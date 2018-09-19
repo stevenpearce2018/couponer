@@ -1,0 +1,58 @@
+
+.loginForm {
+    width: 40%;
+    margin: 0 auto;
+}
+
+.inputGroup {
+    /* background-color: blue; */
+    font-size: 1em;
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.emailPass {
+    font-size: 20px;
+    padding: 1rem;
+}
+
+/*signIn Button*/
+.signIn, .searchButton {
+    margin-left: 50%;
+    margin-top: 3.5rem;
+    border: solid 1px transparent;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5em 1em;
+    color: #000080;
+    background-color: #fde428;
+}
+
+.signIn:hover, .searchButton:hover {
+    background-color: gold;
+}
+
+
+@media (min-width: 440px) {
+    .loginForm {
+      width: 40rem;
+    }
+  }
+
+
+@media only screen and (max-width: 959px) {
+    .signIn, .loginForm {
+      width:98.5%;
+      margin-left:6px;   
+    }
+}  
+
+@media only screen and (max-width: 959px) {
+    .emailPass {
+        width: 99%;
+    }
+}

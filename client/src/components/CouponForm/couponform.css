@@ -1,0 +1,353 @@
+
+.fileInput {
+  cursor: pointer;
+  border:none;
+}
+.previewText {
+  width: 100%;
+  margin-top: 20px;
+}
+html {
+  font-size: 16px;
+}
+
+body {
+  font: 100% / 1.414 sans-serif;
+}
+
+.uploadForm {
+  margin-right: auto;
+  margin-left: auto;
+  width:90%;
+}
+
+fieldset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+label {
+  margin-bottom: 8px;
+  display: block;
+  color: #2b2e4a;
+}
+
+input:not([type=checkbox]):not([type=radio]),
+select,
+textarea {
+  padding: 8px;
+  width: 100%;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 1px solid #bdc3c7;
+  border-left: 0;
+  transition: border-bottom-color .15s ease-in;
+}
+
+input[type=checkbox],
+input[type=radio] {
+  margin-right: 8px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.button, .getCoupon, .declineCoupon, .submitButton {
+  margin-top: 5px;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  padding: 8px 16px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #3fc1c9;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color .15s ease-in;
+}
+
+.button:focus:active {
+  background-color: #31a7ae;
+}
+.button:focus {
+  outline: 0;
+}
+.button:hover {
+  background-color: #7bd4da;
+}
+
+.getCoupon {
+  float:left;
+  background-color:green;
+}
+.getCoupon:hover {
+  background-color:#99FF66;
+}
+.declineCoupon {
+  float:right;
+  background-color:red;
+  margin-bottom:5px;
+}
+.declineCoupon:hover {
+  background-color:#FF99FF;
+}
+
+.description {
+  margin-left: 2%;
+  margin-right: 2%;
+  font-style: oblique;
+  white-space: pre-wrap;      /* CSS3 */   
+  white-space: -moz-pre-wrap; /* Firefox */    
+  white-space: -pre-wrap;     /* Opera <7 */   
+  white-space: -o-pre-wrap;   /* Opera 7 */    
+  word-wrap: break-word;      /* IE */
+}
+
+.exampleTitle {
+  margin-left: 2%;
+  margin-right: 2%;
+  text-align: center;
+  margin-bottom: -20px;
+  margin-top: -20px;
+}
+
+.coupon {
+  background-color: ghostwhite;
+  border-radius: 5px;
+  border-width: .5px;
+}
+
+.exampleImage{
+  width: 100%;
+  height: auto;
+}
+.previewSuperHeader {
+  text-align: center;
+  float: center;
+}
+
+.flexseal{
+  background-color: ghostwhite;
+}
+
+.pricing{
+  width: 92%;
+  margin-left:4%;
+}
+
+.oldPrice, .newPrice, .percentOff, .savings{
+  color:red;
+  text-align:left;
+  display:inline;
+  font-weight: bold;
+}
+.oldPrice {
+  text-decoration: line-through;
+}
+.percentOff {
+  float:right;
+  color:green;
+}
+.savings { 
+  margin-left:10%;
+  text-align:right;
+  float:right;
+  color:green;
+}
+
+.newPrice{
+  color:green;
+}
+
+.amountLeft{
+  padding-top:5px;
+  text-align:center;
+  font-weight: bold
+}
+
+.icon-question {
+  display:inline;
+  float:right;
+  margin-right:0%;
+  background-color:#3fc1c9;
+  color:black;
+  padding-right:6px;
+  padding-left:6px;
+  padding-top:3px;
+  padding-bottom:3px;
+  border-radius: 80px;
+}
+.icon-question:hover {
+  background-color:cyan;
+  cursor:pointer;
+  text-decoration: none;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-size: cover;
+  height: 100vh;
+}
+
+.button {
+  font-size: 1em;
+  padding: 10px;
+  border-radius: 20px/50px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+.button:hover {
+  background: #06D85F;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  transition: opacity 500ms;
+  visibility: hidden;
+  opacity: 0;
+}
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup {
+  margin: 70px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 5px;
+  width: 30%;
+  position: relative;
+  transition: all 5s ease-in-out;
+}
+
+.popup h2 {
+  margin-top: 0;
+  color: #333;
+  font-family: Tahoma, Arial, sans-serif;
+}
+.popup .close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  transition: all 200ms;
+  font-size: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+}
+.popup .close:hover {
+  color: #06D85F;
+}
+.popup .popupcontent {
+  max-height: 30%;
+  overflow: auto;
+}
+
+@media screen and (max-width: 700px){
+  .box{
+    width: 70%;
+  }
+  .popup{
+    width: 70%;
+  }
+}
+
+.icon-question {
+  text-decoration: none;
+}
+
+input[type="file"] {
+  display:none;
+}
+.custom-file-upload {
+    background-color: #3fc1c9;
+    color:ghostwhite;
+    display: inline;
+    padding: 6px 12px;
+    cursor: pointer;
+    float:left;
+}
+.submitButton {
+  float: right;
+  margin-top:0px;
+}
+.submitButton:hover, .custom-file-upload:hover {
+  background-color:cyan;
+}
+.flextape{
+  display: flex;
+  width:100%;
+  margin-left:0%;
+  justify-content: center;
+  display: -webkit-flex; /* Safari */
+  -webkit-flex-wrap: wrap; /* Safari 6.1+ */
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  text-align: left;
+}
+
+.exampleImage{
+  width:96%;
+  margin-left:2%;
+}
+
+.coupon, .couponHeader, .formHeader, .uploadCouponForm, .formHeaderMobile{
+  width:35%;
+  margin-bottom:auto;
+  background-color:ghostwhite;
+  margin-top:30px;
+}
+.formHeaderMobile{
+  display:none;
+}
+
+@media only screen and (max-width: 1000px) {
+  .uploadCouponForm, .formHeader, .coupon, .couponHeader{
+    width:45%;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .uploadCouponForm, .formHeader, .coupon, .couponHeader{
+    width:90%;
+  }
+  .formHeader{
+  display:none;
+}
+  .formHeaderMobile{
+  display:block;
+}
+}
+
+@media only screen and (max-width: 800px) {
+  .uploadCouponForm, .formHeader, .coupon, .couponHeader, .formHeaderMobile{
+    width:90%;
+  }
+  .formHeaderMobile {
+    display:block;
+  }
+}
+
+.formHeader, .couponHeader, .formHeaderMobile {
+  text-align:center;
+  background-color:#fde428;
+  font-size:14px;
+  text-transform:uppercase;
+  color:#002e5b;
+  border-radius:5px;
+}
+
+.exampleTitle{
+  width: 100%;
+  text-align: center;
+}
