@@ -31,6 +31,22 @@ class SignUp extends Component {
       showOrHideAccountMem: 'showBuissnessIfCustomer',
       monthLength: ''
     }
+    this.handleSingup = this.handleSingup.bind(this);
+    this.updateMonthLength = this.updateMonthLength.bind(this);
+    this.updateBuisnessName = this.updateBuisnessName.bind(this);
+    this.handleRadio = this.handleRadio.bind(this);
+    this.updateEmail = this.updateEmail.bind(this);
+    this.updateRegion =this.updateRegion.bind(this);
+    this.updateAddress = this.updateAddress.bind(this);
+    this.updateCCV = this.updateCCV.bind(this);
+    this.updatePhoneNumber = this.updatePhoneNumber.bind(this);
+    this.updateZipcode = this.updateZipcode.bind(this);
+    this.updateCity = this.updateCity.bind(this);
+    this.updateCardNumber = this.updateCardNumber.bind(this);
+    this.updatePassword = this.updatePassword.bind(this);
+    this.updateAddress = this.updateAddress.bind(this);
+    this.updateExperationDate = this.updateExperationDate.bind(this);
+    this.onSelectFlag = this.onSelectFlag.bind(this);
   }
   updateCountry (e) {
     this.setState({ country: e.target.value });
@@ -78,7 +94,7 @@ class SignUp extends Component {
     const google=window.google
     var geocoder = new google.maps.Geocoder();
     let that = this;
-    geocoder.geocode({ 'address': that.state.address }, function (results, status) {
+    geocoder.geocode({ 'address': that.state.address }, (results, status) => {
           if (status == google.maps.GeocoderStatus.OK) {
               var latitude = results[0].geometry.location.lat();
               var longitude = results[0].geometry.location.lng();
@@ -151,7 +167,7 @@ class SignUp extends Component {
                 name="customerOrBuisness" 
                 id={loan} 
                 value={loan}
-                onChange={this.handleRadio.bind(this)}
+                onChange={this.handleRadio}
               />
               {loan}
             </label>
@@ -178,7 +194,7 @@ class SignUp extends Component {
           <strong>Email</strong>
         </label>
         </div>
-        <input className='signupInput' type="email" placeholder="ProSaver@Couponer.com" onChange={this.updateEmail.bind(this)} required/>
+        <input className='signupInput' type="email" placeholder="ProSaver@Couponer.com" onChange={this.updateEmail} required/>
       </div>
     <div className="signupBox">
         <div className='inputLabel'>
@@ -186,7 +202,7 @@ class SignUp extends Component {
           <strong>Password</strong>
         </label>
     </div>
-        <input className='signupInput' type="password" placeholder="Your Password Here" required onChange={this.updatePassword.bind(this)}/>
+        <input className='signupInput' type="password" placeholder="Your Password Here" required onChange={this.updatePassword}/>
       </div>
       <div className="signupBox"> 
         <div className='inputLabel'>
@@ -194,7 +210,7 @@ class SignUp extends Component {
           <strong>Full Phone Number</strong>
         </label>
         </div>
-        <input className='signupInput' type="number" placeholder="(1)123-456-7890" onChange={this.updatePhoneNumber.bind(this)} required/>
+        <input className='signupInput' type="number" placeholder="(1)123-456-7890" onChange={this.updatePhoneNumber} required/>
       </div>
       <div className="signupBox"> 
         <div className='inputLabel'>
@@ -202,7 +218,7 @@ class SignUp extends Component {
           <strong>Credit Card Number</strong>
         </label>
         </div>
-        <input className='signupInput' type="number" placeholder="0000-0000-0000-0000" onChange={this.updateCardNumber.bind(this)} required/>
+        <input className='signupInput' type="number" placeholder="0000-0000-0000-0000" onChange={this.updateCardNumber} required/>
       </div>
           <div className="signupBox"> 
         <div className='inputLabel'>
@@ -210,7 +226,7 @@ class SignUp extends Component {
           <strong>CCV</strong>
         </label>
         </div>
-        <input className='signupInput' type="number" placeholder="555" onChange={this.updateCCV.bind(this)} required/>
+        <input className='signupInput' type="number" placeholder="555" onChange={this.updateCCV} required/>
       </div>
     
           <div className="signupBox"> 
@@ -219,7 +235,7 @@ class SignUp extends Component {
           <strong>Zip code</strong>
         </label>
         </div>
-        <input className='signupInput' type="number" placeholder="55555" onChange={this.updateZipcode.bind(this)} required/>
+        <input className='signupInput' type="number" placeholder="55555" onChange={this.updateZipcode} required/>
       </div>
     
               <div className="signupBox"> 
@@ -228,7 +244,7 @@ class SignUp extends Component {
           <strong>Experation Date</strong>
         </label>
         </div>
-        <input className='signupInput' type="text" placeholder="MM/DD/YYYY" onChange={this.updateExperationDate.bind(this)} required/>
+        <input className='signupInput' type="text" placeholder="MM/DD/YYYY" onChange={this.updateExperationDate} required/>
       </div>
     
         <div className="signupBox"> 
@@ -237,7 +253,7 @@ class SignUp extends Component {
           <strong>Address</strong>
         </label>
         </div>
-        <input className='signupInput' type="text" placeholder="12345 189th Savings St" onChange={this.updateAddress.bind(this)} required/>
+        <input className='signupInput' type="text" placeholder="12345 189th Savings St" onChange={this.updateAddress} required/>
       </div>
 
       <div className="signupBox"> 
@@ -254,7 +270,7 @@ class SignUp extends Component {
           <strong>City</strong>
         </label>
         </div>
-        <input className='signupInput' type="text" placeholder="Coupon Town" required onChange={this.updateCity.bind(this)}/>
+        <input className='signupInput' type="text" placeholder="Coupon Town" required onChange={this.updateCity}/>
       </div>
       <div className="signupBox">
         <div className='inputLabel'>
@@ -264,7 +280,7 @@ class SignUp extends Component {
         </div>
         <ReactFlagsSelect
           defaultCountry="US"
-          onSelect={this.onSelectFlag.bind(this)} 
+          onSelect={this.onSelectFlag} 
           required />
       </div>
       <div className="signupBox">
@@ -273,7 +289,7 @@ class SignUp extends Component {
           <strong>State/Provience</strong>
         </label>
         </div>
-        <input className='signupInput' type="text" placeholder="Florida" required onChange={this.updateRegion.bind(this)} />
+        <input className='signupInput' type="text" placeholder="Florida" required onChange={this.updateRegion} />
       </div>
       <div className={this.state.showOrHideBuisInput}>
       <div className="buisnessNameSignup"> 
@@ -282,7 +298,7 @@ class SignUp extends Component {
           <strong>Buisness Name</strong>
         </label>
         </div>
-        <input className='signupInput' type="text" placeholder="Bob's Kitten Rentals" onChange={this.updateBuisnessName.bind(this)}/>
+        <input className='signupInput' type="text" placeholder="Bob's Kitten Rentals" onChange={this.updateBuisnessName}/>
       </div>
       </div>
       <div className={this.state.showOrHideAccountMem}>
@@ -291,13 +307,13 @@ class SignUp extends Component {
           <strong>Subscription Length 4.99$ per month for unlimited coupons</strong>
         </label>
         </div>
-        <input className='signupInput' type="nubmer" placeholder="Amount of months" onChange={this.updateMonthLength.bind(this)}/>
+        <input className='signupInput' type="nubmer" placeholder="Amount of months" onChange={this.updateMonthLength}/>
       </div>
   </form>
   <br/>
 
   <div className='buttonAndForgot'>
-        <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup.bind(this)}>Submit </button>
+        <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
         <br/>
       <a className='forgotPass' href="#">
         <strong>Forgot Password?</strong>

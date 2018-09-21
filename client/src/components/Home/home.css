@@ -1,58 +1,3 @@
-
-.content{display:table; margin-bottom:60px; width:900px;}
-.content h2{font-size:18px; font-weight:500; color:#002e5b; border-bottom:1px solid #fde428; display:table; padding-bottom:10px; margin-bottom:10px;}
-.content p{font-size:14px; line-height:22px; color:#7c7c7c; text-align:justify;}
-
-.social{margin:0px auto; display:table; display:table;}
-.social li{float:left; padding:0px 10px;}
-.social li a{color:#002e5b; transition: all 0.5s ease 0s;}
-.social li a:hover{color:#fde428; transition: all 0.5s ease 0s;}
-.toggle-menu{
-    display: none;
-}
-@media only screen and (max-width: 1440px) {
-section{max-width:95%;}
-}
-
-@media only screen and (max-width: 1017px) {
-header{padding:20px 0px;}
-#logo{padding:0px;}
-input[type=checkbox] {position: absolute; top: -9999px; left: -9999px; background:none;}
-input[type=checkbox]:fous{background:none;}
-.toggle-menu {float:right; padding:8px 0px; display:inline-block; cursor:pointer; }
-input[type=checkbox]:checked ~ nav {display:block;}
-
-nav{display:none; position:absolute; right:0px; top:53px; background-color:#002e5b; padding:0px; z-index:99;}
-nav ul{width:auto;}
-nav ul li{float:none; padding:0px; width:100%; display:table;}
-nav ul li a{color:#FFF; font-size:15px; padding:10px 20px; display:block; border-bottom: 1px solid rgba(225,225,225,0.1);}
-nav ul li a i{color:#fde428; padding-right:13px;}
-}
-
-@media only screen and (max-width: 980px) {
-.content{width:90%;}
-}
-
-@media only screen and (max-width: 568px) {
-h1{padding:25px 0px;}
-h1 span{display:block;}
-}
-
-@media only screen and (max-width: 480px) {
-section {max-width: 90%;}
-}
-
-@media only screen and (max-width: 360px) {
-h1{font-size:20px;}
-label{padding:5px 0px;}
-#logo{font-size: 20px;}
-nav{top:47px;}
-}
-
-@media only screen and (max-width: 320px) {
-h1 {padding: 20px 0px;}
-}
-
 .coupons{
     width: 100%;
     height: 500px;
@@ -64,3 +9,8 @@ h1 {padding: 20px 0px;}
     background-color: green;
     width: 100%;
 }
+
+
+.content{display:table; margin-bottom:60px; width:900px;}
+.content h2{font-size:18px; font-weight:500; color:#002e5b; border-bottom:1px solid #fde428; display:table; padding-bottom:10px; margin-bottom:10px;}
+.content p{font-size:14px; line-height:22px; color:#7c7c7c; text-align:justify;}

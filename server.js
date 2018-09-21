@@ -3,7 +3,6 @@ const app = express();
 const redisHelper = require('./redisHelper')
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
-const fs = require("fs")
 app.use(bodyParser.json({limit:'50mb'})) // handle json data
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' })) // handle URL-encoded data
 const MongoClient = require('mongodb').MongoClient
@@ -20,6 +19,9 @@ mongoose.connect(
   }
 );
 
+// app.get('*', (req, res) => {
+//   res.json({url: req.url});
+// });
 
 app.post('/api/signupCustomer', async(req, res) => {
   const ip = req.headers['x-forwarded-for'] || 
@@ -130,37 +132,28 @@ app.post('/api/searchCoupons', async (req, res) => {
   const city = req.body.city.toLowerCase()
   const zip = req.body.zip
   const category = req.body.category
-  console.log(city)
   if(city && zip && category) {
-    console.log('1')
     coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
-  } 
+  }
   else if(city && zip) {
-    console.log('2')
     coupons = await Coupon.find({'city' : city, 'zip' : zip})
   } 
   else if(category && zip) {
-    console.log('3')
     coupons = await Coupon.find({'zip' : zip, 'category' : category})
   } 
   else if(category && city) {
-    console.log('4')
     coupons = await Coupon.find({'city' : city, 'category' : category})
   }
   else if(category){
-    console.log('5')
     coupons = await Coupon.find({'category' : category})
   }
   else if(city){
-    console.log('6')
     coupons = await Coupon.find({'city' : city})
-    console.log(coupons)
   }
   else if(zip){
-    console.log('7')
     coupons = await Coupon.find({'zip' : zip})
   }
-  // console.log(coupons)
+  console.log(coupons)
   res.json({
     coupons: coupons
   });

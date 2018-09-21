@@ -12,6 +12,11 @@ class Search extends Component {
       category: '',
       coupons: ''
     }
+    this.updateCity = this.updateCity.bind(this);
+    this.updateZip = this.updateZip.bind(this);
+    this.updateCategory = this.updateCategory.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.test = this.test.bind(this)
   }
   updateCity(e) {
     this.setState({ city: e.target.value });
@@ -27,7 +32,10 @@ class Search extends Component {
     superState.test = 'New State'
     this.props.parentMethod();
     }
-    
+    test() {
+      console.log(this.state.coupons)
+    }
+
   handleSearch(e){
     e.preventDefault();
     const data = {
@@ -64,7 +72,7 @@ class Search extends Component {
           <strong>City :</strong>
         </label>
         </div>
-        <input className='searchCity' type="text" placeholder="Your city" onChange={this.updateCity.bind(this)}/>
+        <input className='searchCity' type="text" placeholder="Your city" onChange={this.updateCity}/>
       </div>
     <div className="searchBox">
         <div className='searchLabel'>
@@ -72,7 +80,7 @@ class Search extends Component {
           <strong>Zip : </strong>
         </label>
     </div>
-        <input className='searchZip' type="text" placeholder="12345" onChange={this.updateZip.bind(this)}/>
+        <input className='searchZip' type="text" placeholder="12345" onChange={this.updateZip}/>
       </div>
       <div className="searchBox"> 
         <div className='searchLabel'>
@@ -80,14 +88,15 @@ class Search extends Component {
           <strong>Category: </strong>
         </label>
         </div>
-        <input className='searchCategory' type="text" placeholder="food" onChange={this.updateCategory.bind(this)}/>
+        <input className='searchCategory' type="text" placeholder="food" onChange={this.updateCategory}/>
       </div>
   </form>
   <br/>
 
-        <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch.bind(this)}><strong>Search</strong></button>
+        <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
         <br/>
       <button onClick={this.callParentFunction}> Update State</button>
+      <button onClick={this.test}> Test </button>
       {this.state.coupons}
         </div>
     )

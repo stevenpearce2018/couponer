@@ -123,6 +123,7 @@ class CouponForm extends Component {
       imagePreviewUrl: 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg',
       category: '',
       city: '',
+      zip: ''
     };
   }
   handleImageChange(e) {
@@ -139,57 +140,70 @@ class CouponForm extends Component {
     }
     reader.readAsDataURL(file)
   }
-  uploadFile(e) {
-    // after a response is gotten from the server
-    // JSON.stringify the response then JSON.parse the response 
-    e.preventDefault();
-    this.setLatAndLong()
-    alert(this.state.length)
-    if (this.state.latitude === '' || this.state.longitude === '') {
-      alert('Invalid Address, please check address!')
-    } else if (this.state.title === 'Rent your very own kitten today!') {
-      alert('You must have a unique title!')
-    }else if (this.state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') {
-      alert('You must have an address!')
-    } else if (this.state.currentPrice <= this.state.discountedPrice) {
-      alert('Your discounted price must be lower than your old price')
-    } else if (this.state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') {
-      alert('You must upload an image!')
-    } else if (this.state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') {
-      alert('You must upload a custom description!')
-    } else if (this.state.city === '') {
-      alert('You must have a city!')
-    }else if (this.state.category === '') {
-      alert('You must have a category!')
-    }else if (this.state.length === '1 day ') {
-      alert('You must have a length!')
-    }else if (this.state.city === '') {
-      alert('You must have a city!')
-    } else {
-      const url = `/api/uploadCoupons`
-      axios.post(
-        url, this.state
-        )
-      .then(response => alert(JSON.stringify(response)))
-    }
-  }
-
   setLatAndLong() {
     let that = this;
     const google=window.google
     var geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'address': this.state.address}, (results, status) => {
+      if (status == google.maps.GeocoderStatus.OK) {
+        if (results[0] && that.state.address.length > 5) {
+          that.setState({
+            latitude:results[0].geometry.location.lat(),
+            longitude: results[0].geometry.location.lng()
+          })
+        }
+      }
+    });
+  }
 
-geocoder.geocode( { 'address': this.state.address}, function(results, status) {
-
-if (status == google.maps.GeocoderStatus.OK) {
-    if (results[0] && that.state.address.length > 5) {
-      that.setState({
-        latitude:results[0].geometry.location.lat(),
-        longitude: results[0].geometry.location.lng()
-      })
-    }
-    }
-});
+  uploadFile(e) {
+    // after a response is gotten from the server
+    // JSON.stringify the response then JSON.parse the response 
+    e.preventDefault();
+    let that = this;
+    const google=window.google
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'address': this.state.address}, (results, status) => {
+      if (status == google.maps.GeocoderStatus.OK) {
+        if (results[0] && that.state.address.length > 5) {
+          that.setState({
+            latitude:results[0].geometry.location.lat(),
+            longitude: results[0].geometry.location.lng()
+          })
+          if (this.state.latitude === '' || this.state.longitude === '') {
+            alert('Invalid Address, please check address!')
+          } else if (this.state.title === 'Rent your very own kitten today!') {
+            alert('You must have a unique title!')
+          } else if (this.state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') {
+            alert('You must have an address!')
+          } else if (this.state.currentPrice <= this.state.discountedPrice) {
+            alert('Your discounted price must be lower than your old price')
+          } else if (this.state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') {
+            alert('You must upload an image!')
+          } else if (this.state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') {
+            alert('You must upload a custom description!')
+          } else if (this.state.city === '') {
+            alert('You must have a city!')
+          } else if (this.state.category === '') {
+            alert('You must have a category!')
+          } else if (this.state.length === '1 day ') {
+            alert('You must have a length!')
+          } else if(this.state.currentPrice <= this.state.discountedPrice) {
+            alert('Your discounted price must be lower than your current price!')
+          } else if (this.state.city === '') {
+            alert('You must have a city!')
+          } else if (this.state.zip === '') {
+            alert('You must have a zipcode!')
+          } else {
+            const url = `/api/uploadCoupons`
+            axios.post(
+              url, this.state
+              )
+            .then(response => alert(JSON.stringify(response)))
+          }
+        }
+      }
+    });
   }
     handleTitleChange(e) {
       if (e.target.value == '') {
@@ -286,6 +300,10 @@ if (status == google.maps.GeocoderStatus.OK) {
     this.setState({city: e.target.value})
   }
 
+  handleZipChange(e){
+    this.setState({zip: e.target.value})
+  }
+
   render() {
     let {imagePreviewUrl} = this.state;
     let $imagePreview = '';
@@ -379,15 +397,25 @@ if (status == google.maps.GeocoderStatus.OK) {
   onChange={(e)=>this.handleAddressChange(e)} />
           <br/>
 
-                    <Input
+        <Input
           hasLabel='true'
           htmlFor='textInput'
           label='City'
           required='true'
           type='text'
-  value={this.state.city}
-  onChange={(e)=>this.handleCityChange(e)} />
+          value={this.state.city}
+          onChange={(e)=>this.handleCityChange(e)} />
           <br/>
+        
+        <Input
+          hasLabel='true'
+          htmlFor='textInput'
+          label='Zip code'
+          required='true'
+          type='number'
+          value={this.state.handleZipChange}
+          onChange={(e)=>this.handleZipChange(e)} />
+        <br/>
         
         <Input
           hasLabel='true'

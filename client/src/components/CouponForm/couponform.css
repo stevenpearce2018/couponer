@@ -351,3 +351,10 @@ input[type="file"] {
   width: 100%;
   text-align: center;
 }
+
+.formHeaderMobile{
+  padding-top:0px;
+  padding-bottom:0px;
+  padding-right:0px;
+  padding-left:0px;
+}

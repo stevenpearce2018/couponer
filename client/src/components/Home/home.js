@@ -17,60 +17,56 @@ class Home extends Component {
       longitude: '',
       coupons: ''
     };
+  }
+
+  componentDidMount () {   
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } 
+    let that = this;
+    const google = window.google
+    var geocoder = new google.maps.Geocoder;
+    const cityNotFound = () => {
+      let url = '/api/getSponseredCoupons/nocityfound'
+      axios.get(url)
+      .then(response => {
+        that.setState({coupons: CouponsMaker(response.data.coupons)})
+      })
     }
-
-    componentDidMount () {
-      
-      if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(showPosition);
-      } 
-      let that = this;
-      const google = window.google
-      var geocoder = new google.maps.Geocoder;
-
-      
-      function showPosition(position) {
-        that.setState({
-          geolocation: position.coords.latitude + " " + position.coords.longitude,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        })
-        var latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
-        geocoder.geocode({'location': latlng}, function(results, status) {
-          if (status === 'OK') {
-            if (results[0]) {
-              let city = results[0].address_components.filter(function(addr){
-                return (addr.types[0]=='locality')?1:(addr.types[0]=='administrative_area_level_1')?1:0;
-             });
-             city = JSON.stringify(city[0].long_name).toLowerCase()
-             const url = '/api/getSponseredCoupons/'+city
-             axios.get(
-               url
-               )
+    function showPosition(position) {
+      that.setState({
+        geolocation: position.coords.latitude + " " + position.coords.longitude,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      })
+      var latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
+      geocoder.geocode({'location': latlng}, (results, status) => {
+        if (status === 'OK') {
+          if (results[0]) {
+            let city = results[0].address_components.filter((addr) => {
+              return (addr.types[0]=='locality')?1:(addr.types[0] == 'administrative_area_level_1')?1:0;
+            });
+            if(city[0]) {
+              city = JSON.stringify(city[0].long_name).toLowerCase()
+            }
+            if (city.length > 0 || city.length > 1) {
+              const url = '/api/getSponseredCoupons/'+city
+              axios.get(url)
               .then(response => {
-                  that.setState({coupons: CouponsMaker(response.data.coupons)})
+                that.setState({coupons: CouponsMaker(response.data.coupons)})
               })
             } else {
-              const url = '/api/getSponseredCoupons/nocityfound'
-              axios.get(
-                url
-                )
-                .then(response => {
-                    that.setState({coupons: CouponsMaker(response.data.coupons)})
-                })
+              cityNotFound()
             }
           } else {
-            const url = '/api/getSponseredCoupons/nocityfound'
-            axios.get(
-              url
-              )
-              .then(response => {
-                  that.setState({coupons: CouponsMaker(response.data.coupons)})
-              })
-            }
-        });
-      }
+            cityNotFound()
+          } 
+        } else {
+          cityNotFound()
+        }
+      });
     }
+  }
 
   render() {
     return (
