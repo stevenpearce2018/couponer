@@ -57,7 +57,7 @@ class App extends Component {
   this.handleSubmit = this.handleSubmit.bind(this);
 }
 componentDidMount () {
-  this._isMounted = true;
+  this._isMounted = true; 
   window.onpopstate = ()=> {
     if(this._isMounted) {
       const urlPath = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)

@@ -79,7 +79,7 @@ app.post('/api/updateAccount', (req, res) => {
   const redisKey = req.body.email;
   let userExist = false;
   // login key is "email:password"
-  redisHelper.get(redisKey, registerUser) //geting user based on email
+  redisHelper.get(redisKey, registerUser) //geting user based on email 
   function registerUser (result) { //then I call this funtion with the information found in redis
     console.log(result)
     console.log(redisKey + ' '+ req.params)
