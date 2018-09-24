@@ -8,7 +8,9 @@ import Footer from './components/Footer/footer';
 import Login from './components/Login/login';
 import Search from './components/Search/search'
 import superState from './superState';
-import history from './history'
+import history from './history';
+import CheckoutForm from './components/CheckoutForm/checkoutForm'
+import { Elements, StripeProvider } from 'react-stripe-elements';
 
 
 // For routing
@@ -36,8 +38,6 @@ class App extends Component {
       password: '',
       test: superState.test,
       mainContent: <Home/>,
-      signinSignoutButton: this.isLoggedinbutton(),
-      signupButton: this.showSignupButton(),
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -57,59 +57,46 @@ class App extends Component {
   this.handleSubmit = this.handleSubmit.bind(this);
 }
 componentDidMount () {
-  this._isMounted = true; 
-  window.onpopstate = ()=> {
+  const urlHandler = (currentURL) => {
+    switch (currentURL.toLowerCase()) {
+      case '':
+          this.setState({mainContent: <Home/>})
+          break;
+      case 'home':
+          this.setState({mainContent: <Home/>})
+          break;
+      case 'uploadcoupon':       
+          this.setState({mainContent: <CouponForm/>})
+          break;
+      case 'accountsettings': 
+          this.setState({mainContent: <AccountSettings/>})
+          break;
+      case 'signup':
+          this.setState({mainContent: <SignUp/>})
+          break;
+      case 'search':
+          this.setState({mainContent: <Search/>})
+          break;
+      case 'login':
+          this.setState({mainContent: <Login/>})
+          break;
+      case 'signin':
+          this.setSignInToMain();
+      default:
+          this.setState({mainContent: <Home/>})
+    }
+  }
+  const url = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
+  urlHandler(url)
+  this._isMounted = true;
+  window.onpopstate = () => {
     if(this._isMounted) {
       const urlPath = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
-      switch (urlPath.toLowerCase()) {
-        case '':
-            this.setState({mainContent: <Home/>})
-            break;
-        case 'home':
-            this.setState({mainContent: <Home/>})
-            break;
-        case 'uploadcoupon':       
-            this.setState({mainContent: <CouponForm/>})
-            break;
-        case 'accountsettings': 
-            this.setState({mainContent: <AccountSettings/>})
-            break;
-        case 'signup':
-            this.setState({mainContent: <SignUp/>})
-            break;
-        case 'search':
-            this.setState({mainContent: <Search/>})
-            break;
-        case 'login':
-            this.setState({mainContent: <Login/>})
-            break;
-        case 'signin':
-            this.setSignInToMain();
-        default:
-            this.setState({mainContent: <Home/>})
-      }
+      urlHandler(urlPath)
     }
   }
 }
-isLoggedinbutton() {
-  let user = localStorage.getItem('credsCoupon')
-  if(user) {
-    return <button className='navBar' onClick={this.handleSignOut}><strong>Sign Out</strong></button>;
-  }
-  else{
-    return <Home/>;
-    // <button className='navBar' value="send" onClick={this.setSignInToMain}><strong>Sign In</strong></button>;
-  }
-}
-showSignupButton(){
-  let user = localStorage.getItem('credsCoupon')
-  if(user) {
-    return '';
-  }
-  else{
-    return <button className='navBar' onClick={this.setSignupToMain}><strong>Sign up</strong></button>;
-  }
-}
+
 setSignupToMain(){
   this.setState({mainContent: <Home/>})
 }
@@ -133,27 +120,6 @@ setSignInToMain() {
   </form>
 </div>})
 }
-  isLoggedin() {
-    let user = localStorage.getItem('credsCoupon')
-    if (user) {
-      return '';
-    } else {
-      return <div className="formDiv">
-      <form className="form" method="post">
-      <h2>SignIn</h2>
-        <div className="inputGroup">
-        <label> Email : </label>
-        <input type="email" id="emailSignin" onChange={this.signInEmail}/>
-        <br/>
-        <label> Password : </label>
-        <input type="password" id="passwordSignin" onChange={this.signInPassword}/>
-        <br/>
-        <button value="send" onClick={this.handleSubmit}> Sign In</button>
-        </div>
-      </form>
-    </div>;
-    }
-  }
     handleSignOut(){
       localStorage.removeItem('credsCoupon')
       this.setState({mainContent: <div className="formDiv">
@@ -181,81 +147,29 @@ setSignInToMain() {
       this.setState({email : event.target.value})
   }
 
-  getUserInfo() {
-    let user = JSON.parse(localStorage.getItem('credsCoupon'));
-    let password;
-    let email;
-    if (user) {
-            password = user.password;
-            email = user.email;
-        const url = `/api/signin/${email}/${password}/accountSettings`
-        fetch(url, {
-          method: 'post',
-          body: {
-            password: password,
-            email: email
-          },
-          headers: {
-            Accept: 'application/json',
-          },
-      }).then(response => {
-        response.json().then(json => {
-            alert(JSON.stringify(json))
-        })
-      })
-    } else {
-        this.setState({mainContent: <div className="formDiv">
-        <form className="form" method="post">
-        <h2>Log in</h2>
-          <div className="inputGroup">
-          <label> Email : </label>
-          <input type="email" id="emailSignin" onChange={this.signInEmail}/>
-          <br/>
-          <label> Password : </label>
-          <input type="password" id="passwordSignin" onChange={this.signInPassword}/>
-          <br/>
-          <button className='navBar' value="send" onClick={this.handleSubmit}><strong>Sign In</strong></button>
-          </div>
-        </form>
-      </div>})
-        }
-    }
-
   setMainAccountSettings(e) {
-    // e.preventDefault();
-    // window.history.pushState({page: "Account Settings"}, "Account Settings", "AccountSettings");
     this.setState({mainContent: <AccountSettings/>})
   }
   setMainUploadCoupon(e) {
-    // e.preventDefault();
-    // window.history.pushState({page: "Upload coupon"}, "Upload coupon", "UploadCoupon");
     this.setState({mainContent: <CouponForm/>})
   }
   setMainSignUp(e){
-    // e.preventDefault();
-    // window.history.pushState({page: "SignUp to Couponer"}, "SignUp to Couponer", "SignUp");
     this.setState({mainContent: <SignUp/>})
   }
   setMainHome(e){
-    // e.preventDefault();
-    // window.history.pushState({page: "Welcome to Couponer"}, "Welcome to Couponer", "Home");
     this.setState({mainContent: <Home/>})
   }
   setMainLogin(e){
-    // e.preventDefault();
-    // window.history.pushState({page: "Login to Couponer"}, "Login to Couponer", "Login");
     this.setState({mainContent: <Login/>})
   }
   setMainSearch(e){
-    // e.preventDefault();
-    // window.history.pushState({page: "Search For Coupons"}, "Search For Coupons", "Search");
     this.setState({mainContent: <Search parentMethod={this.setSuperState}/>})
   }
 
-  handleSubmit(e){
+  async handleSubmit(e){
       e.preventDefault();
       const url = `api/signin`
-      fetch(url, {
+      let response = await fetch(url, {
         body: {
           email: this.state.email,
           password: this.state.password
@@ -264,19 +178,15 @@ setSignInToMain() {
         headers: {
           Accept: 'application/json',
         },
-    }).then(response => {
-      response.json().then(json => {
-          // let user = localStorage.getItem('credsCoupon')
-          // localStorage.setItem('credsCoupon', JSON.stringify(json))
-          // user = localStorage.getItem('credsCoupon')
-          this.setState({
-            mainContent: '',
-            signinSignoutButton: <div className="navBar"><button onClick={this.handleSignOut}><strong>Sign Out</strong></button></div>,
-            signupButton: '',
-        })
-        })
+    })
+    response = await response.json()
+    alert(response)
+      this.setState({
+        mainContent: '',
+        signinSignoutButton: <div className="navBar"><button onClick={this.handleSignOut}><strong>Sign Out</strong></button></div>,
+        signupButton: '',
       })
-  }
+    }
 
   render () {
     return (
@@ -318,6 +228,14 @@ setSignInToMain() {
           {this.state.mainContent}
           <br/>
           <br/>
+          <StripeProvider apiKey="pk_test_3eBW9BZ4UzRNsmtPCk9gc8F2">
+        <div className="example">
+          <h1>React Stripe Elements Example</h1>
+          <Elements>
+            <CheckoutForm />
+          </Elements>
+        </div>
+      </StripeProvider>
           {/* {this.state.signinSignoutButton}
           {this.state.signupButton} */}
 

@@ -36,7 +36,7 @@ class Search extends Component {
       console.log(this.state.coupons)
     }
 
-  handleSearch(e){
+  async handleSearch(e){
     e.preventDefault();
     const data = {
         city: this.state.city,
@@ -44,21 +44,19 @@ class Search extends Component {
         category: this.state.category,
     }
     const url = `/api/searchCoupons`
-    fetch(url, {
+    const response =  await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, cors, *same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
       credentials: "same-origin", // include, same-origin, *omit
       headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json; charset=utf-8",
+        // "Content-Type": "application/x-www-form-urlencoded",
       },
       body: JSON.stringify(data),
-  }).then(response => {
-    response.json().then(json => {
-        this.setState({coupons: CouponsMaker(json.coupons)})
-    })
   })
+  const json = await response.json()
+  this.setState({coupons: CouponsMaker(json.coupons)})
 }                
 // <div className="inputGroup">
 // <div className="emailPass">

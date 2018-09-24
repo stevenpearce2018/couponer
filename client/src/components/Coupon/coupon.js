@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import './coupon.css';
-import axios from 'axios'
-
 
 class Coupon extends Component {
   constructor(props) {

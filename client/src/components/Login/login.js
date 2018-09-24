@@ -19,14 +19,14 @@
     updateEmail(event) {
       this.setState({email : event.target.value})
     }
-    handleSubmit(e){
+    async handleSubmit(e){
       e.preventDefault();
       const data = {
         email: this.state.email,
         password: this.state.password
       }
       const url = `api/signin`
-      fetch(url, {
+      const response = await fetch(url, {
         method: "POST", 
         mode: "cors",
         cache: "no-cache",
@@ -35,13 +35,10 @@
           "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify(data),
-      }).then(response => {
-        response.json().then(json => {
-          alert(JSON.stringify(json))
-            localStorage.setItem('credsCoupon', JSON.stringify(json))
-          })
-        })
-      }
+      })
+      const json = await response.json()
+      localStorage.setItem('credsCoupon', JSON.stringify(json))
+    }
 
     render() {
       return (

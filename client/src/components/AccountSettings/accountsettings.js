@@ -80,21 +80,19 @@ class AccountSettings extends Component {
       isCustomer: 'off'
     })
   }
-  handleUpdateAccount(e){
+  async handleUpdateAccount(e){
     e.preventDefault();
     const url = `api/updateAccount`
-    fetch(url, {
+    const response = await fetch(url, {
       body: this.state,
       method: 'post',
       headers: {
         Accept: 'application/json',
       },
-  }).then(response => {
-    response.json().then(json => {
-        localStorage.setItem('credsCoupon', JSON.stringify(json))
     })
-  })
-}
+    const json = await response.json()
+    localStorage.setItem('credsCoupon', JSON.stringify(json))
+  }
 
   render() {
     return (

@@ -13,7 +13,8 @@ const couponSchema = mongoose.Schema({
     textarea: String,
     base64image: String,
     superCoupon: String,
-    redisKeyToCoupon: String
+    couponCodes: { type : Array , "default" : [] },
+    couponStillValid: Boolean
 })
 
 module.exports = mongoose.model('Coupon', couponSchema)

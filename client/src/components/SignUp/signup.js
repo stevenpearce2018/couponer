@@ -107,9 +107,9 @@ class SignUp extends Component {
   updateMonthLength(event){
     this.setState({monthLength : event.target.value})
   }
-  handleSingup(e){
+  async handleSingup(e){
     e.preventDefault();
-    let data = {
+    const data = {
       address: this.state.address,
       buisnessName: this.state.buisnessName,
       cardholderName: this.state.cardholderName,
@@ -126,8 +126,9 @@ class SignUp extends Component {
       country: this.state.country,
       monthLength: this.state.monthLength
     }
+    alert('works')
     const url = `api/signupCustomer`
-    fetch(url, {
+    const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, cors, *same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -137,11 +138,10 @@ class SignUp extends Component {
           // "Content-Type": "application/x-www-form-urlencoded",
       },
       body: JSON.stringify(data),
-  }).then(response => {
-    response.json().then(json => {
-        localStorage.setItem('credsCoupon', JSON.stringify(json))
-    })
   })
+    const json = await response.json()
+    alert(json)
+    localStorage.setItem('credsCoupon', JSON.stringify(json))
 }
   render() {
     const yourPick = this.state.yourPick
@@ -244,7 +244,7 @@ class SignUp extends Component {
           <strong>Experation Date</strong>
         </label>
         </div>
-        <input className='signupInput' type="text" placeholder="MM/DD/YYYY" onChange={this.updateExperationDate} required/>
+        <input className='signupInput' type="text" placeholder="MM/YY" onChange={this.updateExperationDate} required/>
       </div>
     
         <div className="signupBox"> 

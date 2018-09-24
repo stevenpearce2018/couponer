@@ -2,21 +2,50 @@ import React from 'react';
 
 const CouponsMaker = (props) => {
     const content = props.map((coupons) =>
-    <div className='coupons'>
-        <div className='coupons'><h3>{coupons.title}</h3></div>
-        <div className='coupons'><img src={coupons.base64image} /></div>
-        <div className='coupons'><p>{coupons.category}</p></div>
-        <div className='coupons'><p>{coupons.textarea}</p></div>
-        <div className='coupons'><p>{coupons.category}</p></div>
-        <div className='coupons'><p>{coupons.city}</p></div>
-        <div className='coupons'><p>{coupons.address}</p></div>
-        <div className='coupons'><p>{coupons.currentPrice}</p></div>
-        <div className='coupons'><p>{coupons.discountedPrice}</p></div>
-        <div className='coupons'><p>{coupons.lengthInDays}</p></div>
+    <div className="coupon">
+    <h1 className = "exampleTitle">{coupons.title}</h1>
+    <img  className = "exampleImage" src={coupons.base64image} />
+    <div className="pricing">
+      <div className='oldPrice'>
+          Was: {(coupons.currentPrice - 0).toFixed(2)}$
+      </div>
+      <div className='percentOff'>
+          {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
+      </div>
+      <br/>
+      <div className='newPrice'>
+          Now: {(coupons.discountedPrice - 0).toFixed(2)}$
+      </div>
+      <div className='savings'>
+          Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
+      </div>
+      <br/>
+      <hr/>
+      <div className="amountLeft">
+          Only {coupons.amountCoupons} Coupons Left!
+      </div>
+    <hr/>
+    <div className="description">
+    <br/>
+      <p>{coupons.textarea}</p>
+      <br/>
+      <hr/>
+      <br/>
+      <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
+      <hr/>
+      <br/>
+      <p>{coupons.address}</p>
+      <hr/>
+      <br/>
+                <button className="getCoupon"> Get Coupon </button>
+    <button className ="declineCoupon"> No Thanks </button>
     </div>
+    <br/>
+  </div>
+</div>
     );
     return (
-    <div className='couponsHolder'>
+    <div className='flextape'>
         {content}
       </div>
     );
