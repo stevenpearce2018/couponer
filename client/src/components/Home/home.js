@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import './home.css';
 import CouponsMaker from '../../couponsMaker';
 
-// 1) Make get request to server from client
-// 2) Support get request and confirm it works
-// 3) Send some fake data from the server and display it on the client
-// 4) When you are able to send fake data and display it then send real data and display it --- Do this with state
-
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -18,20 +13,18 @@ class Home extends Component {
     };
   }
 
-  async componentDidMount () {   
-    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
-    let that = this;
+  componentDidMount () {   
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } 
+    const that = this;
     const google = window.google
     const geocoder = new google.maps.Geocoder;
     const cityNotFound = async () => {
       const url = '/api/getSponseredCoupons/nocityfound'
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
-      })
-      that.setState({coupons: CouponsMaker(response.data.coupons)})
+      const response = await fetch(url);
+      const data = await response.json();
+      that.setState({coupons: CouponsMaker(data.coupons)})
     }
     function showPosition(position) {
       that.setState({
@@ -46,16 +39,12 @@ class Home extends Component {
             let city = results[0].address_components.filter((addr) => {
               return (addr.types[0]=='locality')?1:(addr.types[0] == 'administrative_area_level_1')?1:0;
             });
-            if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase();
+            if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
             if (city.length > 0 || city.length > 1) {
               const url = '/api/getSponseredCoupons/'+city
-              const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                  Accept: 'application/json',
-                },
-              })
-              that.setState({coupons: CouponsMaker(response.data.coupons)})
+              const response = await fetch(url);
+              const data = await response.json();
+              that.setState({coupons: CouponsMaker(data.coupons)})
             } else cityNotFound();
           } else cityNotFound();
         } else cityNotFound();
@@ -88,4 +77,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default Home
