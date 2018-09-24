@@ -4,6 +4,7 @@ import ReactFlagsSelect from 'react-flags-select';
  
 //import css module
 import 'react-flags-select/css/react-flags-select.css';
+import InputField from '../SubComponents/InputField/inputField'
 
 class SignUp extends Component {
   constructor(props) {
@@ -47,6 +48,7 @@ class SignUp extends Component {
     this.updateAddress = this.updateAddress.bind(this);
     this.updateExperationDate = this.updateExperationDate.bind(this);
     this.onSelectFlag = this.onSelectFlag.bind(this);
+    this.updateCardholderName = this.updateCardholderName.bind(this);
   }
   updateCountry (e) {
     this.setState({ country: e.target.value });
@@ -79,7 +81,7 @@ class SignUp extends Component {
     this.setState({city : event.target.value})
   }
   updateExperationDate(event) {
-    this.setState({experationDate : event.target.value})
+    this.setState({experationDate : event.target.value});
   }
   updateZipcode(event) {
     this.setState({zipCode : event.target.value})
@@ -126,7 +128,7 @@ class SignUp extends Component {
       country: this.state.country,
       monthLength: this.state.monthLength
     }
-    alert('works')
+    alert(JSON.stringify(this.state.experationDate))
     const url = `api/signupCustomer`
     const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -188,90 +190,87 @@ class SignUp extends Component {
           <strong>{options}</strong>
         </div>
           <form className='signinForm'>
-      <div className="signupBox">
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Email">
-          <strong>Email</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="email" placeholder="ProSaver@Couponer.com" onChange={this.updateEmail} required/>
-      </div>
-    <div className="signupBox">
-        <div className='inputLabel'>
-        <label htmlFor="password">
-          <strong>Password</strong>
-        </label>
-    </div>
-        <input className='signupInput' type="password" placeholder="Your Password Here" required onChange={this.updatePassword}/>
-      </div>
-      <div className="signupBox"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Phone Number">
-          <strong>Full Phone Number</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="number" placeholder="(1)123-456-7890" onChange={this.updatePhoneNumber} required/>
-      </div>
-      <div className="signupBox"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Credit Card Number">
-          <strong>Credit Card Number</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="number" placeholder="0000-0000-0000-0000" onChange={this.updateCardNumber} required/>
-      </div>
-          <div className="signupBox"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Credit Card Number">
-          <strong>CCV</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="number" placeholder="555" onChange={this.updateCCV} required/>
-      </div>
-    
-          <div className="signupBox"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Zipcode">
-          <strong>Zip code</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="number" placeholder="55555" onChange={this.updateZipcode} required/>
-      </div>
-    
-              <div className="signupBox"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Experation Date">
-          <strong>Experation Date</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="text" placeholder="MM/YY" onChange={this.updateExperationDate} required/>
-      </div>
-    
-        <div className="signupBox"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Street">
-          <strong>Address</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="text" placeholder="12345 189th Savings St" onChange={this.updateAddress} required/>
-      </div>
+          <InputField
+          htmlFor="Email"
+          type="email"
+          labelHTML="Email"
+          placeholder="ProSaver@Couponer.com"
+          onChange={this.updateEmail}
+          required
+          />
+          <InputField
+          htmlFor="Password"
+          type="password"
+          labelHTML="Password"
+          placeholder="Your Password Here"
+          onChange={this.updatePassword}
+          required
+          />
+          <InputField
+          htmlFor="Phone Number"
+          type="number"
+          labelHTML="Full Phone Number"
+          placeholder="(1)123-456-7890"
+          onChange={this.updatePhoneNumber}
+          required
+          />
+          <InputField
+          htmlFor="Credit Card Number"
+          type="number"
+          labelHTML="Credit Card Number"
+          placeholder="0000-0000-0000-0000"
+          onChange={this.updateCardNumber}
+          required
+          />
+          <InputField
+          htmlFor="CCV"
+          type="number"
+          labelHTML="CCV"
+          placeholder="555"
+          onChange={this.updateCCV}
+          required
+          />
+          <InputField
+          htmlFor="Zip Code"
+          type="number"
+          labelHTML="Zip Code"
+          placeholder="55555"
+          onChange={this.updateZipcode}
+          required
+          />
+          <InputField
+          htmlFor="Experation Date"
+          type="text"
+          labelHTML="Experation Date"
+          placeholder="MM/YY"
+          onChange={this.updateExperationDate}
+          required
+          />
+          <InputField
+          htmlFor="Street"
+          type="text"
+          labelHTML="Address"
+          placeholder="12345 189th Savings St"
+          onChange={this.updateAddress}
+          required
+          />
+          <InputField
+          htmlFor="Cardholder Name"
+          type="text"
+          labelHTML="Cardholder Name"
+          placeholder="Billy Bob"
+          onChange={this.updateCardholderName}
+          required
+          />
+          <InputField
+          htmlFor="City"
+          type="text"
+          labelHTML="City"
+          placeholder="Coupon Town"
+          onChange={this.updateCity}
+          required
+          />
 
-      <div className="signupBox"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="cardholder name">
-          <strong>Cardholder Name</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="text" placeholder="Bob billy johnson" onChange={this.updateCardholderName.bind(this)} required/>
-      </div>
-          <div className="signupBox">
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="City">
-          <strong>City</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="text" placeholder="Coupon Town" required onChange={this.updateCity}/>
-      </div>
       <div className="signupBox">
         <div className='inputLabel'>
         <label className='signupLabel' htmlFor="City">
@@ -283,31 +282,31 @@ class SignUp extends Component {
           onSelect={this.onSelectFlag} 
           required />
       </div>
-      <div className="signupBox">
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="City">
-          <strong>State/Provience</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="text" placeholder="Florida" required onChange={this.updateRegion} />
-      </div>
+      <InputField
+        htmlFor="State/Provience"
+        type="text"
+        labelHTML="State/Provience"
+        placeholder="New York"
+        onChange={this.updateRegion}
+        required
+      />
       <div className={this.state.showOrHideBuisInput}>
-      <div className="buisnessNameSignup"> 
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="buisness name">
-          <strong>Buisness Name</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="text" placeholder="Bob's Kitten Rentals" onChange={this.updateBuisnessName}/>
-      </div>
+      <InputField
+        htmlFor="Buisness Name"
+        type="text"
+        labelHTML="Buisness Name"
+        placeholder="Bob's Kitten Rentals"
+        onChange={this.updateBuisnessName}
+      /> 
       </div>
       <div className={this.state.showOrHideAccountMem}>
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="Subscription Length">
-          <strong>Subscription Length 4.99$ per month for unlimited coupons</strong>
-        </label>
-        </div>
-        <input className='signupInput' type="nubmer" placeholder="Amount of months" onChange={this.updateMonthLength}/>
+      <InputField
+        htmlFor="Subscription Length"
+        type="text"
+        labelHTML="Subscription Length"
+        placeholder="Subscription Length 4.99$ per month for unlimited coupons"
+        onChange={this.updateMonthLength}
+      />
       </div>
   </form>
   <br/>
@@ -319,7 +318,7 @@ class SignUp extends Component {
         <strong>Forgot Password?</strong>
       </a>
       </div>
-        </div>
+    </div>
     )
   }
   handleRadio(e) {

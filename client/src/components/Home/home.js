@@ -50,7 +50,6 @@ class Home extends Component {
             if (city.length > 0 || city.length > 1) {
               const url = '/api/getSponseredCoupons/'+city
               const response = await fetch(url, {
-                body: this.state,
                 method: 'GET',
                 headers: {
                   Accept: 'application/json',

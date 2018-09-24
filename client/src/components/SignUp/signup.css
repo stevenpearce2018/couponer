@@ -171,12 +171,9 @@
   display: none;
 }
 .showBuissnessIfCustomer{
-  display: inline;
+  display: block;
 }
 
-.buisnessNameSignup{
-  padding-right: 5%;
-}
 .buttonAndForgot{
   width: 80%;
   margin-left: 10%;

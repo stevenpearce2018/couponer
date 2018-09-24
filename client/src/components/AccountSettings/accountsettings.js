@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import './accountsettings.css';
+import InputField from '../SubComponents/InputField/inputField'
 
 class AccountSettings extends Component {
   constructor(props) {
     super(props);
     this.state = {
       email: '',
-      password: '',
+      oldPassword: '',
+      newPassword:'',
       address: '',
       cardNumber: '',
       cardholderName: '',
@@ -16,11 +18,23 @@ class AccountSettings extends Component {
       experationDate: '',
       zipCode: '',
       buisnessName: 'off',
-      isCustomer: 'off',
-      isBuisnessOwner: 'off',
-      phoneNumber:''
+      phoneNumber:'',
 
     };
+    this.updateEmail = this.updateEmail.bind(this);
+    this.updateOldPassword = this.updateOldPassword.bind(this);
+    this.updateNewPassword = this.updateNewPassword.bind(this);
+    this.updateAddress= this.updateAddress.bind(this);
+    this.updateCardNumber = this.updateCardNumber.bind(this);
+    this.updateCardholderName= this.updateCardholderName.bind(this);
+    this.updateCCV = this.updateCCV.bind(this);
+    this.updateCity = this.updateCity.bind(this);
+    this.updateState = this.updateState.bind(this);
+    this.updateExperationDate = this.updateExperationDate.bind(this);
+    this.updateZipcode = this.updateZipcode.bind(this);
+    this.updateBuisnessName = this.updateBuisnessName.bind(this);
+    this.updatePhoneNumber = this.updatePhoneNumber.bind(this);
+    this.handleUpdateAccount = this.handleUpdateAccount.bind(this);
     // this.updateInput = this.updateInput.bind(this);
     // this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -35,8 +49,11 @@ class AccountSettings extends Component {
     this.setState({phoneNumber: event.target.value}) 
   }
 
-  updatePassword(event) {
-    this.setState({password : event.target.value})
+  updateOldPassword(event) {
+    this.setState({oldPassword : event.target.value})
+  }
+  updateNewPassword(event) {
+    this.setState({newPassword : event.target.value})
   }
   updateEmail(event) {
     this.setState({email : event.target.value})
@@ -96,11 +113,11 @@ class AccountSettings extends Component {
 
   render() {
     return (
-
+<div className="container text-center">
       <form className="accountForm" method="post">
       <div className="adjustAccountSettings">
         
-        <h2>Account Settings</h2>
+        <h2>Change Account Settings</h2>
           {/* <div className="inputGroup">
             <input id="radio1" name="radio" type="radio" value="checked" checked onChange={this.updateIsCustomer.bind(this)}/>
             <label>Customer</label>
@@ -108,106 +125,122 @@ class AccountSettings extends Component {
             <label> Buisness Owner</label> 
           </div> */}
           </div>
-          
         
-      
+          <InputField
+          htmlFor="Email"
+          type="email"
+          labelHTML="Email"
+          placeholder="ProSaver@Couponer.com"
+          onChange={this.updateEmail}
+          />
+
+          <InputField
+          htmlFor="Password"
+          type="password"
+          labelHTML="Old Password"
+          placeholder="Old Password"
+          onChange={this.updateOldPassword}
+          />
+
+          <InputField
+          htmlFor="Password"
+          type="password"
+          labelHTML="Password"
+          placeholder="Password"
+          onChange={this.updateOldPassword}
+          />
+
+          <InputField
+          htmlFor="Phone Number"
+          type="number"
+          labelHTML="Phone Number"
+          placeholder="+1 123-456-7890"
+          onChange={this.updatePhoneNumber}
+          />
+          
+          <InputField
+          htmlFor="Address"
+          type="text"
+          labelHTML="Address"
+          placeholder="13389 Savings Street"
+          onChange={this.updateAddress}
+          />
+          
+          <InputField
+          htmlFor="Card Number"
+          type="text"
+          labelHTML="Card Number"
+          placeholder="0000-0000-0000-0000"
+          onChange={this.updateCardNumber}
+          />
+          
+          <InputField
+          htmlFor="Cardholder Name"
+          type="text"
+          labelHTML="Cardholder Name"
+          placeholder="Billy Bob"
+          onChange={this.updateCardholderName}
+          />
         
-        <div className="accountForm">    
-          <div className="emailUpdate">
-          <label> Email : </label>
-          <input type="email" id="email" required onChange={this.updateEmail.bind(this)}/>
-          </div>
+          <InputField
+          htmlFor="CCV"
+          type="number"
+          labelHTML="CCV"
+          placeholder="555"
+          onChange={this.updateCCV}
+          />        
           
-        </div>
+          <InputField
+          htmlFor="City"
+          type="text"
+          labelHTML="City"
+          placeholder="Coupon Town"
+          onChange={this.updateCity}
+          />   
           
-        <div className="accountForm">
-          <div className="passwordUpdate">
-          <label> Password : </label>
-          <input type="password" id="password" required onChange={this.updatePassword.bind(this)}/>
-          </div>
-        </div>
+          <InputField
+          htmlFor="State"
+          type="text"
+          labelHTML="State"
+          placeholder="York"
+          onChange={this.updateState}
+          />      
           
-        <div className="accountForm">
-          <div className="phoneUpdate">
-          <label> Phone Number : </label>
-          <input type="text" id="phoneNumber" required onChange={this.updatePhoneNumber.bind(this)}/>
-        </div>
-          </div>
-        
-        <div className="accountForm">
-          <div className="adressUpdate">
-          <label> Address : </label>
-          <input type="text" id="address" required onChange={this.updateAddress.bind(this)}/>
-          </div>
-        </div>
+          <InputField
+          htmlFor="Experation Date"
+          type="text"
+          labelHTML="Experation Date"
+          placeholder="MM/YY"
+          onChange={this.updateExperationDate}
+          />
+
+          <InputField
+          htmlFor="Experation Date"
+          type="text"
+          labelHTML="Experation Date(MM/YY)"
+          placeholder="MM/YY"
+          onChange={this.updateExperationDate}
+          />   
           
-          
-        <div className="accountForm">
-          <div className="cardNumberUpdate">
-          <label> Card Number : </label>
-          <input type="text" id="cardNumber" required onChange={this.updateCardNumber.bind(this)}/>
-          </div>
-        </div>
-          
-          
-        <div className="accountForm">
-          <div className="cardholderNameUpdate">
-          <label> Cardholder Name : </label>
-          <input type="text" id="cardholderName" required onChange={this.updateCardholderName.bind(this)}/>
-          </div>
-        </div>
-          
-          
-        <div className="accountForm">
-          <div className="CCVUpdate">
-          <label> CCV : </label>
-          <input type="text" id="CCV" required  onChange={this.updateCCV.bind(this)}/>
-          </div>
-        </div>
-          
-          
-        <div className="accountForm">
-          <div className="cityUpdate">
-          <label> City : </label>
-          <input type="text" id="city" required onChange={this.updateCity.bind(this)}/>
-          </div>
-        </div>
-          
-          
-        <div className="accountForm">
-          <div className="stateUpdate">
-          <label> State : </label>
-          <input type="text" id="state" required onChange={this.updateState.bind(this)}/>
-          </div>
-        </div>
-          
-          
-        <div className="accountForm">
-          <div className="experationDateUpdate">
-          <label> Experation Date(mm/yy) : </label>
-          <input type="text" id="experationDate" required onChange={this.updateExperationDate.bind(this)}/>
-          </div>
-          </div>
-          
-          
-        <div className="accountForm">
-          <div className="zipCodeUpdate">
-          <label> ZIP Code: </label>
-          <input type="text" id="zipCode" required onChange={this.updateZipcode.bind(this)}/>
-          </div>
-        </div>
-          
-          
-        <div className="accountForm">
-          <div className="businessNameUpdate">
-          <label className="buisnessOwner"> Buisness Name : </label>
-          <input type="text" id="buisnessName" className="buisnessOwner" onChange={this.updateBuisnessName.bind(this)}/>
-          </div>
-        </div>
-          
-          
-          <button value="send" className="updatebtn" onClick={this.handleUpdateAccount.bind(this)}> Update Info</button>
+          <InputField
+          htmlFor="Zip Code"
+          type="number"
+          labelHTML="Zip Code"
+          placeholder="55555"
+          onChange={this.updateZipcode}
+          />  
+
+          <InputField
+          htmlFor="Buisness Name"
+          type="text"
+          labelHTML="Buisness Name"
+          placeholder="Buisness Name"
+          onChange={this.updateBuisnessName}
+          /> 
+
+          <button value="send" className="updatebtn" onClick={this.handleUpdateAccount}> Update Info</button>
         </form>
+        </div>
     )
   }
 }
