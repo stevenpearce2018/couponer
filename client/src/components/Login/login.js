@@ -37,6 +37,7 @@
         body: JSON.stringify(data),
       })
       const json = await response.json()
+      alert(JSON.stringify(json))
       localStorage.setItem('credsCoupon', JSON.stringify(json))
     }
 

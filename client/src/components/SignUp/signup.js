@@ -16,6 +16,7 @@ class SignUp extends Component {
       ],
       email: '',
       password: '',
+      passwordConfirm: '',
       address: '',
       cardNumber: '',
       cardholderName: '',
@@ -62,6 +63,9 @@ class SignUp extends Component {
   updatePassword(event) {
     this.setState({password : event.target.value})
   }
+  updatePasswordConfirmation(event) {
+    this.setState({passwordConfirm : event.target.value})
+  }
   updateEmail(event) {
     this.setState({email : event.target.value})
   }
@@ -92,20 +96,6 @@ class SignUp extends Component {
   updatePhoneNumber(event){
     this.setState({phoneNumber : event.target.value})
   }
-  GetLocation() {
-    const google=window.google
-    var geocoder = new google.maps.Geocoder();
-    let that = this;
-    geocoder.geocode({ 'address': that.state.address }, (results, status) => {
-          if (status == google.maps.GeocoderStatus.OK) {
-              var latitude = results[0].geometry.location.lat();
-              var longitude = results[0].geometry.location.lng();
-              alert("Latitude: " + latitude + "\nLongitude: " + longitude);
-          } else {
-              alert("Request failed.")
-          }
-      });
-  };
   updateMonthLength(event){
     this.setState({monthLength : event.target.value})
   }
@@ -207,6 +197,14 @@ class SignUp extends Component {
           required
           />
           <InputField
+          htmlFor="Password"
+          type="password"
+          labelHTML="Confirm Password"
+          placeholder="Confirm Password"
+          onChange={this.updatePasswordConfirmation}
+          required
+          />
+          <InputField
           htmlFor="Phone Number"
           type="number"
           labelHTML="Full Phone Number"
@@ -270,18 +268,6 @@ class SignUp extends Component {
           onChange={this.updateCity}
           required
           />
-
-      <div className="signupBox">
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="City">
-          <strong>Country</strong>
-        </label>
-        </div>
-        <ReactFlagsSelect
-          defaultCountry="US"
-          onSelect={this.onSelectFlag} 
-          required />
-      </div>
       <InputField
         htmlFor="State/Provience"
         type="text"
@@ -308,16 +294,26 @@ class SignUp extends Component {
         onChange={this.updateMonthLength}
       />
       </div>
+      
+      <div className="signupBox">
+        <div className='inputLabel'>
+        <label className='signupLabel' htmlFor="City">
+          <strong>Country</strong>
+        </label>
+        </div>
+        <ReactFlagsSelect
+          defaultCountry="US"
+          onSelect={this.onSelectFlag} 
+          required />
+      </div>
   </form>
-  <br/>
-
   <div className='buttonAndForgot'>
-        <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
-        <br/>
+    <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
+  </div>
       <a className='forgotPass' href="#">
         <strong>Forgot Password?</strong>
       </a>
-      </div>
+      
     </div>
     )
   }

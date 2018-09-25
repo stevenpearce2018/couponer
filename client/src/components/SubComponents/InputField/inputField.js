@@ -12,7 +12,7 @@ class InputField extends Component {
         <strong>{this.props.labelHTML}</strong>
       </label>
       </div>
-      <input className='signupInput' type={this.props.type} placeholder={this.props.placeholder} onChange={this.props.onChange} required/>
+      <input className='signupInput' type={this.props.type} placeholder={this.props.placeholder} onChange={this.props.onChange}/>
       </div>
       )
     }
