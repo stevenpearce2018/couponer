@@ -98,19 +98,6 @@
       }
   }
   
-  @media only screen and (min-width: 440px) {
-    .radioPad {
-      width: 30%;
-    }
-  }
-
-  @media (min-width: 560px) {
-    .radioPad {
-      width: 62%;
-      text-align: center;
-    }
-  }
-
 
   .radioPad__wrapper {
     display: block;
@@ -119,12 +106,16 @@
     color: #000080;
     text-transform: uppercase;
     font-size: 1rem;
-    margin: 0.2rem;
-    padding: .5rem;
-    margin-right: 1rem;
-    margin-inline-start: 50%;
+    padding-bottom:12px;
   }
-
+.center_radio{
+  text-align: center;
+  width: 90%;
+  margin-left:5%;
+}
+.radioHTML{
+  margin-left:-6.5%;
+}
   .radioPad__wrapper:active,
   .radioPad__wrapper--selected {
     background: #fde428 !important;
@@ -162,6 +153,7 @@
   margin-top: 25px;
   margin-bottom: 25px;
   cursor: pointer;
+  font-size: 1em;
 }
 
 /* .row{
@@ -169,26 +161,27 @@
 } */
 .lead{
   text-align: center;
+  margin-left:-55px;
 }
 
-.radioPad {
-  display: inline-block;
-  vertical-align: top;
-  align-content: center;
-  width: 100%;
-  margin-left:-27.5%;
-}
 @media only screen and (max-width: 990px) {
   .radioPad__wrapper{
     width: 90%;
-    margin-left:31.5%;
-    text-align: center;
+    margin-left:5%;
+    padding:0px;
+    padding-bottom:12px;
+  }
+  .lead{
+    margin-left:0px;
+  }
+  .signupbtn{
+    width: 100%;
   }
 }
 
 @media only screen and (max-width: 400px) {
   .radioPad__wrapper{
-    margin-left:30.5%;
+    margin-left:5%;
   }
 }
 .forgotPass{

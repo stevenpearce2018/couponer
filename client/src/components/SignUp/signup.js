@@ -140,11 +140,7 @@ class SignUp extends Component {
     const options = this.state.customerOrBuisness.map((loan, key) => {
       const isCurrent = this.state.yourPick === loan
       return (
-        
-        <div 
-          key={key} 
-          className="radioPad"
-        >
+        <div className='center_radio'>
             <label 
               className={
                 isCurrent ? 
@@ -160,9 +156,9 @@ class SignUp extends Component {
                 value={loan}
                 onChange={this.handleRadio}
               />
-              <strong>{loan}</strong>
+              <strong className='radioHTML'>{loan}</strong>
             </label>
-          </div>
+            </div>
       )
     })
     return (
