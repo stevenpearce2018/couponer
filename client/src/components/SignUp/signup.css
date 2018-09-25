@@ -110,8 +110,8 @@
   }
 .center_radio{
   text-align: center;
-  width: 90%;
-  margin-left:5%;
+  width: 80%;
+  margin-left:10%;
 }
 .radioHTML{
   margin-left:-6.5%;
@@ -170,6 +170,10 @@
     margin-left:5%;
     padding:0px;
     padding-bottom:12px;
+  }
+  .center_radio{
+    width: 90%;
+    margin-left:5%;
   }
   .lead{
     margin-left:0px;
