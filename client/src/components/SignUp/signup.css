@@ -105,6 +105,7 @@
     background: whitesmoke;
     color: #000080;
     text-transform: uppercase;
+    padding:0px;
     font-size: 1rem;
     padding-bottom:12px;
   }
@@ -167,9 +168,7 @@
 @media only screen and (max-width: 990px) {
   .radioPad__wrapper{
     width: 90%;
-    margin-left:5%;
-    padding:0px;
-    padding-bottom:12px;
+    margin-left:5%; 
   }
   .center_radio{
     width: 90%;

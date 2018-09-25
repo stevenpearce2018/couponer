@@ -171,6 +171,7 @@ class SignUp extends Component {
             }
           </p>
           <hr />
+          <br/>
           {options}
         </div>
           <form className='signinForm'>
