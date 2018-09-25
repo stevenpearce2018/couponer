@@ -145,7 +145,6 @@ class SignUp extends Component {
           key={key} 
           className="radioPad"
         >
-          <div className='radioButtonsSignup'>
             <label 
               className={
                 isCurrent ? 
@@ -161,10 +160,9 @@ class SignUp extends Component {
                 value={loan}
                 onChange={this.handleRadio}
               />
-              {loan}
+              <strong>{loan}</strong>
             </label>
           </div>
-        </div>
       )
     })
     return (
@@ -177,7 +175,7 @@ class SignUp extends Component {
             }
           </p>
           <hr />
-          <strong>{options}</strong>
+          {options}
         </div>
           <form className='signinForm'>
           <InputField
@@ -310,9 +308,9 @@ class SignUp extends Component {
   <div className='buttonAndForgot'>
     <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
   </div>
-      <a className='forgotPass' href="#">
+      <div className='forgotPass'>
         <strong>Forgot Password?</strong>
-      </a>
+      </div>
       
     </div>
     )

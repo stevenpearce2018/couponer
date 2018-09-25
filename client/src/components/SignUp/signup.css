@@ -73,6 +73,7 @@
   
   .forgotPass:hover{
     color:cyan;
+    cursor: pointer;
   }
   @media only screen and (max-width: 959px) {
       .forgotPass {
@@ -97,14 +98,6 @@
       }
   }
   
-  
-  .radioPad {
-    display: inline-block;
-    vertical-align: top;
-    margin-right: 2%;
-    margin-left: 2%;
-    align-content: center;
-  }
   @media only screen and (min-width: 440px) {
     .radioPad {
       width: 30%;
@@ -152,21 +145,6 @@
   }
 
 
-  @media only screen and (max-width: 992px) {
-    .radioPad__wrapper {
-      width: 10rem;
-      margin: 0 auto;   
-    }
-}  
-
-@media only screen and (max-width: 600px) {
-  .radioPad__wrapper{
-    width: 10rem;
-    margin: 0 auto;
-  }
-}
-
-
 .hideBuissnessIfCustomer{
   display: none;
 }
@@ -183,20 +161,7 @@
 .signupbtn{
   margin-top: 25px;
   margin-bottom: 25px;
-}
-
-@media only screen and (min-device-width: 119px) and (max-device-width: 748px) {
-  .radioButtonsSignup, .radioPad, .radioPad__radio, .radioPad__wrapper {
-    width: 100%;
-    padding: 1%;
-  }
-}
-
-@media only screen and (min-width: 753px) and (max-width: 1025px) {
-  .radioButtonsSignup, .radioPad, .radioPad__radio, .radioPad__wrapper {
-    width: 100%;
-    padding: 1%;
-  }
+  cursor: pointer;
 }
 
 /* .row{
@@ -204,4 +169,29 @@
 } */
 .lead{
   text-align: center;
+}
+
+.radioPad {
+  display: inline-block;
+  vertical-align: top;
+  align-content: center;
+  width: 100%;
+  margin-left:-27.5%;
+}
+@media only screen and (max-width: 990px) {
+  .radioPad__wrapper{
+    width: 90%;
+    margin-left:31.5%;
+    text-align: center;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .radioPad__wrapper{
+    margin-left:30.5%;
+  }
+}
+.forgotPass{
+  width: 100%;
+  color: blue;
 }
