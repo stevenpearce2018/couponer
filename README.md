@@ -18,11 +18,11 @@ You will need a redis server running locally for the server to compile. I plan o
 [/] === Partial
 [X] === Done
 
-[X] Search functionality <br />
+[X] Search Functionality <br />
 [ ] Docker Containers <br />
-[X] Stateless server <br />
+[X] Stateless Server <br />
 [ ] Load Balancer <br />
-[/] Redis caching support <br />
+[/] Redis Caching Support <br />
 [ ] HTTPS <br />
 [X] MongoDB Connection <br />
 [X] Signup Support <br />
@@ -32,19 +32,23 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] Display Coupons <br />
 [X] Create Coupons <br />
 [/] Login Security/Validation <br />
-[/] React Native app (Waiting till webapp is fully complete to resume) <br />
+[/] React Native App (Waiting till webapp is Fully Complete to Resume) <br />
 [ ] Refactoring of CSS <br />
-[ ] Global CSS classes to reduce css bloat <br />
+[ ] Global CSS Classes to Reduce Css Bloat <br />
 [ ] Refactoring of JS Components <br />
 [X] Router Support <br />
 [X] SPA design <br />
-[ ] Webpack lazy loading <br />
-[ ] Image optimizations for performance <br />
+[ ] Webpack Lazy Loading <br />
+[ ] Image Optimizations for Performance <br />
 [/] General Serverside Validation of data <br />
 [/] Stripe payment handling (May move to amazon or other payment processor) <br />
-[ ] CDN setup of assets <br />
-[X] Address validation <br />
+[ ] CDN Setup of Assets <br />
+[X] Address Validation <br />
 [X] GeoLocation AutoSearch  <br />
-[/] Strip unused dependacies <br />
-[/] Mongoose models <br />
-[ ] Deployed on (probably) heroku <br />
+[/] Strip Unused dependacies <br />
+[/] Mongoose Models <br />
+[ ] Production MongoDB Setup <br />
+[ ] Production Redis Setup <br />
+[ ] Enviromnet of MongoDB String Setup <br />
+[ ] Production Payment Setup <br />
+[ ] Deployed on (Probably) Heroku <br />
