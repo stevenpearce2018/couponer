@@ -18,33 +18,33 @@ You will need a redis server running locally for the server to compile. I plan o
 [/] === Partial
 [X] === Done
 
-[X] Search functionality
-[ ] Docker Containers
-[X] Stateless server
-[ ] Load Balancer
-[/] Redis caching support
-[ ] HTTPS
-[X] MongoDB Connection
-[X] Signup Support
-[/] Login Support
-[X] Login Encryption
-[X] Autoload Sponsered Coupons
-[X] Display Coupons
-[X] Create Coupons
-[/] Login Security/Validation
-[/] React Native app (Waiting till webapp is fully complete to resume)
-[ ] Refactoring of CSS
-[ ] Global CSS classes to reduce css bloat
-[ ] Refactoring of JS Components
-[X] Router Support
-[X] SPA design
-[ ] Webpack lazy loading
-[ ] Image optimizations for performance
-[/] General Serverside Validation of data
-[/] Stripe payment handling (May move to amazon or other payment processor)
-[ ] CDN setup of assets
-[X] Address validation
-[X] GeoLocation AutoSearch 
-[/] Strip unused dependacies
-[/] Mongoose models
-[ ] Deployed on (probably) heroku
+[X] Search functionality <br />
+[ ] Docker Containers <br />
+[X] Stateless server <br />
+[ ] Load Balancer <br />
+[/] Redis caching support <br />
+[ ] HTTPS <br />
+[X] MongoDB Connection <br />
+[X] Signup Support <br />
+[/] Login Support <br />
+[X] Login Encryption <br />
+[X] Autoload Sponsered Coupons <br />
+[X] Display Coupons <br />
+[X] Create Coupons <br />
+[/] Login Security/Validation <br />
+[/] React Native app (Waiting till webapp is fully complete to resume) <br />
+[ ] Refactoring of CSS <br />
+[ ] Global CSS classes to reduce css bloat <br />
+[ ] Refactoring of JS Components <br />
+[X] Router Support <br />
+[X] SPA design <br />
+[ ] Webpack lazy loading <br />
+[ ] Image optimizations for performance <br />
+[/] General Serverside Validation of data <br />
+[/] Stripe payment handling (May move to amazon or other payment processor) <br />
+[ ] CDN setup of assets <br />
+[X] Address validation <br />
+[X] GeoLocation AutoSearch  <br />
+[/] Strip unused dependacies <br />
+[/] Mongoose models <br />
+[ ] Deployed on (probably) heroku <br />
