@@ -50,6 +50,7 @@ class SignUp extends Component {
     this.updateExperationDate = this.updateExperationDate.bind(this);
     this.onSelectFlag = this.onSelectFlag.bind(this);
     this.updateCardholderName = this.updateCardholderName.bind(this);
+    this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this);
   }
   updateCountry (e) {
     this.setState({ country: e.target.value });
@@ -132,7 +133,6 @@ class SignUp extends Component {
       body: JSON.stringify(data),
   })
     const json = await response.json()
-    alert(json)
     localStorage.setItem('credsCoupon', JSON.stringify(json))
 }
   render() {

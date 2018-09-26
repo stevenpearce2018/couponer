@@ -1,193 +1,193 @@
 
 .signupBox {
-    margin-bottom: 15px;
-    margin-top: 15px;
-  }
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
 @media only screen and (min-width: 959px) {
-  .signupBox {
-    width: 45%;
-    margin-right: 5%;
-    margin-bottom: 25px;
-    margin-top: 25px;
-    float: left;
-    -webkit-column-gap: 40px; /* Chrome, Safari, Opera */
-    column-gap: 40px;
-  }
+.signupBox {
+  width: 45%;
+  margin-right: 5%;
+  margin-bottom: 25px;
+  margin-top: 25px;
+  float: left;
+  -webkit-column-gap: 40px; /* Chrome, Safari, Opera */
+  column-gap: 40px;
+}
 }
 .signupbtn{
-    margin-top:10px;
-    background-color:#fde428;
-    border-radius:5px;
-    color: #000080;
-    width:34.3%;
-    margin-left:6px;
-    padding-top:10px;
-    padding-left:10px;
-    padding-right:10px;
-    padding-bottom:10px;
-  }
-  
-  /*signin form as a whole*/
-  .signinForm {
-  width: 80%;
-  margin: 0 auto;
-  } */
-  
-  
-  /*Filler text alignment*/
-  .signupInput {
-  display: inline;
-  }
-  
-  input {
-  display: inline-block;
-  width: 100%;
-  padding: 1rem;
-  }
-  
- 
-  @media all and (min-width: 35rem) and (max-width: 60rem) {
-  
-  label {
-  display: block;
-  }
-  }
-  
- 
-  @media all and (min-width:60rem) {
-  label {
-  display: inline;
-  }
-  
-  input {
-  width: 90%;
-  }
-  
-  }
-  
-  .forgotPass{
-    text-decoration: none;
-    width:95%;
-    text-align:center;
-  }
-  
-  .forgotPass:hover{
-    color:cyan;
-    cursor: pointer;
-  }
-  @media only screen and (max-width: 959px) {
-      .forgotPass {
-        width:98.5%;
-        margin-left:6px;   
-      }
-      .signupbtn{
-        margin-left:6px; 
-        width: 33.333%;
-        margin-right: 5%;
-      }
-  }
-  
-  @media only screen and (max-width: 559px) {
-      .forgotPass {
-          width:97.5%;
-      }
-      .signupbtn{
-        width: 33.333%;
-        margin-right: 5%;
-        margin-top:30px;
-      }
-  }
-  
+  margin-top:10px;
+  background-color:#fde428;
+  border-radius:5px;
+  color: #000080;
+  width:34.3%;
+  margin-left:6px;
+  padding-top:10px;
+  padding-left:10px;
+  padding-right:10px;
+  padding-bottom:10px;
+}
 
-  .radioPad__wrapper {
-    display: block;
-    cursor: pointer;
-    background: whitesmoke;
-    color: #000080;
-    text-transform: uppercase;
-    padding:0px;
-    font-size: 1rem;
-    padding-bottom:12px;
-  }
+/*signin form as a whole*/
+.signinForm {
+width: 80%;
+margin: 0 auto;
+} */
+
+
+/*Filler text alignment*/
+.signupInput {
+display: inline;
+}
+
+input {
+display: inline-block;
+width: 100%;
+padding: 1rem;
+}
+
+
+@media all and (min-width: 35rem) and (max-width: 60rem) {
+
+label {
+display: block;
+}
+}
+
+
+@media all and (min-width:60rem) {
+label {
+display: inline;
+}
+
+input {
+width: 90%;
+}
+
+}
+
+.forgotPass{
+  text-decoration: none;
+  width:95%;
+  text-align:center;
+}
+
+.forgotPass:hover{
+  color:cyan;
+  cursor: pointer;
+}
+@media only screen and (max-width: 959px) {
+    .forgotPass {
+      width:98.5%;
+      margin-left:6px;   
+    }
+    .signupbtn{
+      margin-left:6px; 
+      width: 33.333%;
+      margin-right: 5%;
+    }
+}
+
+@media only screen and (max-width: 559px) {
+    .forgotPass {
+        width:97.5%;
+    }
+    .signupbtn{
+      width: 33.333%;
+      margin-right: 5%;
+      margin-top:30px;
+    }
+}
+
+
+.radioPad__wrapper {
+  display: block;
+  cursor: pointer;
+  background: whitesmoke;
+  color: #000080;
+  text-transform: uppercase;
+  padding:0px;
+  font-size: 1rem;
+  padding-bottom:12px;
+}
 .center_radio{
-  text-align: center;
-  width: 80%;
-  margin-left:10%;
+text-align: center;
+width: 80%;
+margin-left:10%;
 }
 .radioHTML{
-  margin-left:-6.5%;
+margin-left:-6.5%;
 }
-  .radioPad__wrapper:active,
-  .radioPad__wrapper--selected {
-    background: #fde428 !important;
-  }
-  .radioPad__wrapper:hover {
-    background: #fde428;
-  }
-  .radioPad__radio {
-    visibility: hidden;
-    height: 0;
-    width: 0;
-    opacity: 0;
-  }
-  
-  .forgotPass{
-    margin-left:5px;
-    width: 100%;
-  }
+.radioPad__wrapper:active,
+.radioPad__wrapper--selected {
+  background: #fde428 !important;
+}
+.radioPad__wrapper:hover {
+  background: #fde428;
+}
+.radioPad__radio {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  opacity: 0;
+}
+
+.forgotPass{
+  margin-left:5px;
+  width: 100%;
+}
 
 
 .hideBuissnessIfCustomer{
-  display: none;
+display: none;
 }
 .showBuissnessIfCustomer{
-  display: block;
+display: block;
 }
 
 .buttonAndForgot{
-  width: 80%;
-  margin-left: 10%;
-  padding-right: 2.5%;
-  text-align: center;
+width: 80%;
+margin-left: 10%;
+padding-right: 2.5%;
+text-align: center;
 }
 .signupbtn{
-  margin-top: 25px;
-  margin-bottom: 25px;
-  cursor: pointer;
-  font-size: 1em;
+margin-top: 25px;
+margin-bottom: 25px;
+cursor: pointer;
+font-size: 1em;
 }
 
 /* .row{
-  text-align: center;
+text-align: center;
 } */
 .lead{
-  text-align: center;
-  margin-left:-55px;
+text-align: center;
+margin-left:-55px;
+}
+.signupbtn{
+  width: 100%;
 }
 
 @media only screen and (max-width: 990px) {
-  .radioPad__wrapper{
-    width: 90%;
-    margin-left:5%; 
-  }
-  .center_radio{
-    width: 90%;
-    margin-left:5%;
-  }
-  .lead{
-    margin-left:0px;
-  }
-  .signupbtn{
-    width: 100%;
-  }
+.radioPad__wrapper{
+  width: 90%;
+  margin-left:5%; 
+}
+.center_radio{
+  width: 90%;
+  margin-left:5%;
+}
+.lead{
+  margin-left:0px;
+}
 }
 
 @media only screen and (max-width: 400px) {
-  .radioPad__wrapper{
-    margin-left:5%;
-  }
+.radioPad__wrapper{
+  margin-left:5%;
+}
 }
 .forgotPass{
-  width: 100%;
-  color: blue;
+width: 100%;
+color: blue;
 }

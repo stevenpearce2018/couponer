@@ -1,6 +1,7 @@
  
  import React, { Component } from 'react';
  import './login.css';
+ import superState from '../../superState';
  
  class Login extends Component {
     constructor(props) {
@@ -38,9 +39,12 @@
       })
       const json = await response.json()
       alert(JSON.stringify(json))
+      // send login key to superstate
+      superState.loggedin = 'true'
+      this.props.parentMethod();
       localStorage.setItem('credsCoupon', JSON.stringify(json))
     }
-
+    
     render() {
       return (
         <div className="loginForm">

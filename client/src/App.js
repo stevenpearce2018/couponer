@@ -34,10 +34,9 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      email: '',
-      password: '',
       test: superState.test,
       mainContent: <Home/>,
+      loggedin: 'loggedout'
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -48,11 +47,8 @@ class App extends Component {
   this.setSignupToMain = this.setSignupToMain.bind(this);
   this.handleSignOut = this.handleSignOut.bind(this);
   this.setSuperState = this.setSuperState.bind(this);
-  this.signInPassword = this.signInPassword.bind(this);
   this.handleSubmit = this.handleSubmit.bind(this);
-  this.setSignInToMain = this.setSignInToMain.bind(this);
-  this.signInPassword = this.signInPassword.bind(this);
-  this.signInEmail = this.signInEmail.bind(this);
+  this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
   this.setSignupToMain = this.setSignupToMain.bind(this);
   this.handleSubmit = this.handleSubmit.bind(this);
 }
@@ -104,47 +100,13 @@ setSignupToMain(){
 setSuperState(){
   this.setState({test: superState.test})
 }
-setSignInToMain() {
-  this.setState({mainContent: <div className="formDiv">
-  <form className="form" method="post">
-  <h2>SignIn</h2>
-    <div className="inputGroup">
-    <label> Email : </label>
-    <input type="email" id="emailSignin" onChange={this.signInEmail}/>
-    <br/>
-    <label> Password : </label>
-    <input type="password" id="passwordSignin" onChange={this.signInPassword}/>
-    <br/>
-    <button value="send" onClick={this.handleSubmit}> Sign In</button>
-    </div>
-  </form>
-</div>})
-}
-    handleSignOut(){
-      localStorage.removeItem('credsCoupon')
-      this.setState({mainContent: <div className="formDiv">
-      <form className="form" method="post">
-      <h2>SignIn</h2>
-        <div className="inputGroup">
-        <label> Email : </label>
-        <input type="email" id="emailSignin" onChange={this.signInEmail}/>
-        <br/>
-        <label> Password : </label>
-        <input type="password" id="passwordSignin" onChange={this.signInPassword}/>
-        <br/>
-        <button value="send" onClick={this.handleSubmit}> Sign In</button>
-        </div>
-      </form>
-    </div>})
-    this.setState({
-      signupButton: <button className='navBar' onClick={this.setSignupToMain}><strong>Sign up</strong></button>,
-      signinSignoutButton: <button className='navBar' onClick={this.setSignInToMain}><strong>Sign in</strong></button>})
-    }
-    signInPassword(event) {
-      this.setState({password : event.target.value})
+  handleSignOut(){
+    this.setState({loggedin: 'loggedOut'})
   }
-  signInEmail(event) {
-      this.setState({email : event.target.value})
+
+  setStateLoggedIn() {
+    alert('setStateLoggedIn')
+    this.setState({loggedin: 'loggedin'})
   }
 
   setMainAccountSettings(e) {
@@ -160,7 +122,7 @@ setSignInToMain() {
     this.setState({mainContent: <Home/>})
   }
   setMainLogin(e){
-    this.setState({mainContent: <Login/>})
+    this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
   }
   setMainSearch(e){
     this.setState({mainContent: <Search parentMethod={this.setSuperState}/>})
