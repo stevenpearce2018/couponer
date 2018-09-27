@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './couponform.css';
+import Coupon from '../SubComponents/Coupon/coupon';
 
 // Create component for label
 class Label extends Component {
@@ -315,7 +316,16 @@ class CouponForm extends Component {
           <h1 className='formHeaderText'> Coupon details</h1>
         </div>
         <div className="flextape">
-        <div className="coupon">
+        <Coupon
+        title = {this.state.title}
+        imagePreviewUrl = {this.state.imagePreviewUrl}
+        currentPrice = {this.state.currentPrice}
+        discountedPrice = {this.state.discountedPrice}
+        amountCoupons = {this.state.length}
+        textarea = {this.state.textarea}
+        address = {this.state.address}
+        />
+        {/* <div className="coupon">
           <h1 className = "exampleTitle">{this.state.title}</h1>
           <div className = "exampleImage" >{$imagePreview}</div>
           <div className="pricing">
@@ -355,7 +365,7 @@ class CouponForm extends Component {
           </div>
           <br/>
         </div>
-      </div>
+      </div> */}
         <div className='formHeaderMobile'>
           <h1> Coupon details</h1>
         </div>

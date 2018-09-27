@@ -118,6 +118,7 @@ textarea {
   background-color: ghostwhite;
   border-radius: 5px;
   border-width: .5px;
+  padding-bottom:10px;
 }
 
 .exampleImage{
