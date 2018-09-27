@@ -123,8 +123,13 @@ class CouponForm extends Component {
       imagePreviewUrl: 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg',
       category: '',
       city: '',
-      zip: ''
+      zip: '',
+      popupClass: 'overlayHidden'
     };
+    this.togglePopup = this.togglePopup.bind(this);
+  }
+  togglePopup(){
+
   }
   handleImageChange(e) {
     e.preventDefault();
@@ -472,15 +477,15 @@ class CouponForm extends Component {
           onChange={(e)=>this.handleTextareaChange(e)} />
          <br/>
           <div className='box'>
-              <a className="icon-button" href="#popup1">
+              <a className="icon-button" onClick={this.togglePopup()}>
                 <i 
                 className="icon-question">
                 </i>
                 </a>
-<div id="popup1" className="overlay">
+<div className="overlay">
 	<div className="popup">
 		<h2>What are Super Coupons?</h2>
-		<a className="close" href="#">&times;</a>
+		<a className="close" onClick={this.togglePopup()}>&times;</a>
 		<div className="popupcontent">
 			Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons are also the only coupons that can appear on the home page. Super Coupons cost 1.00$ per coupon instead of the standard 0.50$.
 		</div>
