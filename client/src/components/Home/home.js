@@ -55,7 +55,7 @@ class Home extends Component {
   render() {
     return (
       <div>
-          <form action="/charge" method="POST">
+          {/* <form action="/charge" method="POST">
           <script
             src="https://checkout.stripe.com/checkout.js" className="stripe-button"
             data-key="pk_test_3eBW9BZ4UzRNsmtPCk9gc8F2"
@@ -65,7 +65,7 @@ class Home extends Component {
             data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
             data-locale="auto">
           </script>
-        </form>
+        </form> */}
         <section id="portfolio" className="content">
         <h2>What we do</h2>
         <p>Couponer is meant to be a <strong>buisness and consumer friendly</strong> way of connecting customers with unique products and experiences. Couponer is cheap for both parties, costing only 5$ a month for <strong>unlimited</strong> coupons as a consumer and 0.50$ per coupon posted as a buisness. Couponer is the perfect way to make more money for your buisness through promotions or find great deals on places a consumer may have never heard of. Sign up today, and find great deals in a city near you.</p>
