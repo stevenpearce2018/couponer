@@ -49,7 +49,7 @@ app.post('/api/signupCustomer', async(req, res) => {
      req.socket.remoteAddress ||
      (req.connection.socket ? req.connection.socket.remoteAddress : null);
   // const redisKey = req.body.email;
-  let loginKey
+  let loggedInKey;
   const result = await AccountInfo.find({ 'email': req.body.email })
     if (result.length === 0) {
       if (req.body.email && req.body.password && req.body.phoneNumber && req.body.cardNumber && req.body.CCV && req.body.zipCode && req.body.experationDate && req.body.address &&
@@ -57,7 +57,7 @@ app.post('/api/signupCustomer', async(req, res) => {
         const hashedPass = await bcrypt.hashSync(req.body.password, 10);
         const email = req.body.email
         if (req.body.buisnessName == '' || !req.body.buisnessName) loginKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ':b';
-        else loginKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ':c';
+        else loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         const accountInfo = new AccountInfo({
           _id: new mongoose.Types.ObjectId(),
           email: email,
@@ -74,15 +74,14 @@ app.post('/api/signupCustomer', async(req, res) => {
           country: req.body.country,
           region: req.body.region,
           yourPick: req.body.yourPick,
-          loggedInKey: loginKey,
+          loggedInKey: loggedInKey,
           ip: ip
         })
         await accountInfo.save()
         .catch(err => console.log(err))
-        console.log(accountInfo)
         res.json({
           email: email,
-          loggedInKey:loginKey
+          loggedInKey:loggedInKey
         });
     } else res.json({resp:'You need to fill out all fields!'});
     } else res.json({resp:'Email address is taken!'});
@@ -155,7 +154,19 @@ app.post("/charge", async (req, res) => {
 
 app.post('/api/signin', async (req, res) => {
   const outcome = await AccountInfo.find({'email' : req.body.email}).limit(1)
-  if(bcrypt.compareSync(req.body.password, outcome[0].password)) res.json({loggedInKey: outcome[0].loggedInKey});
+  if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
+    // console.log(outcome[0].loggedInKey)
+    // console.log(outcome[0].ip)
+    // console.log(req.connection.remoteAddress.replace('::ffff:', ''))
+    const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    res.json({loggedInKey: loggedInKey});
+    await AccountInfo.updateOne(
+      { "_id" : outcome[0]._id }, 
+      { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
+      { "upsert" : true } 
+    );
+    await accountInfo.save()
+  }
   else res.json({loggedInKey: 'invalid login'})
 });
 
