@@ -9,6 +9,7 @@ class Coupon extends Component {
   render() {
     return (
         <div className="coupon">
+        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css"></link>
           <h1 className = "exampleTitle">{this.props.title}</h1>
           <div className = "exampleImage" ><img className = "exampleImage" src={this.props.imagePreviewUrl} /></div>
           <div className="pricing">
@@ -37,7 +38,7 @@ class Coupon extends Component {
             <br/>
             <hr/>
             <br/>
-            <p className="timeLeft"> Don't delay, only <strong>{this.props.amountCoupons}</strong> left until these coupons expire! </p>
+            <p className="timeLeft"> Don't delay, only <strong>{this.props.length}</strong> left until these coupons expire! </p>
             <hr/>
             <br/>
             <p>{this.props.address}</p>
