@@ -1,9 +1,12 @@
 .searchBox{
+    width: 100%;
+}
+.searchForm{
     width: 79%;
     margin-left: 10%;
 }
 
 .searchButton{
-    width: 81.5%;
-    margin-left:10%;
+    width: 103%;
+    margin-left: 0%;
 }

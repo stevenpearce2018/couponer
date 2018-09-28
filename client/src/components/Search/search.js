@@ -3,6 +3,25 @@ import './search.css';
 import superState from '../../superState';
 import CouponsMaker from '../../couponsMaker';
 
+// Private component, keep scoped to search component
+class SearchField extends Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    return (
+      <div className="searchBox">
+      <div className='searchLabel'>
+      <label className='signupLabel' htmlFor={this.props.htmlFor}>
+        <strong>{this.props.htmlFor}</strong>
+      </label>
+      </div>
+      <input className={this.props.className} type="text" placeholder={this.props.placeholder} onChange={this.props.onChange}/>
+    </div>
+    )
+  }
+}
+
 class Search extends Component {
   constructor(props) {
     super(props)
@@ -39,60 +58,53 @@ class Search extends Component {
   async handleSearch(e){
     e.preventDefault();
     const data = {
-        city: this.state.city,
-        zip: this.state.zip,
-        category: this.state.category,
+      city: this.state.city,
+      zip: this.state.zip,
+      category: this.state.category,
     }
-    const url = `/api/searchCoupons`
-    const response =  await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data),
-  })
-  const json = await response.json()
-  this.setState({coupons: CouponsMaker(json.coupons)})
+    const that = this;
+    if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '') {
+      const url = `/api/searchCoupons`
+      const response =  await fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+      that.setState({coupons: CouponsMaker(json.coupons)})
+    }
 }                
-// <div className="inputGroup">
-// <div className="emailPass">
   render() {
     return (
       <div className="container text-center">
-          <form className='searchForm'>
-      <div className="searchBox">
-        <div className='searchLabel'>
-        <label className='signupLabel' htmlFor="City">
-          <strong>City</strong>
-        </label>
-        </div>
-        <input className='searchCity' type="text" placeholder="Your city" onChange={this.updateCity}/>
-      </div>
-    <div className="searchBox">
-        <div className='searchLabel'>
-        <label htmlFor="Zip">
-          <strong>Zip</strong>
-        </label>
-    </div>
-        <input className='searchZip' type="text" placeholder="12345" onChange={this.updateZip}/>
-      </div>
-      <div className="searchBox"> 
-        <div className='searchLabel'>
-        <label className='searchLabel' htmlFor="Category">
-          <strong>Category </strong>
-        </label>
-        </div>
-        <input className='searchCategory' type="text" placeholder="food" onChange={this.updateCategory}/>
-      </div>
+      <form className='searchForm'>
+      <h2>Search for coupons by city, zipcode, and even by category!</h2>
+      <br/>
+      <SearchField
+      htmlFor="City"
+      className='searchCity'
+      onChange={this.updateCity}
+      />
+      <br/>
+      <SearchField
+      htmlFor="Zip"
+      className='searchZip'
+      onChange={this.updateZip}
+      />
+      <br/>
+      <SearchField
+      htmlFor="Category"
+      className='searchCategory'
+      onChange={this.updateCategory}
+      />
+      <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
   </form>
-  <br/>
-
-        <button type="submit" value="Submit" className="searchButton signupbtn" onClick={this.handleSearch}><strong>Search</strong></button>
-        <br/>
       <button onClick={this.callParentFunction}> Update State</button>
       <button onClick={this.test}> Test </button>
       {this.state.coupons}
