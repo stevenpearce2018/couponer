@@ -67,7 +67,7 @@ class Search extends Component {
       <div className="searchBox">
         <div className='searchLabel'>
         <label className='signupLabel' htmlFor="City">
-          <strong>City :</strong>
+          <strong>City</strong>
         </label>
         </div>
         <input className='searchCity' type="text" placeholder="Your city" onChange={this.updateCity}/>
@@ -75,7 +75,7 @@ class Search extends Component {
     <div className="searchBox">
         <div className='searchLabel'>
         <label htmlFor="Zip">
-          <strong>Zip : </strong>
+          <strong>Zip</strong>
         </label>
     </div>
         <input className='searchZip' type="text" placeholder="12345" onChange={this.updateZip}/>
@@ -83,7 +83,7 @@ class Search extends Component {
       <div className="searchBox"> 
         <div className='searchLabel'>
         <label className='searchLabel' htmlFor="Category">
-          <strong>Category: </strong>
+          <strong>Category </strong>
         </label>
         </div>
         <input className='searchCategory' type="text" placeholder="food" onChange={this.updateCategory}/>
@@ -91,7 +91,7 @@ class Search extends Component {
   </form>
   <br/>
 
-        <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
+        <button type="submit" value="Submit" className="searchButton signupbtn" onClick={this.handleSearch}><strong>Search</strong></button>
         <br/>
       <button onClick={this.callParentFunction}> Update State</button>
       <button onClick={this.test}> Test </button>

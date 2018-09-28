@@ -21,10 +21,12 @@ class Home extends Component {
     const google = window.google
     const geocoder = new google.maps.Geocoder;
     async function cityNotFound () {
-      const url = '/api/getSponseredCoupons/nocityfound'
-      const response = await fetch(url);
-      const data = await response.json();
-      that.setState({coupons: CouponsMaker(data.coupons)})
+      try {
+        const url = '/api/getSponseredCoupons/nocityfound'
+        const response = await fetch(url);
+        const data = await response.json();
+        that.setState({coupons: CouponsMaker(data.coupons)})     
+      } catch (error) {}
     }
     function showPosition(position) {
       that.setState({
