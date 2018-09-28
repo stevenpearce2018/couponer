@@ -319,23 +319,23 @@ input[type="file"] {
 }
 
 @media only screen and (max-width: 900px) {
-  .uploadCouponForm, .formHeader, .coupon, .couponHeader{
-    width:90%;
-  }
   .formHeader{
   display:none;
 }
   .formHeaderMobile{
   display:block;
 }
+.uploadCouponForm, .formHeader, .coupon, .couponHeader, .formHeaderMobile{
+  width:90%;
+}
+.formHeaderMobile {
+  display:block;
+}
 }
 
-@media only screen and (max-width: 800px) {
-  .uploadCouponForm, .formHeader, .coupon, .couponHeader, .formHeaderMobile{
-    width:90%;
-  }
-  .formHeaderMobile {
-    display:block;
+@media only screen and (max-width: 600px) {
+  fieldset{
+    width: 95%;
   }
 }
 
@@ -358,4 +358,11 @@ input[type="file"] {
   padding-bottom:0px;
   padding-right:0px;
   padding-left:0px;
+}
+
+.icon{
+  width:20px;
+  margin-bottom:-5px;
+  float:right;
+  margin-right:-18px;
 }

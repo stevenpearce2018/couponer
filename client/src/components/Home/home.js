@@ -20,7 +20,7 @@ class Home extends Component {
     const that = this;
     const google = window.google
     const geocoder = new google.maps.Geocoder;
-    const cityNotFound = async () => {
+    async function cityNotFound () {
       const url = '/api/getSponseredCoupons/nocityfound'
       const response = await fetch(url);
       const data = await response.json();
