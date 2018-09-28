@@ -27,7 +27,7 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] MongoDB Connection <br />
 [X] Signup Support <br />
 [/] Login Support <br />
-[X] Login Encryption <br />
+[X] Account details Encryption <br />
 [X] Autoload Sponsered Coupons <br />
 [X] Display Coupons <br />
 [X] Create Coupons <br />
