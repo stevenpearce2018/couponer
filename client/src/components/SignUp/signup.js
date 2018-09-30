@@ -133,7 +133,7 @@ class SignUp extends Component {
       body: JSON.stringify(data),
   })
     const json = await response.json()
-    localStorage.setItem('credsCoupon', JSON.stringify(json))
+    sessionStorage.setItem('credsCoupon', JSON.stringify(json))
 }
   render() {
     const yourPick = this.state.yourPick

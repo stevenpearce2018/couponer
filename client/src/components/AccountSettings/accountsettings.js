@@ -108,7 +108,7 @@ class AccountSettings extends Component {
       },
     })
     const json = await response.json()
-    localStorage.setItem('credsCoupon', JSON.stringify(json))
+    sessionStorage.setItem('credsCoupon', JSON.stringify(json))
   }
 
   render() {

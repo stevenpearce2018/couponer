@@ -7,7 +7,6 @@ import Home from './components/Home/home'
 import Footer from './components/Footer/footer';
 import Login from './components/Login/login';
 import Search from './components/Search/search'
-import superState from './superState';
 import history from './history';
 import CheckoutForm from './components/CheckoutForm/checkoutForm'
 import { Elements, StripeProvider } from 'react-stripe-elements';
@@ -34,9 +33,9 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      test: superState.test,
       mainContent: <Home/>,
-      loggedin: 'loggedout'
+      loginButton: 'notHidden',
+      logoutButton: 'hidden'
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -45,12 +44,9 @@ class App extends Component {
   this.setMainHome = this.setMainHome.bind(this);
   this.setMainLogin = this.setMainLogin.bind(this);
   this.setSignupToMain = this.setSignupToMain.bind(this);
-  this.handleSignOut = this.handleSignOut.bind(this);
-  this.setSuperState = this.setSuperState.bind(this);
-  this.handleSubmit = this.handleSubmit.bind(this);
   this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
   this.setSignupToMain = this.setSignupToMain.bind(this);
-  this.handleSubmit = this.handleSubmit.bind(this);
+  this.logout = this.logout.bind(this);
 }
 componentDidMount () {
   const urlHandler = (currentURL) => {
@@ -74,7 +70,7 @@ componentDidMount () {
           this.setState({mainContent: <Search/>})
           break;
       case 'login':
-          this.setState({mainContent: <Login/>})
+          this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
           break;
       case 'signin':
           this.setSignInToMain();
@@ -83,7 +79,7 @@ componentDidMount () {
     }
   }
   const url = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
-  urlHandler(url)
+  urlHandler(url);
   this._isMounted = true;
   window.onpopstate = () => {
     if(this._isMounted) {
@@ -91,22 +87,19 @@ componentDidMount () {
       urlHandler(urlPath)
     }
   }
+  if (sessionStorage.getItem('couponerkey')) this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
 
 setSignupToMain(){
   this.setState({mainContent: <Home/>})
 }
 
-setSuperState(){
-  this.setState({test: superState.test})
-}
-  handleSignOut(){
-    this.setState({loggedin: 'loggedOut'})
-  }
-
   setStateLoggedIn() {
-    alert('setStateLoggedIn')
-    this.setState({loggedin: 'loggedin'})
+    this.setState({mainContent: <Home/>, logoutButton: 'notHidden', loginButton: 'hidden'})
+  }
+  logout(){
+    sessionStorage.setItem('couponerkey', '')
+    this.setState({mainContent: <Home/>, loginButton: 'notHidden', logoutButton: 'hidden'})
   }
 
   setMainAccountSettings(e) {
@@ -125,30 +118,8 @@ setSuperState(){
     this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
   }
   setMainSearch(e){
-    this.setState({mainContent: <Search parentMethod={this.setSuperState}/>})
+    this.setState({mainContent: <Search/>})
   }
-
-  async handleSubmit(e){
-      e.preventDefault();
-      const url = `api/signin`
-      let response = await fetch(url, {
-        body: {
-          email: this.state.email,
-          password: this.state.password
-        },
-        method: 'post',
-        headers: {
-          Accept: 'application/json',
-        },
-    })
-    response = await response.json()
-    alert(response)
-      this.setState({
-        mainContent: '',
-        signinSignoutButton: <div className="navBar"><button onClick={this.handleSignOut}><strong>Sign Out</strong></button></div>,
-        signupButton: '',
-      })
-    }
 
   render () {
     return (
@@ -177,16 +148,16 @@ setSuperState(){
           <nav className='navPopup'>
             <ul>
               <Link href = '/Home'><li onClick={this.setMainHome}><a href="#Home"><i className="icon-home"></i>Home</a></li></Link>
-              <Link href = '/Login'><li onClick={this.setMainLogin}><a href="#Login"><i className="icon-signin"></i>Login</a></li></Link>
-              <Link href = '/SignUp'><li onClick={this.setMainSignUp}><a href="#SignUp"><i className="icon-user"></i>Sign up</a></li></Link>
-              <Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><a href="#AccountSettings"><i className="icon-gear"></i>Account Settings</a></li></Link>
+              <div className={this.state.loginButton}><Link href = '/Login'><li onClick={this.setMainLogin}><a href="#Login"><i className="icon-signin"></i>Login</a></li></Link></div>
+              <div className={this.state.loginButton}><Link href = '/SignUp'><li onClick={this.setMainSignUp}><a href="#SignUp"><i className="icon-user"></i>Sign up</a></li></Link></div>
+              <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><a href="#logout"><i className="icon-user"></i>Logout</a></li></Link></div>
+              <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><a href="#AccountSettings"><i className="icon-gear"></i>Account Settings</a></li></Link></div>
               <Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><a href="#Coupons"><i className="icon-money"></i>Coupons</a></li></Link>
               <Link href = '/Search'><li onClick={this.setMainSearch}><a href="#Search"><i className="icon-search"></i>Search</a></li></Link>
             </ul>
           </nav>
           </section>
         </header>
-          <h1>{this.state.test}</h1>
           {this.state.mainContent}
           <br/>
           <br/>

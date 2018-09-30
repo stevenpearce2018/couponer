@@ -34,10 +34,7 @@ const uri = 'mongodb+srv://Steve:Password@cluster0-bpsap.mongodb.net/test?authSo
 
 mongoose.connect(
   "mongodb+srv://Steve:Password@cluster0-bpsap.mongodb.net/test?authSource=test&w=1",
-  {
-    useMongoClient: true
-  }
-);
+).then(console.log('Connected to mongoDB'));
 
 // app.get('*', (req, res) => {
 //   res.json({url: req.url});
@@ -172,12 +169,11 @@ app.post('/api/signin', async (req, res) => {
 
 
 app.post
-(`/api/uploadCoupons`, (req, res) => { // req = request
+(`/api/uploadCoupons`, async(req, res) => { // req = request
   const lengthInDays = req.body.length.replace(/\D/g,'');
   const amountCoupons = req.body.amountCoupons;
   let couponCodes = [];
   for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-  console.log(JSON.stringify(couponCodes))
   const saveCoupon = async () => {
     const coupon = new Coupon({
       _id: new mongoose.Types.ObjectId(),
@@ -192,16 +188,18 @@ app.post
       textarea: req.body.textarea,
       base64image: req.body.imagePreviewUrl,
       superCoupon: req.body.superCoupon,
-      couponCodes: couponCodes,
-      couponStillValid: true
+      // couponCodes: couponCodes,
+      // couponStillValid: true
     })
-    saveCoupon();
     await coupon.save()
-    .catch(err => console.log(err))
+      .catch(err => console.log(err))
   }
+  saveCoupon();
+  // res.json({response: 'Coupon Created'})
+  res.json({response: 'Coupon Created'})
+}
 
-  res.json({resp: 'testing done'})
-})
+)
   
 const port = 4000;
 

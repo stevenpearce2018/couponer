@@ -28,6 +28,19 @@ class CouponForm extends Component {
       validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg'></img>
     };
     this.togglePopup = this.togglePopup.bind(this);
+    this.uploadFile = this.uploadFile.bind(this);
+    this.handleTitleChange = this.handleTitleChange.bind(this);
+    this.handleAddressChange = this.handleAddressChange.bind(this);
+    this.handleDiscountedPriceChange = this.handleDiscountedPriceChange.bind(this);
+    this.handleCategoryChange = this.handleCategoryChange.bind(this);
+    this.handleLengthChange = this.handleLengthChange.bind(this);
+    this.handleSuperChange = this.handleSuperChange.bind(this);
+    this.handleZipChange = this.handleZipChange.bind(this);
+    this.handleImageChange = this.handleImageChange.bind(this);
+    this.handleCityChange = this.handleCityChange.bind(this);
+    this.handleCurrentPriceChange = this.handleCurrentPriceChange.bind(this);
+    this.handleAmountCouponsChange = this.handleAmountCouponsChange.bind(this);
+    this.handleTextareaChange = this.handleTextareaChange.bind(this);
   }
   togglePopup(){
 
@@ -57,9 +70,7 @@ class CouponForm extends Component {
     const google = window.google
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
-      alert(results[0].geometry.location.lat())
-      alert(results[0].geometry.location.lng())
-      if (results[0].status == google.maps.GeocoderStatus.OK) {
+      if (google.maps.GeocoderStatus.OK === 'OK') {
         if (results[0] && that.state.address.length > 5) {
           that.setState({
             latitude:results[0].geometry.location.lat(),
@@ -79,15 +90,35 @@ class CouponForm extends Component {
           else if (this.state.zip === '' || this.state.zip.length < 3) alert('You must have a zipcode!')
           else {
             const url = `/api/uploadCoupons`
+            alert(JSON.stringify(this.state))
+            const data = {
+              title: this.state.title,
+              longitude: this.state.longitude,
+              latitude: this.state.latitude,
+              address: this.state.address,
+              amountCoupons: this.state.amountCoupons,
+              currentPrice: this.state.currentPrice,
+              discountedPrice: this.state.discountedPrice,
+              length: this.state.length,
+              superCoupon: this.state.superCoupon,
+              textarea: this.state.textarea,
+              imagePreviewUrl: this.state.imagePreviewUrl,
+              category: this.state.category,
+              city: this.state.city,
+              zip: this.state.zip
+            }
             const response = await fetch(url, {
-              body: this.state,
-              method: 'POST',
+              method: "POST", 
+              mode: "cors",
+              cache: "no-cache",
+              credentials: "same-origin",
               headers: {
-                Accept: 'application/json',
+                "Content-Type": "application/json; charset=utf-8",
               },
+              body: JSON.stringify(data),
             })
-            alert(JSON.stringify(response)) // !todo, remove this alert
-            alert('Your coupon was created. Woohoo!')
+            const json = await response.json()
+            alert(JSON.stringify(json))
             // !todo, reroute user to homepage
           }
         }
@@ -201,7 +232,7 @@ class CouponForm extends Component {
           <h1>Coupon details</h1>
         </div>
         <div className='uploadCouponForm'>
-        <form // onSubmit={(e)=>this.handleSubmit(e)}
+        <form // onSubmit={this.handleSubmit}
         method="post"
         encType="multipart/form-data"
         className='uploadForm'
@@ -216,7 +247,7 @@ class CouponForm extends Component {
           type='text'
           className='couponUploadTitle'
           value={this.state.title}
-          onChange={(e)=>this.handleTitleChange(e)}
+          onChange={this.handleTitleChange}
           />
           <br/>
           
@@ -228,7 +259,7 @@ class CouponForm extends Component {
           required='true'
           type='text'
           value={this.state.address}
-          onChange={(e)=>this.handleAddressChange(e)} />
+          onChange={this.handleAddressChange} />
           <br/>
 
         <Input
@@ -238,7 +269,7 @@ class CouponForm extends Component {
           required='true'
           type='text'
           value={this.state.city}
-          onChange={(e)=>this.handleCityChange(e)} />
+          onChange={this.handleCityChange} />
           <br/>
         
         <Input
@@ -248,7 +279,7 @@ class CouponForm extends Component {
           required='true'
           type='number'
           value={this.state.handleZipChange}
-          onChange={(e)=>this.handleZipChange(e)} />
+          onChange={this.handleZipChange} />
         <br/>
         
         <Input
@@ -258,7 +289,7 @@ class CouponForm extends Component {
           required='true'
           type='number'
           value={this.state.amountCoupons}
-          onChange={(e)=>this.handleAmountCouponsChange(e)} />
+          onChange={this.handleAmountCouponsChange} />
         <br/>
         <Input
           hasLabel='true'
@@ -267,7 +298,7 @@ class CouponForm extends Component {
           required='true'
           type='number'
           value={this.state.currentPrice}
-          onChange={(e)=>this.handleCurrentPriceChange(e)} />
+          onChange={this.handleCurrentPriceChange} />
         <br/>
         <Input
           hasLabel='true'
@@ -276,7 +307,7 @@ class CouponForm extends Component {
           required='true'
           type='number'
           value={this.state.discountedPrice}
-          onChange={(e)=>this.handleDiscountedPriceChange(e)} />
+          onChange={this.handleDiscountedPriceChange} />
         <br/>
         <Select
           hasLabel='true'
@@ -285,7 +316,7 @@ class CouponForm extends Component {
           options='Food, Entertainment, Health and Fitness, Retail, Home Improvement, Activities, Other'
           required='true'
           value={this.state.length}
-          onChange={(e)=>this.handleCategoryChange(e)} />
+          onChange={this.handleCategoryChange} />
         <br/>
         <Input
           hasLabel='true'
@@ -294,7 +325,7 @@ class CouponForm extends Component {
           type='number'
           required='true'
           value={this.state.length}
-          onChange={(e)=>this.handleLengthChange(e)} />
+          onChange={this.handleLengthChange} />
         <br/>
         <Textarea
           hasLabel='true'
@@ -302,10 +333,10 @@ class CouponForm extends Component {
           label='Description of Coupon'
           required='true'
           value={this.state.textarea}
-          onChange={(e)=>this.handleTextareaChange(e)} />
+          onChange={this.handleTextareaChange} />
          <br/>
           <div className='box'>
-              <a className="icon-button" onClick={this.togglePopup()}>
+              <a className="icon-button" onClick={this.togglePopup}>
                 <i 
                 className="icon-question">
                 </i>
@@ -313,7 +344,7 @@ class CouponForm extends Component {
           <div className="overlay">
             <div className="popup">
               <h2>What are Super Coupons?</h2>
-              <a className="close" onClick={this.togglePopup()}>&times;</a>
+              <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
                 Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons are also the only coupons that can appear on the home page. Super Coupons cost 1.00$ per coupon instead of the standard 0.50$.
               </div>
@@ -327,7 +358,7 @@ class CouponForm extends Component {
             options="Let's Go Super!, No thanks."
             required='true'
             value={this.state.superCoupon}
-            onChange={(e)=>this.handleSuperChange(e)} />
+            onChange={this.handleSuperChange} />
           </div>
           <br/>
           <br/>
@@ -336,11 +367,11 @@ class CouponForm extends Component {
             <input className="fileInput" 
               type="file"
               required='true'
-              onChange={(e)=>this.handleImageChange(e)} />
+              onChange={this.handleImageChange} />
             </label>
           <button className="submitButton" 
             type="submit" 
-            onClick={(e)=>this.uploadFile(e)}
+            onClick={this.uploadFile}
             >
           Upload Coupons
           </button>

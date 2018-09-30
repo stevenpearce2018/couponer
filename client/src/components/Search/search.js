@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './search.css';
-import superState from '../../superState';
 import CouponsMaker from '../../couponsMaker';
 
 // Private component, keep scoped to search component
@@ -35,7 +34,6 @@ class Search extends Component {
     this.updateZip = this.updateZip.bind(this);
     this.updateCategory = this.updateCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.test = this.test.bind(this)
   }
   updateCity(e) {
     this.setState({ city: e.target.value });
@@ -46,14 +44,6 @@ class Search extends Component {
   updateCategory (e) {
     this.setState({ category: e.target.value });
   }
-
-  callParentFunction = () => {
-    superState.test = 'New State'
-    this.props.parentMethod();
-    }
-    test() {
-      console.log(this.state.coupons)
-    }
 
   async handleSearch(e){
     e.preventDefault();
@@ -105,8 +95,6 @@ class Search extends Component {
       />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
   </form>
-      <button onClick={this.callParentFunction}> Update State</button>
-      <button onClick={this.test}> Test </button>
       {this.state.coupons}
         </div>
     )
