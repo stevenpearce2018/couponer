@@ -188,8 +188,8 @@ app.post
       textarea: req.body.textarea,
       base64image: req.body.imagePreviewUrl,
       superCoupon: req.body.superCoupon,
-      // couponCodes: couponCodes,
-      // couponStillValid: true
+      couponCodes: couponCodes,
+      couponStillValid: true
     })
     await coupon.save()
       .catch(err => console.log(err))
