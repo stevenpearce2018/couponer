@@ -166,8 +166,7 @@ app.post('/api/signin', async (req, res) => {
 });
 
 
-app.post
-(`/api/uploadCoupons`, async(req, res) => { // req = request
+app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   const lengthInDays = req.body.length.replace(/\D/g,'');
   const amountCoupons = req.body.amountCoupons;
   let couponCodes = [];
@@ -195,10 +194,17 @@ app.post
   saveCoupon();
   // res.json({response: 'Coupon Created'})
   res.json({response: 'Coupon Created'})
-}
+})
+app.post(`/api/getCoupon`, async(req, res) => { // req = request
+  const ip = req.headers['x-forwarded-for'] || 
+  req.connection.remoteAddress || 
+  req.socket.remoteAddress ||
+  (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  const outcome = await AccountInfo.find({'ip' : ip.replace('::ffff:', ''), loggedInKey:req.body.loggedInKey }).limit(1)
 
-)
-  
+
+})
+
 const port = 4000;
 
 app.listen(port, () => `Server running on port ${port}`);

@@ -45,7 +45,6 @@ class Coupon extends Component {
             <hr/>
             <br/>
           <button className="getCoupon"> Get Coupon </button>
-          <button className="declineCoupon"> No Thanks </button>
           </div>
           <br/>
         </div>

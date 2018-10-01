@@ -22,11 +22,11 @@ You will need a redis server running locally for the server to compile. I plan o
 [ ] Docker Containers <br />
 [X] Stateless Server <br />
 [ ] Load Balancer <br />
-[/] Redis Caching Support <br />
+[X] Redis Caching Support <br />
 [ ] HTTPS <br />
 [X] MongoDB Connection <br />
 [X] Signup Support <br />
-[/] Login Support <br />
+[X] Login Support <br />
 [X] Account details Encryption <br />
 [X] Autoload Sponsered Coupons <br />
 [X] Display Coupons <br />
@@ -35,14 +35,14 @@ You will need a redis server running locally for the server to compile. I plan o
 [/] React Native App (Waiting till webapp is Fully Complete to Resume) <br />
 [ ] Refactoring of CSS <br />
 [ ] Global CSS Classes to Reduce Css Bloat <br />
-[ ] Refactoring of JS Components <br />
+[/] Refactoring of JS Components <br />
 [X] Router Support <br />
 [X] SPA design <br />
 [ ] Webpack Lazy Loading <br />
 [ ] Image Optimizations for Performance <br />
 [/] General Serverside Validation of data <br />
 [/] Stripe payment handling (May move to amazon or other payment processor) <br />
-[ ] CDN Setup of Assets <br />
+[/] CDN Setup of Assets <br />
 [X] Address Validation <br />
 [X] GeoLocation AutoSearch  <br />
 [/] Strip Unused dependacies <br />

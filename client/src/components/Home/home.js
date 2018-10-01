@@ -16,7 +16,7 @@ class Home extends Component {
   componentDidMount () {
     const CouponsMaker = (props) => {
       const content = props.map((coupons) =>
-      <div className="coupon">
+      <div className="coupon" id={coupons._id}>
       <h1 className = "exampleTitle">{coupons.title}</h1>
       <img  className = "exampleImage" src={coupons.base64image} />
       <div className="pricing">
@@ -52,7 +52,6 @@ class Home extends Component {
         <hr/>
         <br/>
       <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
-      <button className ="declineCoupon"> No Thanks </button>
       </div>
       <br/>
     </div>
@@ -105,10 +104,31 @@ class Home extends Component {
     }
   }
 
-  getCoupons(id) {
-    alert('works')
+  async getCoupons(id) {
+    alert('works');
     alert(id)
+    const loggedInKey = localStorage.getItem('couponerkey')
+    if (!loggedInKey) alert('You are not logged in!')
+    else {
+      const data = {
+        id: id,
+        loggedInKey: loggedInKey
+      }
+      const url = `api/getCoupon`
+      const response = await fetch(url, {
+        method: "POST", 
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+    }
   }
+
   render() {
     return (
       <div>
