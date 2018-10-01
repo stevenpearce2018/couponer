@@ -106,13 +106,11 @@ app.get('/api/getSponseredCoupons/:city', async (req, res) => {
   const cityUserIsIn = req.params.city.toLowerCase()
   if(req.body.city && nocityfound !== 'nocityfound') {
     coupons = await Coupon.find({city : cityUserIsIn} ).limit(20)
-    console.log(coupons)
     if (coupons.length > 0 ) res.json({ coupons: coupons });
     else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
   }
   else {    
       coupons = await Coupon.find().limit(20)
-      console.log(coupons.length)
       if (coupons.length > 0 ) res.json({ coupons });
       else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
   }
