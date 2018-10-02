@@ -44,7 +44,7 @@ class Coupon extends Component {
             <p>{this.props.address}</p>
             <hr/>
             <br/>
-          <button className="getCoupon"> Get Coupon </button>
+          <button className="getCoupon"><strong>Get Coupon</strong></button>
           </div>
           <br/>
         </div>

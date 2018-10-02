@@ -54,7 +54,7 @@ textarea {
   resize: vertical;
 }
 
-.button, .getCoupon, .declineCoupon, .submitButton {
+.button, .getCoupon, .submitButton {
   margin-top: 5px;
   margin-right: auto;
   margin-left: auto;
@@ -67,6 +67,10 @@ textarea {
   border-radius: 2px;
   cursor: pointer;
   transition: background-color .15s ease-in;
+}
+.getCoupon{
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .button:focus:active {

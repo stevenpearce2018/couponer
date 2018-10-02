@@ -25,7 +25,7 @@ class Login extends Component {
       email: this.state.email,
       password: this.state.password
     }
-    const url = `api/signin`
+    const url = `/api/signin`
     const response = await fetch(url, {
       method: "POST", 
       mode: "cors",
@@ -38,7 +38,6 @@ class Login extends Component {
     })
     const json = await response.json()
     alert(JSON.stringify(json.loggedInKey))
-    // send login key to superstate
     this.props.parentMethod();
     localStorage.setItem('couponerkey', JSON.stringify(json.loggedInKey))
   }

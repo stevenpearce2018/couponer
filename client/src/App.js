@@ -97,9 +97,26 @@ setSignupToMain(){
   setStateLoggedIn() {
     this.setState({mainContent: <Home/>, logoutButton: 'notHidden', loginButton: 'hidden'})
   }
-  logout(){
-    sessionStorage.setItem('couponerkey', '')
+  async logout(){
+    const loggedInKey = sessionStorage.getItem('couponerkey');
+    const data = {
+      loggedInKey: loggedInKey
+    }
+    const url = `/api/signout`;
+    const response = await fetch(url, {
+      method: "POST", 
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(data),
+    })
+    const json = await response.json()
+    alert(JSON.stringify(json))
     this.setState({mainContent: <Home/>, loginButton: 'notHidden', logoutButton: 'hidden'})
+    sessionStorage.setItem('couponerkey', '')
   }
 
   setMainAccountSettings(e) {
