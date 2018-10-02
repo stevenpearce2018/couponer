@@ -105,16 +105,14 @@ class Home extends Component {
   }
 
   async getCoupons(id) {
-    alert('works');
-    alert(id)
-    const loggedInKey = localStorage.getItem('couponerkey')
+    const loggedInKey = sessionStorage.getItem('couponerkey')
     if (!loggedInKey) alert('You are not logged in!')
     else {
       const data = {
-        id: id,
+        _id: id,
         loggedInKey: loggedInKey
       }
-      const url = `api/getCoupon`
+      const url = `/api/getCoupon`
       const response = await fetch(url, {
         method: "POST", 
         mode: "cors",
@@ -126,6 +124,7 @@ class Home extends Component {
         body: JSON.stringify(data),
       })
       const json = await response.json()
+      alert(JSON.stringify(json))
     }
   }
 

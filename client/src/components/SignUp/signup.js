@@ -120,7 +120,7 @@ class SignUp extends Component {
       monthLength: this.state.monthLength
     }
     alert(JSON.stringify(this.state.experationDate))
-    const url = `api/signupCustomer`
+    const url = `/api/signupCustomer`
     const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, cors, *same-origin
@@ -133,7 +133,11 @@ class SignUp extends Component {
       body: JSON.stringify(data),
   })
     const json = await response.json()
-    sessionStorage.setItem('credsCoupon', JSON.stringify(json))
+    if(json.loggedInKey) {
+      sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+      this.props.parentMethod();
+    }
+    else alert(JSON.stringify(json))
 }
   render() {
     const yourPick = this.state.yourPick

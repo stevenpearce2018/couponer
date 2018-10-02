@@ -39,7 +39,7 @@ class Login extends Component {
     const json = await response.json()
     alert(JSON.stringify(json.loggedInKey))
     this.props.parentMethod();
-    localStorage.setItem('couponerkey', JSON.stringify(json.loggedInKey))
+    sessionStorage.setItem('couponerkey', JSON.stringify(json.loggedInKey))
   }
     
   render() {

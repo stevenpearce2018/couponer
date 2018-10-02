@@ -46,7 +46,7 @@ class Search extends Component {
   async getCoupons(id){
     alert('works');
     alert(id)
-    const loggedInKey = localStorage.getItem('couponerkey')
+    const loggedInKey = sessionStorage.getItem('couponerkey')
     if (!loggedInKey) alert('You are not logged in!')
     else {
       const data = {

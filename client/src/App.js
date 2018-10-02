@@ -64,7 +64,7 @@ componentDidMount () {
           this.setState({mainContent: <AccountSettings/>})
           break;
       case 'signup':
-          this.setState({mainContent: <SignUp/>})
+          this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
           break;
       case 'search':
           this.setState({mainContent: <Search/>})
@@ -126,7 +126,7 @@ setSignupToMain(){
     this.setState({mainContent: <CouponForm/>})
   }
   setMainSignUp(e){
-    this.setState({mainContent: <SignUp/>})
+    this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
   }
   setMainHome(e){
     this.setState({mainContent: <Home/>})

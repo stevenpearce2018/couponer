@@ -32,15 +32,13 @@ app.post('/api/signupCustomer', async(req, res) => {
      req.connection.remoteAddress || 
      req.socket.remoteAddress ||
      (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  let loggedInKey;
+  const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   const result = await AccountInfo.find({ 'email': req.body.email })
     if (result.length === 0) {
       if (req.body.email && req.body.password && req.body.phoneNumber && req.body.cardNumber && req.body.CCV && req.body.zipCode && req.body.experationDate && req.body.address &&
         req.body.cardholderName && req.body.city && req.body.country && req.body.region && req.body.yourPick && ip) {
         const hashedPass = await bcrypt.hashSync(req.body.password, 10);
-        const email = req.body.email
-        if (req.body.buisnessName == '' || !req.body.buisnessName) loginKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ':b';
-        else loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const email = req.body.email;
         const accountInfo = new AccountInfo({
           _id: new mongoose.Types.ObjectId(),
           email: email,
@@ -58,12 +56,14 @@ app.post('/api/signupCustomer', async(req, res) => {
           region: req.body.region,
           yourPick: req.body.yourPick,
           loggedInKey: loggedInKey,
+          couponIds: [],
+          couponsCurrentlyClaimed: 0,
           ip: ip
         })
         await accountInfo.save()
         .catch(err => console.log(err))
+        console.log(loggedInKey)
         res.json({
-          email: email,
           loggedInKey:loggedInKey
         });
     } else res.json({resp:'You need to fill out all fields!'});
@@ -106,7 +106,13 @@ app.post('/api/signin', async (req, res) => {
 });
 
 app.post(`/api/signout`, async(req, res) => { // req = request
-  const outcome = await AccountInfo.find({'loggedInKey' : req.body.loggedInKey}).limit(1)
+  // const outcome = await AccountInfo.find({'loggedInKey' : req.body.loggedInKey}).limit(1)
+  const loggedInKey = req.body.loggedInKey
+  console.log(loggedInKey, 'loggedInKey')
+  const outcome = await AccountInfo.find({'loggedInKey': loggedInKey}).limit(1)
+  console.log(outcome, 'outcome')
+  const outcometwo = await AccountInfo.find({'email' : 'testtest'}).limit(1)
+  console.log(outcometwo, 'outcometwo')
   if (outcome) {
     res.json({response:"Logout Successful"})
     await AccountInfo.updateOne(
@@ -114,8 +120,8 @@ app.post(`/api/signout`, async(req, res) => { // req = request
       { "$set" : { "ip" : ''}, loggedInKey:'' }, 
       { "upsert" : true } 
     );
-    const outcomeTwo = await AccountInfo.find({"_id" : outcome[0]._id}).limit(1)
-    console.log(JSON.stringify(outcomeTwo));
+    // const outcomeTwo = await AccountInfo.find({"_id" : outcome[0]._id}).limit(1)
+    // console.log(JSON.stringify(outcomeTwo));
   }
   else res.json({response:"Logout Failed"})
 })
@@ -197,11 +203,25 @@ app.post("/charge", async (req, res) => {
 });
 
 app.post(`/api/getCoupon`, async(req, res) => { // req = request
+  if (!req.body.loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+  console.log(req.body.loggedInKey)
   const ip = req.headers['x-forwarded-for'] || 
   req.connection.remoteAddress || 
   req.socket.remoteAddress ||
   (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  const outcome = await AccountInfo.find({'ip' : ip.replace('::ffff:', ''), loggedInKey:req.body.loggedInKey }).limit(1)
+  const outcome = await AccountInfo.find({'loggedInKey':req.body.loggedInKey })
+  console.log(outcome)
+  if (outcome) {
+    if (outcome.couponsCurrentlyClaimed < 5) {
+      res.json({response: "Coupon Claimed!"});
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
+        { "upsert" : true } 
+      );
+    } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
+  }
+  else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
 })
 
 const port = 4000;
