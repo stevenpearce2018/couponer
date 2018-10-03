@@ -217,12 +217,13 @@ body {
   right: 0;
   background: rgba(0, 0, 0, 0.7);
   transition: opacity 500ms;
-  visibility: hidden;
-  opacity: 0;
-}
-.overlay:target {
   visibility: visible;
   opacity: 1;
+}
+.hiddenOverlay {
+  visibility: hidden;
+  opacity: 0;
+  display: none;
 }
 
 .popup {

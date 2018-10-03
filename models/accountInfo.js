@@ -17,6 +17,7 @@ const accountInfo = mongoose.Schema({
     region: String,
     yourPick: String,
     loggedInKey: String,
+    membershipExperationDate: String,
     ip: String
 })
 

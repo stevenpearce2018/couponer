@@ -37,10 +37,10 @@ class Coupon extends Component {
             <p>{this.props.textarea}</p>
             <br/>
             <hr/>
-            <br/>
+            {/* <br/>
             <p className="timeLeft"> Don't delay, only <strong>{this.props.length}</strong> left until these coupons expire! </p>
             <hr/>
-            <br/>
+            <br/> */}
             <p>{this.props.address}</p>
             <hr/>
             <br/>

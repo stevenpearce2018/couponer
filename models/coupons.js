@@ -6,7 +6,7 @@ const couponSchema = mongoose.Schema({
     address: String,
     city: String,
     amountCoupons: Number,
-    lengthInDays: Number,
+    // lengthInDays: Number,
     currentPrice: Number,
     discountedPrice: Number,
     category: String,

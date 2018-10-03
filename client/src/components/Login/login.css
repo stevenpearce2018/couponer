@@ -32,7 +32,7 @@
     background-color: #fde428;
 }
 
-.signIn:hover, .searchButton:hover {
+.signIn:hover, .searchButton:hover, .signupbtn:hover {
     background-color: gold;
 }
 

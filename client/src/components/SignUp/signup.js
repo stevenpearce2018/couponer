@@ -31,7 +31,10 @@ class SignUp extends Component {
       country: 'US',
       region: '',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
-      monthLength: ''
+      monthLength: '',
+      validAddress:<img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg'></img>,
+      latitude:'',
+      longitude:''
     }
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMonthLength = this.updateMonthLength.bind(this);
@@ -72,6 +75,23 @@ class SignUp extends Component {
   }
   updateAddress(event) {
     this.setState({address : event.target.value})
+    let that = this;
+    if (event.target.value == '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
+    else this.setState({address: event.target.value})
+    const google = window.google
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
+    try {
+      if (results[0] && that.state.address.length > 5) {
+        that.setState({
+          latitude:results[0].geometry.location.lat(),
+          longitude: results[0].geometry.location.lng(),
+          validAddress: <img src='https://storage.googleapis.com/csstest/valid.svg'></img>
+        })
+      }
+    }
+    catch (error) { that.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg'></img>}) }
+    });
   }
   updateCardNumber(event) {
     this.setState({cardNumber : event.target.value})
@@ -119,7 +139,6 @@ class SignUp extends Component {
       country: this.state.country,
       monthLength: this.state.monthLength
     }
-    alert(JSON.stringify(this.state.experationDate))
     const url = `/api/signupCustomer`
     const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -133,11 +152,10 @@ class SignUp extends Component {
       body: JSON.stringify(data),
   })
     const json = await response.json()
-    if(json.loggedInKey) {
-      sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+    if (json.loggedInKey) {
       this.props.parentMethod();
+      sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
     }
-    else alert(JSON.stringify(json))
 }
   render() {
     const yourPick = this.state.yourPick
@@ -246,7 +264,8 @@ class SignUp extends Component {
           <InputField
           htmlFor="Street"
           type="text"
-          labelHTML="Address"
+          labelHTML="Full Address"
+          icon={this.state.validAddress}
           placeholder="12345 189th Savings St"
           onChange={this.updateAddress}
           required

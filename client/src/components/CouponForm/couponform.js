@@ -16,7 +16,7 @@ class CouponForm extends Component {
       amountCoupons: '100',
       currentPrice: '10.00',
       discountedPrice: '5.00',
-      length: '1 day ',
+      // length: '1 day ',
       superCoupon: 'Make a Selection',
       textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.',
       file: '',
@@ -24,7 +24,7 @@ class CouponForm extends Component {
       category: '',
       city: '',
       zip: '',
-      popupClass: 'overlayHidden',
+      popupClass: 'hiddenOverlay',
       validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg'></img>
     };
     this.togglePopup = this.togglePopup.bind(this);
@@ -33,7 +33,7 @@ class CouponForm extends Component {
     this.handleAddressChange = this.handleAddressChange.bind(this);
     this.handleDiscountedPriceChange = this.handleDiscountedPriceChange.bind(this);
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
-    this.handleLengthChange = this.handleLengthChange.bind(this);
+    // this.handleLengthChange = this.handleLengthChange.bind(this);
     this.handleSuperChange = this.handleSuperChange.bind(this);
     this.handleZipChange = this.handleZipChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
@@ -43,7 +43,9 @@ class CouponForm extends Component {
     this.handleTextareaChange = this.handleTextareaChange.bind(this);
   }
   togglePopup(){
-
+    let newClass = "hiddenOverlay";
+    if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
+    this.setState({popupClass: newClass})
   }
   handleImageChange(e) {
     e.preventDefault();
@@ -133,8 +135,8 @@ class CouponForm extends Component {
     let that = this;
     if (e.target.value == '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
     else this.setState({address: e.target.value})
-    var google = window.google
-    var geocoder = new google.maps.Geocoder();
+    const google = window.google
+    const geocoder = new google.maps.Geocoder();
     geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
       try {
           if (results[0] && that.state.address.length > 5) {
@@ -170,10 +172,10 @@ class CouponForm extends Component {
         else this.setState({currentPrice: e.target.value + '0'})
       } else this.setState({currentPrice: e.target.value + '.00'})
     }
-    handleLengthChange(e) {
-      if (e.target.value === 1) this.setState({length: e.target.value + ' day '})
-      this.setState({length: e.target.value + ' days '})
-    }
+    // handleLengthChange(e) {
+    //   if (e.target.value === 1) this.setState({length: e.target.value + ' day '})
+    //   this.setState({length: e.target.value + ' days '})
+    // }
     handleTextareaChange(e) {
       if(e.target.value === '') this.setState({textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.'})
       else this.setState({ textarea: e.target.value})
@@ -318,7 +320,7 @@ class CouponForm extends Component {
           value={this.state.length}
           onChange={this.handleCategoryChange} />
         <br/>
-        <Input
+        {/* <Input
           hasLabel='true'
           htmlFor='length'
           label='How many days?'
@@ -326,7 +328,7 @@ class CouponForm extends Component {
           required='true'
           value={this.state.length}
           onChange={this.handleLengthChange} />
-        <br/>
+        <br/> */}
         <Textarea
           hasLabel='true'
           htmlFor='textarea'
@@ -341,7 +343,7 @@ class CouponForm extends Component {
                 className="icon-question">
                 </i>
                 </a>
-          <div className="overlay">
+          <div className={this.state.popupClass}>
             <div className="popup">
               <h2>What are Super Coupons?</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>

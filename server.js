@@ -91,6 +91,11 @@ app.post('/api/updateAccount', (req, res) => {
 //   }
 // });
 
+
+
+// req.body.email
+// req.body.password
+
 app.post('/api/signin', async (req, res) => {
   const outcome = await AccountInfo.find({'email' : req.body.email}).limit(1)
   if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
@@ -127,7 +132,7 @@ app.post(`/api/signout`, async(req, res) => { // req = request
 })
 
 app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
-  const lengthInDays = req.body.length.replace(/\D/g,'');
+  // const lengthInDays = req.body.length.replace(/\D/g,'');
   const amountCoupons = req.body.amountCoupons;
   let couponCodes = [];
   for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
@@ -138,7 +143,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
       address: req.body.address,
       city: req.body.city.toLowerCase(),
       amountCoupons: amountCoupons,
-      lengthInDays: lengthInDays,
+      // lengthInDays: lengthInDays,
       currentPrice: req.body.currentPrice,
       discountedPrice: req.body.discountedPrice,
       category: req.body.category,
