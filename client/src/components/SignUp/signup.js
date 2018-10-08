@@ -32,7 +32,7 @@ class SignUp extends Component {
       region: '',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
       monthLength: '',
-      validAddress:<img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="invalid address"></img>,
+      validAddress:<img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>,
       latitude:'',
       longitude:''
     }
@@ -86,7 +86,7 @@ class SignUp extends Component {
         that.setState({
           latitude:results[0].geometry.location.lat(),
           longitude: results[0].geometry.location.lng(),
-          validAddress: <img src='https://storage.googleapis.com/csstest/valid.svg' alt="Address is valid"></img>
+          validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/valid.svg' alt="Address is valid"></img>
         })
       }
     }
