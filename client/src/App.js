@@ -33,7 +33,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      mainContent: <Home/>,
+      mainContent: '',
       loginButton: 'notHidden',
       logoutButton: 'hidden'
   };
@@ -52,25 +52,25 @@ componentDidMount () {
   const urlHandler = (currentURL) => {
     switch (currentURL.toLowerCase()) {
       case '':
-          this.setState({mainContent: <Home/>})
+          this.setMainHome()
           break;
       case 'home':
-          this.setState({mainContent: <Home/>})
+          this.setMainHome()
           break;
       case 'uploadcoupon':       
-          this.setState({mainContent: <CouponForm/>})
+          this.setMainUploadCoupon()
           break;
       case 'accountsettings': 
-          this.setState({mainContent: <AccountSettings/>})
+          this.setMainAccountSettings()
           break;
       case 'signup':
-          this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
+          this.setMainSignUp()
           break;
       case 'search':
-          this.setState({mainContent: <Search/>})
+          this.setMainSearch()
           break;
       case 'login':
-          this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
+          this.setMainLogin()
           break;
       case 'signin':
           this.setSignInToMain();
