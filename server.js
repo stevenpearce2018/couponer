@@ -28,6 +28,9 @@ mongoose.connect(
 ).then(console.log('Connected to mongoDB'));
 
 app.post('/api/signupCustomer', async(req, res) => {
+  const yourPick = req.body.yourPick
+  // ' Customer'
+  // 'Buisness Owner'
   const ip = req.headers['x-forwarded-for'] || 
      req.connection.remoteAddress || 
      req.socket.remoteAddress ||
@@ -36,36 +39,38 @@ app.post('/api/signupCustomer', async(req, res) => {
   const result = await AccountInfo.find({ 'email': req.body.email })
     if (result.length === 0) {
       if (req.body.email && req.body.password && req.body.phoneNumber && req.body.cardNumber && req.body.CCV && req.body.zipCode && req.body.experationDate && req.body.address &&
-        req.body.cardholderName && req.body.city && req.body.country && req.body.region && req.body.yourPick && ip) {
-        const hashedPass = await bcrypt.hashSync(req.body.password, 10);
-        const email = req.body.email;
-        const accountInfo = new AccountInfo({
-          _id: new mongoose.Types.ObjectId(),
-          email: email,
-          buisnessName: req.body.buisnessName,
-          password: hashedPass,
-          phoneNumber: req.body.phoneNumber,
-          creditCardNumber: req.body.cardNumber,
-          CCV: req.body.CCV,
-          zipCode: req.body.zipCode,
-          experationDate: req.body.experationDate,
-          address: req.body.address,
-          cardholderName: req.body.cardholderName,
-          city: req.body.city.toLowerCase(),
-          country: req.body.country,
-          region: req.body.region,
-          yourPick: req.body.yourPick,
-          loggedInKey: loggedInKey,
-          couponIds: [],
-          couponsCurrentlyClaimed: 0,
-          ip: ip
-        })
-        await accountInfo.save()
-        .catch(err => console.log(err))
-        redisHelper.set(loggedInKey, loggedInKey)
-        res.json({
-          loggedInKey:loggedInKey
-        });
+        req.body.cardholderName && req.body.city && req.body.country && req.body.region && yourPick && ip) {
+          if (yourPick === ' Buisness Owner' || yourPick === ' Customer') {
+            const hashedPass = await bcrypt.hashSync(req.body.password, 10);
+            const email = req.body.email;
+            const accountInfo = new AccountInfo({
+              _id: new mongoose.Types.ObjectId(),
+              email: email,
+              buisnessName: req.body.buisnessName,
+              password: hashedPass,
+              phoneNumber: req.body.phoneNumber,
+              creditCardNumber: req.body.cardNumber,
+              CCV: req.body.CCV,
+              zipCode: req.body.zipCode,
+              experationDate: req.body.experationDate,
+              address: req.body.address,
+              cardholderName: req.body.cardholderName,
+              city: req.body.city.toLowerCase(),
+              country: req.body.country,
+              region: req.body.region,
+              yourPick: req.body.yourPick,
+              loggedInKey: loggedInKey,
+              couponIds: [],
+              couponsCurrentlyClaimed: 0,
+              ip: ip
+            })
+            await accountInfo.save()
+            .catch(err => console.log(err))
+            redisHelper.set(loggedInKey, loggedInKey)
+            res.json({
+              loggedInKey:loggedInKey
+            });
+          } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
     } else res.json({resp:'You need to fill out all fields!'});
     } else res.json({resp:'Email address is taken!'});
 });
@@ -96,9 +101,21 @@ app.post('/api/updateAccount', (req, res) => {
 // req.body.password
 
 app.post('/api/signin', async (req, res) => {
-  const outcome = await AccountInfo.find({'email' : req.body.email}).limit(1)
+  const email = req.body.email;
+  const outcome = await AccountInfo.find({'email' : email}).limit(1)
   if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
-    const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    // !todo, currently this code makes the terrible assumption that if the code is found X amount of times that the next key in the line must be valid...
+    // this is stupid and should be changed but for now it will do.
+    let loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    let keyAndEmailObject = {
+      loggedInKey: loggedInKey,
+      email: email
+    }
+    // redisHelper.get(loggedInKey, isKeyUnique)
+    // function isKeyUnique(key) {
+    //   // if 
+    // }
+    redisHelper.set(loggedInKey, keyAndEmailObject, 21600)
     res.json({loggedInKey: loggedInKey});
     await AccountInfo.updateOne(
       { "_id" : outcome[0]._id }, 
@@ -132,32 +149,41 @@ app.post(`/api/signout`, async(req, res) => { // req = request
 
 app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   // const lengthInDays = req.body.length.replace(/\D/g,'');
-  const amountCoupons = req.body.amountCoupons;
-  let couponCodes = [];
-  for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-  const saveCoupon = async () => {
-    const coupon = new Coupon({
-      _id: new mongoose.Types.ObjectId(),
-      title: req.body.title,
-      address: req.body.address,
-      city: req.body.city.toLowerCase(),
-      amountCoupons: amountCoupons,
-      // lengthInDays: lengthInDays,
-      currentPrice: req.body.currentPrice,
-      discountedPrice: req.body.discountedPrice,
-      category: req.body.category,
-      textarea: req.body.textarea,
-      base64image: req.body.imagePreviewUrl,
-      superCoupon: req.body.superCoupon,
-      couponCodes: couponCodes,
-      couponStillValid: true
-    })
-    await coupon.save()
-      .catch(err => console.log(err))
+  redisHelper.get(loggedInKey, searchForKey)
+  async function searchForKey(accountBoundToKey) {
+    const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
+    if (outcome) {
+      // !todo, check if membership is still valid below
+      if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+    } else {
+      const amountCoupons = req.body.amountCoupons;
+      let couponCodes = [];
+      for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+      const saveCoupon = async () => {
+        const coupon = new Coupon({
+          _id: new mongoose.Types.ObjectId(),
+          title: req.body.title,
+          address: req.body.address,
+          city: req.body.city.toLowerCase(),
+          amountCoupons: amountCoupons,
+          // lengthInDays: lengthInDays,
+          currentPrice: req.body.currentPrice,
+          discountedPrice: req.body.discountedPrice,
+          category: req.body.category,
+          textarea: req.body.textarea,
+          base64image: req.body.imagePreviewUrl,
+          superCoupon: req.body.superCoupon,
+          couponCodes: couponCodes,
+          couponStillValid: true
+        })
+        await coupon.save()
+          .catch(err => console.log(err))
+      }
+      saveCoupon();
+      // res.json({response: 'Coupon Created'})
+      res.json({response: 'Coupon Created'})
+    }
   }
-  saveCoupon();
-  // res.json({response: 'Coupon Created'})
-  res.json({response: 'Coupon Created'})
 })
 
 app.get('/api/getSponseredCoupons/:city', async (req, res) => {
@@ -207,25 +233,32 @@ app.post("/charge", async (req, res) => {
 });
 
 app.post(`/api/getCoupon`, async(req, res) => { // req = request
-  if (!req.body.loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
-  console.log(req.body.loggedInKey)
+  const loggedInKey = req.body.loggedInKey;
+  if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+  console.log(loggedInKey)
   const ip = req.headers['x-forwarded-for'] || 
   req.connection.remoteAddress || 
   req.socket.remoteAddress ||
   (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  const outcome = await AccountInfo.find({'loggedInKey':req.body.loggedInKey })
-  console.log(outcome)
-  if (outcome) {
-    if (outcome.couponsCurrentlyClaimed < 5) {
-      res.json({response: "Coupon Claimed!"});
-      await AccountInfo.updateOne(
-        { "_id" : outcome[0]._id }, 
-        { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
-        { "upsert" : true } 
-      );
-    } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
+  redisHelper.get(loggedInKey, searchForKey)
+  async function searchForKey(accountBoundToKey) {
+    const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
+    if (outcome) {
+      // !todo, check if membership is still valid below
+      if (outcome.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
+      else {
+        if (outcome.couponsCurrentlyClaimed < 5) {
+          res.json({response: "Coupon Claimed!"});
+          await AccountInfo.updateOne(
+            { "_id" : outcome[0]._id }, 
+            { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
+            { "upsert" : true } 
+          );
+        } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
+      }
+    }
+    else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
-  else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
 })
 
 const port = 4000;
