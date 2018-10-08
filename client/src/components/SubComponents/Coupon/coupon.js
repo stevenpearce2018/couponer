@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
-import './coupon.css';
 
 class Coupon extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
         <div className="coupon">
-        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css"></link>
           <h1 className = "exampleTitle">{this.props.title}</h1>
-          <div className = "exampleImage" ><img className = "exampleImage" src={this.props.imagePreviewUrl} /></div>
+          <div className = "exampleImage" ><img className = "exampleImage" src={this.props.imagePreviewUrl} alt={this.props.textarea}/></div>
           <div className="pricing">
             <div className='oldPrice'>
                 Was: {(this.props.currentPrice - 0).toFixed(2)}$

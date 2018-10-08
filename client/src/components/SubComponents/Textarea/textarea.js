@@ -15,13 +15,12 @@ class Textarea extends Component {
           />
   
           <textarea
-            cols={this.props.cols || null}
-            class={this.props.htmlFor}
-            name={this.props.name || null}
-            required={this.props.required || null}
-            rows={this.props.rows || null}
-            value = {this.props.textarea || null}
-            onChange={this.props.onChange || null}
+            cols={this.props.cols || ''}
+            name={this.props.name || ''}
+            required={this.props.required || ''}
+            rows={this.props.rows || ''}
+            value = {this.props.textarea || ''}
+            onChange={this.props.onChange || ''}
             className={this.props.className}
           >
           </textarea>

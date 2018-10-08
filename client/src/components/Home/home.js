@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './home.css';
-import CouponsMaker from '../../couponsMaker';
+// import CouponsMaker from '../../couponsMaker';
 
 class Home extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class Home extends Component {
       const content = props.map((coupons) =>
       <div className="coupon" id={coupons._id}>
       <h1 className = "exampleTitle">{coupons.title}</h1>
-      <img  className = "exampleImage" src={coupons.base64image} />
+      <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
       <div className="pricing">
         <div className='oldPrice'>
             Was: {(coupons.currentPrice - 0).toFixed(2)}$
@@ -88,7 +88,7 @@ class Home extends Component {
         if (status === 'OK') {
           if (results[0]) {
             let city = results[0].address_components.filter((addr) => {
-              return (addr.types[0]=='locality')?1:(addr.types[0] == 'administrative_area_level_1')?1:0;
+              return (addr.types[0] === 'locality')?1:(addr.types[0] === 'administrative_area_level_1')?1:0;
             });
             if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
             if (city.length > 0 || city.length > 1) {

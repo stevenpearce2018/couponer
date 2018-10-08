@@ -74,8 +74,10 @@ componentDidMount () {
           break;
       case 'signin':
           this.setSignInToMain();
+          break;
       default:
           this.setState({mainContent: <Home/>})
+          break;
     }
   }
   const url = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
@@ -164,13 +166,13 @@ setSignupToMain(){
 
           <nav className='navPopup'>
             <ul>
-              <Link href = '/Home'><li onClick={this.setMainHome}><a href="#Home"><i className="icon-home"></i>Home</a></li></Link>
-              <div className={this.state.loginButton}><Link href = '/Login'><li onClick={this.setMainLogin}><a href="#Login"><i className="icon-signin"></i>Login</a></li></Link></div>
-              <div className={this.state.loginButton}><Link href = '/SignUp'><li onClick={this.setMainSignUp}><a href="#SignUp"><i className="icon-user"></i>Sign up</a></li></Link></div>
-              <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><a href="#logout"><i className="icon-user"></i>Logout</a></li></Link></div>
-              <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><a href="#AccountSettings"><i className="icon-gear"></i>Account Settings</a></li></Link></div>
-              <Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><a href="#Coupons"><i className="icon-money"></i>Coupons</a></li></Link>
-              <Link href = '/Search'><li onClick={this.setMainSearch}><a href="#Search"><i className="icon-search"></i>Search</a></li></Link>
+              <Link href = '/Home'><li onClick={this.setMainHome}><div><i className="icon-home"></i>Home</div></li></Link>
+              <div className={this.state.loginButton}><Link href = '/Login'><li onClick={this.setMainLogin}><div><i className="icon-signin"></i>Login</div></li></Link></div>
+              <div className={this.state.loginButton}><Link href = '/SignUp'><li onClick={this.setMainSignUp}><div><i className="icon-user"></i>Sign up</div></li></Link></div>
+              <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="icon-user"></i>Logout</div></li></Link></div>
+              <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><div><i className="icon-gear"></i>Account Settings</div></li></Link></div>
+              <Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="icon-money"></i>Coupons</div></li></Link>
+              <Link href = '/Search'><li onClick={this.setMainSearch}><div><i className="icon-search"></i>Search</div></li></Link>
             </ul>
           </nav>
           </section>

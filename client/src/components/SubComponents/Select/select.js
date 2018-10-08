@@ -23,11 +23,11 @@ class Select extends Component {
           
           <select
             defaultValue=''
-            class={this.props.htmlFor}
-            name={this.props.name || null}
-            required={this.props.required || null}
-            value = {this.props.length || null}
-            onChange={this.props.onChange || null}
+            className={this.props.htmlFor}
+            name={this.props.name || ''}
+            required={this.props.required || ''}
+            value = {this.props.length}
+            onChange={this.props.onChange || ''}
           >
             <option value='' disabled>Make Selection</option>
   

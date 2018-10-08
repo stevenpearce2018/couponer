@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-// const redisHelper = require('./redisHelper')
+const redisHelper = require('./redisHelper')
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 app.use(bodyParser.json({limit:'50mb'})) // handle json data
@@ -62,7 +62,7 @@ app.post('/api/signupCustomer', async(req, res) => {
         })
         await accountInfo.save()
         .catch(err => console.log(err))
-        console.log(loggedInKey)
+        redisHelper.set(loggedInKey, loggedInKey)
         res.json({
           loggedInKey:loggedInKey
         });
@@ -73,7 +73,6 @@ app.post('/api/signupCustomer', async(req, res) => {
 app.post('/api/updateAccount', (req, res) => {
   // !todo, update account settings
 });
-
 
 // app.post("/charge", async (req, res) => {
 //   console.log('charge works')

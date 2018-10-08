@@ -3,9 +3,6 @@ import './search.css';
 
 // Private component, keep scoped to search component
 class SearchField extends Component {
-  constructor(props) {
-    super(props)
-  }
   render() {
     return (
       <div className="searchBox">
@@ -44,8 +41,6 @@ class Search extends Component {
     this.setState({ category: e.target.value });
   }
   async getCoupons(id){
-    alert('works');
-    alert(id)
     const loggedInKey = sessionStorage.getItem('couponerkey')
     if (!loggedInKey) alert('You are not logged in!')
     else {
@@ -65,6 +60,7 @@ class Search extends Component {
         body: JSON.stringify(data),
       })
       const json = await response.json()
+      console.log(json, '!todo, alert the user that the coupon has been claimed.')
     }
   }
 
@@ -90,12 +86,11 @@ class Search extends Component {
         body: JSON.stringify(data),
       })
       const json = await response.json()
-      that.setState({coupons: CouponsMaker(json.coupons)})
       const CouponsMaker = (props) => {
         const content = props.map((coupons) =>
         <div className="coupon" id={coupons._id}>
-        <h1 className = "exampleTitle">{coupons.title}</h1>
-        <img  className = "exampleImage" src={coupons.base64image} />
+        <h1 className ="exampleTitle">{coupons.title}</h1>
+        <img className ="exampleImage" src={coupons.base64image} alt={coupons.textarea} />
         <div className="pricing">
           <div className='oldPrice'>
               Was: {(coupons.currentPrice - 0).toFixed(2)}$
@@ -140,6 +135,7 @@ class Search extends Component {
           </div>
         );
       }
+      that.setState({coupons: CouponsMaker(json.coupons)})
     }
 }                
   render() {

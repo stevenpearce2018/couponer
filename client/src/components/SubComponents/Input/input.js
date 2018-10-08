@@ -13,7 +13,7 @@ class Input extends Component {
           />
   
           <input
-            class={this.props.htmlFor}
+            className={this.props.htmlFor}
             max={this.props.max || ''}
             min={this.props.min || ''}
             name={this.props.name || ''}

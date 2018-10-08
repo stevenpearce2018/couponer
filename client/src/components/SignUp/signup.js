@@ -32,7 +32,7 @@ class SignUp extends Component {
       region: '',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
       monthLength: '',
-      validAddress:<img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg'></img>,
+      validAddress:<img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="invalid address"></img>,
       latitude:'',
       longitude:''
     }
@@ -76,7 +76,7 @@ class SignUp extends Component {
   updateAddress(event) {
     this.setState({address : event.target.value})
     let that = this;
-    if (event.target.value == '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
+    if (event.target.value === '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
     else this.setState({address: event.target.value})
     const google = window.google
     const geocoder = new google.maps.Geocoder();
@@ -86,11 +86,11 @@ class SignUp extends Component {
         that.setState({
           latitude:results[0].geometry.location.lat(),
           longitude: results[0].geometry.location.lng(),
-          validAddress: <img src='https://storage.googleapis.com/csstest/valid.svg'></img>
+          validAddress: <img src='https://storage.googleapis.com/csstest/valid.svg' alt="Address is valid"></img>
         })
       }
     }
-    catch (error) { that.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg'></img>}) }
+    catch (error) { that.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>}) }
     });
   }
   updateCardNumber(event) {

@@ -25,7 +25,7 @@ class CouponForm extends Component {
       city: '',
       zip: '',
       popupClass: 'hiddenOverlay',
-      validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg'></img>
+      validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg' alt="Address is invalid"></img>
     };
     this.togglePopup = this.togglePopup.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
@@ -128,12 +128,12 @@ class CouponForm extends Component {
     });
   }
   handleTitleChange(e) {
-    if (e.target.value == '') this.setState({ title: 'Rent your very own kitten today!'})
+    if (e.target.value === '') this.setState({ title: 'Rent your very own kitten today!'})
     else this.setState({ title: e.target.value })
   }
   handleAddressChange(e) {
     let that = this;
-    if (e.target.value == '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
+    if (e.target.value === '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
     else this.setState({address: e.target.value})
     const google = window.google
     const geocoder = new google.maps.Geocoder();
@@ -144,11 +144,11 @@ class CouponForm extends Component {
             that.setState({
               latitude:results[0].geometry.location.lat(),
               longitude: results[0].geometry.location.lng(),
-              validAddress: <img src='https://storage.googleapis.com/csstest/valid.svg'></img>
+              validAddress: <img src='https://storage.googleapis.com/csstest/valid.svg' alt="Address is valid"></img>
             })
           }
       }
-      catch (error) { that.setState({validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg'></img>}) }
+      catch (error) { that.setState({validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg' alt="Address is invalid"></img>}) }
     });
   }
   
@@ -168,7 +168,7 @@ class CouponForm extends Component {
     handleCurrentPriceChange(e) {
       let price = e.target.value;
       if (price.includes('.')) {
-        if (price.substring(price.length-3, price.length-2) == '.') this.setState({currentPrice: e.target.value})
+        if (price.substring(price.length-3, price.length-2) === '.') this.setState({currentPrice: e.target.value})
         else this.setState({currentPrice: e.target.value + '0'})
       } else this.setState({currentPrice: e.target.value + '.00'})
     }
@@ -245,7 +245,7 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textInput'
           label='Title'
-          required='true'
+          required={true}
           type='text'
           className='couponUploadTitle'
           value={this.state.title}
@@ -258,7 +258,7 @@ class CouponForm extends Component {
           htmlFor='textInput'
           label='Full Address'
           icon={this.state.validAddress.props.src}
-          required='true'
+          required={true}
           type='text'
           value={this.state.address}
           onChange={this.handleAddressChange} />
@@ -268,7 +268,7 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textInput'
           label='City'
-          required='true'
+          required={true}
           type='text'
           value={this.state.city}
           onChange={this.handleCityChange} />
@@ -278,7 +278,7 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textInput'
           label='Zip code'
-          required='true'
+          required={true}
           type='number'
           value={this.state.handleZipChange}
           onChange={this.handleZipChange} />
@@ -288,7 +288,7 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textInput'
           label='Amount of Coupons'
-          required='true'
+          required={true}
           type='number'
           value={this.state.amountCoupons}
           onChange={this.handleAmountCouponsChange} />
@@ -297,7 +297,7 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textInput'
           label='Current Price'
-          required='true'
+          required={true}
           type='number'
           value={this.state.currentPrice}
           onChange={this.handleCurrentPriceChange} />
@@ -306,7 +306,7 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textInput'
           label='Discounted Price'
-          required='true'
+          required={true}
           type='number'
           value={this.state.discountedPrice}
           onChange={this.handleDiscountedPriceChange} />
@@ -316,7 +316,7 @@ class CouponForm extends Component {
           htmlFor='select'
           label='Coupon Category'
           options='Food, Entertainment, Health and Fitness, Retail, Home Improvement, Activities, Other'
-          required='true'
+          required={true}
           value={this.state.length}
           onChange={this.handleCategoryChange} />
         <br/>
@@ -325,7 +325,7 @@ class CouponForm extends Component {
           htmlFor='length'
           label='How many days?'
           type='number'
-          required='true'
+          required={true}
           value={this.state.length}
           onChange={this.handleLengthChange} />
         <br/> */}
@@ -333,7 +333,7 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textarea'
           label='Description of Coupon'
-          required='true'
+          required={true}
           value={this.state.textarea}
           onChange={this.handleTextareaChange} />
          <br/>
@@ -358,7 +358,7 @@ class CouponForm extends Component {
             htmlFor='select'
             label='Super Coupon'
             options="Let's Go Super!, No thanks."
-            required='true'
+            required={true}
             value={this.state.superCoupon}
             onChange={this.handleSuperChange} />
           </div>
@@ -368,7 +368,7 @@ class CouponForm extends Component {
             Upload Your Image
             <input className="fileInput" 
               type="file"
-              required='true'
+              required={true}
               onChange={this.handleImageChange} />
             </label>
           <button className="submitButton" 
