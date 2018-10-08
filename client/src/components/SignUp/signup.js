@@ -32,7 +32,7 @@ class SignUp extends Component {
       region: '',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
       monthLength: '',
-      validAddress:<img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>,
+      validAddress: '',
       latitude:'',
       longitude:''
     }
@@ -54,6 +54,13 @@ class SignUp extends Component {
     this.onSelectFlag = this.onSelectFlag.bind(this);
     this.updateCardholderName = this.updateCardholderName.bind(this);
     this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this);
+    this.setInitialState = this.setInitialState.bind(this);
+  }
+  setInitialState () {
+    this.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>})
+  }
+  componentDidMount () {
+    this.setInitialState();
   }
   updateCountry (e) {
     this.setState({ country: e.target.value });
@@ -162,8 +169,8 @@ class SignUp extends Component {
     const options = this.state.customerOrBuisness.map((loan, key) => {
       const isCurrent = this.state.yourPick === loan
       return (
-        <div className='center_radio'>
-            <label 
+        <div className='center_radio' id={key}>
+            <label id={key}
               className={
                 isCurrent ? 
                   'radioPad__wrapper radioPad__wrapper--selected' :
