@@ -17,6 +17,7 @@
     "bcrypt": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+    "buttons": "^0.1.2",
     "concurrently": "^3.5.1",
     "express": "^4.16.2",
     "fs": "0.0.1-security",
@@ -25,6 +26,8 @@
     "mongoose": "^5.2.12",
     "nodemon": "^1.14.7",
     "npm": "^6.4.1",
+    "path": "^0.12.7",
+    "react-radio": "^2.1.2",
     "redis": "^2.8.0",
     "stripe": "^6.11.0"
   }
