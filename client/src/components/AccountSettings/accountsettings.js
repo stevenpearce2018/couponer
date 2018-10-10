@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './accountsettings.css';
-import InputField from '../SubComponents/InputField/inputField'
+import InputField from '../SubComponents/InputField/inputField';
+import { ReCaptcha } from 'react-recaptcha-google';
 
 class AccountSettings extends Component {
   constructor(props) {
@@ -34,9 +35,11 @@ class AccountSettings extends Component {
     this.updateZipcode = this.updateZipcode.bind(this);
     this.updateBuisnessName = this.updateBuisnessName.bind(this);
     this.updatePhoneNumber = this.updatePhoneNumber.bind(this);
-    this.handleUpdateAccount = this.handleUpdateAccount.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     // this.updateInput = this.updateInput.bind(this);
     // this.handleSubmit = this.handleSubmit.bind(this);
+    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    this.verifyCallback = this.verifyCallback.bind(this);
   }
 
   // updateInputField(event, fieldBeingUpdated) {
@@ -44,7 +47,24 @@ class AccountSettings extends Component {
   //     [fieldBeingUpdated] : event.target.value
   //   })
   // }
-
+  componentDidMount() {
+    if (this.captchaDemo) {
+        console.log("started, just a second...")
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+    this.onLoadRecaptcha();
+  }
+  onLoadRecaptcha() {
+    if (this.captchaDemo) {
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+  }
+  verifyCallback(recaptchaToken) {
+    // Here you will get the final recaptchaToken!!!  
+    console.log(recaptchaToken, "<= your recaptcha token")
+  }
   updatePhoneNumber(event) {
     this.setState({phoneNumber: event.target.value}) 
   }
@@ -97,7 +117,7 @@ class AccountSettings extends Component {
       isCustomer: 'off'
     })
   }
-  async handleUpdateAccount(e){
+  async handleSubmit(e){
     e.preventDefault();
     const url = `api/updateAccount`
     const response = await fetch(url, {
@@ -238,7 +258,16 @@ class AccountSettings extends Component {
           onChange={this.updateBuisnessName}
           /> 
 
-          <button value="send" className="updatebtn" onClick={this.handleUpdateAccount}> Update Info</button>
+          <button value="send" className="updatebtn" onClick={this.handleSubmit}> Update Info</button>
+          <ReCaptcha
+            ref={(el) => {this.captchaDemo = el;}}
+            size="invisible"
+            render="explicit"
+            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
+            data-theme="dark"
+            onloadCallback={this.onLoadRecaptcha}
+            verifyCallback={this.verifyCallback}
+          />
         </form>
         </div>
     )

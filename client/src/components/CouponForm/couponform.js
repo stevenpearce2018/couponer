@@ -4,6 +4,7 @@ import Coupon from '../SubComponents/Coupon/coupon';
 import Input from '../SubComponents/Input/input';
 import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
+import { ReCaptcha } from 'react-recaptcha-google';
 
 class CouponForm extends Component {
   constructor(props) {
@@ -41,6 +42,25 @@ class CouponForm extends Component {
     this.handleCurrentPriceChange = this.handleCurrentPriceChange.bind(this);
     this.handleAmountCouponsChange = this.handleAmountCouponsChange.bind(this);
     this.handleTextareaChange = this.handleTextareaChange.bind(this);
+    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    this.verifyCallback = this.verifyCallback.bind(this);
+  }
+  componentDidMount() {
+    if (this.captchaDemo) {
+        console.log("started, just a second...")
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+  }
+  onLoadRecaptcha() {
+    if (this.captchaDemo) {
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+  }
+  verifyCallback(recaptchaToken) {
+    // Here you will get the final recaptchaToken!!!  
+    console.log(recaptchaToken, "<= your recaptcha token")
   }
   togglePopup(){
     let newClass = "hiddenOverlay";
@@ -377,6 +397,15 @@ class CouponForm extends Component {
             >
           Upload Coupons
           </button>
+          <ReCaptcha
+            ref={(el) => {this.captchaDemo = el;}}
+            size="invisible"
+            render="explicit"
+            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
+            data-theme="dark"
+            onloadCallback={this.onLoadRecaptcha}
+            verifyCallback={this.verifyCallback}
+          />
       </form>
       </div>
       </div>

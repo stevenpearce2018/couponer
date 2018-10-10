@@ -1,10 +1,12 @@
  
 import React, { Component } from 'react';
 import './login.css';
+import { ReCaptcha } from 'react-recaptcha-google';
+import { loadReCaptcha } from 'react-recaptcha-google';
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = {
         email: '',
         password: ''
@@ -12,6 +14,8 @@ class Login extends Component {
     this.updateEmail = this.updateEmail.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    this.verifyCallback = this.verifyCallback.bind(this);
   }
   updatePassword(event) {
     this.setState({password : event.target.value})
@@ -19,6 +23,26 @@ class Login extends Component {
   updateEmail(event) {
     this.setState({email : event.target.value})
   }
+
+  componentDidMount() {
+    loadReCaptcha()
+    if (this.captchaDemo) {
+        console.log("started, just a second...")
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+  }
+  onLoadRecaptcha() {
+      if (this.captchaDemo) {
+          this.captchaDemo.reset();
+          this.captchaDemo.execute();
+      }
+  }
+  verifyCallback(recaptchaToken) {
+    // Here you will get the final recaptchaToken!!!  
+    console.log(recaptchaToken, "<= your recaptcha token")
+  }
+
   async handleSubmit(e){
     e.preventDefault();
     const data = {
@@ -58,6 +82,15 @@ class Login extends Component {
                 <button className='signupbtn' value="send" onClick={this.handleSubmit}><strong>Sign In</strong></button>
               </div>
             </div>
+            <ReCaptcha
+            ref={(el) => {this.captchaDemo = el;}}
+            size="invisible"
+            render="explicit"
+            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
+            data-theme="dark"
+            onloadCallback={this.onLoadRecaptcha}
+            verifyCallback={this.verifyCallback}
+            />
           </form>
       </div>
     );

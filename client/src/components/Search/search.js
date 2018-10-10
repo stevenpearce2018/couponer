@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './search.css';
+import { ReCaptcha } from 'react-recaptcha-google';
 
 // Private component, keep scoped to search component
 class SearchField extends Component {
@@ -30,6 +31,25 @@ class Search extends Component {
     this.updateZip = this.updateZip.bind(this);
     this.updateCategory = this.updateCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    this.verifyCallback = this.verifyCallback.bind(this);
+  }
+  componentDidMount() {
+    if (this.captchaDemo) {
+        console.log("started, just a second...")
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+  }
+  onLoadRecaptcha() {
+    if (this.captchaDemo) {
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }
+  }
+  verifyCallback(recaptchaToken) {
+    // Here you will get the final recaptchaToken!!!  
+    console.log(recaptchaToken, "<= your recaptcha token")
   }
   updateCity(e) {
     this.setState({ city: e.target.value });
@@ -162,6 +182,15 @@ class Search extends Component {
       onChange={this.updateCategory}
       />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
+      <ReCaptcha
+        ref={(el) => {this.captchaDemo = el;}}
+        size="invisible"
+        render="explicit"
+        sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
+        data-theme="dark"
+        onloadCallback={this.onLoadRecaptcha}
+        verifyCallback={this.verifyCallback}
+      />
   </form>
       {this.state.coupons}
         </div>
