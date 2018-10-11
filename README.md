@@ -39,6 +39,7 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] Router Support <br />
 [X] SPA design <br />
 [ ] Webpack Lazy Loading <br />
+[X] Recaptcha Support <br />
 [ ] Image Optimizations for Performance <br />
 [/] General Serverside Validation of data <br />
 [/] Stripe payment handling (May move to amazon or other payment processor) <br />
