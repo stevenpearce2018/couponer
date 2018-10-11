@@ -26,6 +26,7 @@ class Search extends Component {
       zip: '',
       category: '',
       coupons: '',
+      keywords: '',
       recaptchaToken: ''
     }
     this.updateCity = this.updateCity.bind(this);
@@ -34,6 +35,7 @@ class Search extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.verifyCallback = this.verifyCallback.bind(this);
+    this.updateKeywords = this.updateKeywords.bind(this);
   }
   componentDidMount() {
     if (this.captchaDemo) {
@@ -58,6 +60,9 @@ class Search extends Component {
   }
   updateCategory (e) {
     this.setState({ category: e.target.value });
+  }
+  updateKeywords(e){
+    this.setState({ keywords: e.target.value });
   }
   async getCoupons(id){
     const loggedInKey = sessionStorage.getItem('couponerkey')
@@ -89,6 +94,8 @@ class Search extends Component {
       city: this.state.city,
       zip: this.state.zip,
       category: this.state.category,
+      keywords: this.state.keywords,
+      recaptchaToken: this.state.recaptchaToken
     }
     const that = this;
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '') {
@@ -179,6 +186,12 @@ class Search extends Component {
       htmlFor="Category"
       className='searchCategory'
       onChange={this.updateCategory}
+      />
+      <br/>
+      <SearchField
+      htmlFor="Keywords: Seperate keywords by commas"
+      className='searchCategory'
+      onChange={this.updateKeywords}
       />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
       <ReCaptcha

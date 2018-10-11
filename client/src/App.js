@@ -7,6 +7,7 @@ import Home from './components/Home/home'
 import Footer from './components/Footer/footer';
 import Login from './components/Login/login';
 import Search from './components/Search/search'
+import About from './components/About/about'
 import history from './history';
 import CheckoutForm from './components/CheckoutForm/checkoutForm'
 import { Elements, StripeProvider } from 'react-stripe-elements';
@@ -47,6 +48,7 @@ class App extends Component {
   this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
   this.setSignupToMain = this.setSignupToMain.bind(this);
   this.logout = this.logout.bind(this);
+  this.setMainToAbout= this.setMainToAbout.bind(this);
 }
 componentDidMount () {
   const urlHandler = (currentURL) => {
@@ -75,6 +77,9 @@ componentDidMount () {
       case 'signin':
           this.setSignInToMain();
           break;
+      case 'about':
+          this.setMainToAbout();
+          break;
       default:
           this.setState({mainContent: <Home/>})
           break;
@@ -92,9 +97,12 @@ componentDidMount () {
   if (sessionStorage.getItem('couponerkey')) this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
 
-setSignupToMain(){
-  this.setState({mainContent: <Home/>})
-}
+  setSignupToMain(){
+    this.setState({mainContent: <Home/>})
+  }
+  setMainToAbout(){
+    this.setState({mainContent: <About/>})
+  }
 
   setStateLoggedIn() {
     this.setState({mainContent: <Home/>, logoutButton: 'notHidden', loginButton: 'hidden'})
@@ -167,6 +175,7 @@ setSignupToMain(){
           <nav className='navPopup'>
             <ul>
               <Link href = '/Home'><li onClick={this.setMainHome}><div><i className="icon-home"></i>Home</div></li></Link>
+              <Link href = '/About'><li onClick={this.setMainAbout}><div><i className="fa fa-info-circle"></i>About</div></li></Link>
               <div className={this.state.loginButton}><Link href = '/Login'><li onClick={this.setMainLogin}><div><i className="icon-signin"></i>Login</div></li></Link></div>
               <div className={this.state.loginButton}><Link href = '/SignUp'><li onClick={this.setMainSignUp}><div><i className="icon-user"></i>Sign up</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="icon-user"></i>Logout</div></li></Link></div>
