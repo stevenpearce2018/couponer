@@ -35,7 +35,8 @@ class SignUp extends Component {
       monthLength: '',
       validAddress: '',
       latitude:'',
-      longitude:''
+      longitude:'',
+      recaptchaToken: ''
     }
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMonthLength = this.updateMonthLength.bind(this);
@@ -61,7 +62,6 @@ class SignUp extends Component {
   }
   componentDidMount() {
     if (this.captchaDemo) {
-        console.log("started, just a second...")
         this.captchaDemo.reset();
         this.captchaDemo.execute();
     }
@@ -73,8 +73,7 @@ class SignUp extends Component {
     }
   }
   verifyCallback(recaptchaToken) {
-    // Here you will get the final recaptchaToken!!!  
-    console.log(recaptchaToken, "<= your recaptcha token")
+    this.setState({recaptchaToken: recaptchaToken})
   }
   setInitialState () {
     this.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>})

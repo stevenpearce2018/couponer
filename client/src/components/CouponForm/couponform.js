@@ -26,6 +26,7 @@ class CouponForm extends Component {
       city: '',
       zip: '',
       popupClass: 'hiddenOverlay',
+      recaptchaToken: '',
       validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg' alt="Address is invalid"></img>
     };
     this.togglePopup = this.togglePopup.bind(this);
@@ -47,7 +48,6 @@ class CouponForm extends Component {
   }
   componentDidMount() {
     if (this.captchaDemo) {
-        console.log("started, just a second...")
         this.captchaDemo.reset();
         this.captchaDemo.execute();
     }
@@ -59,8 +59,7 @@ class CouponForm extends Component {
     }
   }
   verifyCallback(recaptchaToken) {
-    // Here you will get the final recaptchaToken!!!  
-    console.log(recaptchaToken, "<= your recaptcha token")
+    this.setState({recaptchaToken: recaptchaToken})
   }
   togglePopup(){
     let newClass = "hiddenOverlay";

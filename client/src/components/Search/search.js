@@ -25,7 +25,8 @@ class Search extends Component {
       city: '',
       zip: '',
       category: '',
-      coupons: ''
+      coupons: '',
+      recaptchaToken: ''
     }
     this.updateCity = this.updateCity.bind(this);
     this.updateZip = this.updateZip.bind(this);
@@ -36,7 +37,6 @@ class Search extends Component {
   }
   componentDidMount() {
     if (this.captchaDemo) {
-        console.log("started, just a second...")
         this.captchaDemo.reset();
         this.captchaDemo.execute();
     }
@@ -48,8 +48,7 @@ class Search extends Component {
     }
   }
   verifyCallback(recaptchaToken) {
-    // Here you will get the final recaptchaToken!!!  
-    console.log(recaptchaToken, "<= your recaptcha token")
+    this.setState({recaptchaToken: recaptchaToken})
   }
   updateCity(e) {
     this.setState({ city: e.target.value });

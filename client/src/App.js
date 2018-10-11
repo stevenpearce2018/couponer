@@ -182,10 +182,10 @@ setSignupToMain(){
           <br/>
           <StripeProvider apiKey="pk_test_3eBW9BZ4UzRNsmtPCk9gc8F2">
         <div className="example">
-          <h1>React Stripe Elements Example</h1>
+          {/* <h1>React Stripe Elements Example</h1>
           <Elements>
             <CheckoutForm />
-          </Elements>
+          </Elements> */}
         </div>
       </StripeProvider>
           {/* {this.state.signinSignoutButton}

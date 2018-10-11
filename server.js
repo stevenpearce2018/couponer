@@ -10,6 +10,9 @@ const Coupon = require('./models/coupons')
 const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
 const stripe = require("stripe")("sk_test_0Mebt2KJK4aP2PGMoiya8LEj");
+//!todo, change recaptcha key and put in .env
+const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
+
 // const fs = require('fs')
 // const htttpsOptions = {
 //   cert: fs.readFileSync('./ssl/server.crt'),
@@ -23,11 +26,21 @@ const stripe = require("stripe")("sk_test_0Mebt2KJK4aP2PGMoiya8LEj");
 // Get the payment token ID submitted by the form:
 // const token = request.body.stripeToken; // Using Express
 
+
+//!todo, get production mongodb account and login string. Use .env for connection string
 mongoose.connect(
   "mongodb+srv://Steve:Password@cluster0-bpsap.mongodb.net/test?authSource=test&w=1",
 ).then(console.log('Connected to mongoDB'));
 
+
+
 app.post('/api/signupCustomer', async(req, res) => {
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  await request(verifyUrl, (err, response, body) => {
+    body = JSON.parse(body);
+    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
+    else return res.json({"success": true, "msg":"Captcha passed"});
+  })
   const yourPick = req.body.yourPick
   // ' Customer'
   // 'Buisness Owner'
@@ -75,7 +88,13 @@ app.post('/api/signupCustomer', async(req, res) => {
     } else res.json({resp:'Email address is taken!'});
 });
 
-app.post('/api/updateAccount', (req, res) => {
+app.post('/api/updateAccount', async (req, res) => {
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  await request(verifyUrl, (err, response, body) => {
+    body = JSON.parse(body);
+    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
+    else return res.json({"success": true, "msg":"Captcha passed"});
+  })
   // !todo, update account settings
 });
 
@@ -101,6 +120,12 @@ app.post('/api/updateAccount', (req, res) => {
 // req.body.password
 
 app.post('/api/signin', async (req, res) => {
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  await request(verifyUrl, (err, response, body) => {
+    body = JSON.parse(body);
+    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
+    else return res.json({"success": true, "msg":"Captcha passed"});
+  })
   const email = req.body.email;
   const outcome = await AccountInfo.find({'email' : email}).limit(1)
   if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
@@ -149,6 +174,12 @@ app.post(`/api/signout`, async(req, res) => { // req = request
 
 app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   // const lengthInDays = req.body.length.replace(/\D/g,'');
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  await request(verifyUrl, (err, response, body) => {
+    body = JSON.parse(body);
+    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
+    else return res.json({"success": true, "msg":"Captcha passed"});
+  })
   redisHelper.get(loggedInKey, searchForKey)
   async function searchForKey(accountBoundToKey) {
     const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
@@ -202,6 +233,12 @@ app.get('/api/getSponseredCoupons/:city', async (req, res) => {
 });
 
 app.post('/api/searchCoupons', async (req, res) => {
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  await request(verifyUrl, (err, response, body) => {
+    body = JSON.parse(body);
+    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
+    else return res.json({"success": true, "msg":"Captcha passed"});
+  })
   let coupons;
   const city = req.body.city.toLowerCase()
   const zip = req.body.zip

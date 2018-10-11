@@ -9,7 +9,8 @@ class Login extends Component {
     super(props, context);
     this.state = {
         email: '',
-        password: ''
+        password: '',
+        recaptchaToken: '',
     };
     this.updateEmail = this.updateEmail.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
@@ -27,7 +28,6 @@ class Login extends Component {
   componentDidMount() {
     loadReCaptcha()
     if (this.captchaDemo) {
-        console.log("started, just a second...")
         this.captchaDemo.reset();
         this.captchaDemo.execute();
     }
@@ -39,8 +39,7 @@ class Login extends Component {
       }
   }
   verifyCallback(recaptchaToken) {
-    // Here you will get the final recaptchaToken!!!  
-    console.log(recaptchaToken, "<= your recaptcha token")
+    this.setState({recaptchaToken: recaptchaToken})
   }
 
   async handleSubmit(e){
