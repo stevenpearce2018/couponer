@@ -10,6 +10,7 @@ const Coupon = require('./models/coupons')
 const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
 const stripe = require("stripe")("sk_test_0Mebt2KJK4aP2PGMoiya8LEj");
+const request = require('request');
 //!todo, change recaptcha key and put in .env
 const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 
@@ -35,7 +36,7 @@ mongoose.connect(
 
 
 app.post('/api/signupCustomer', async(req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
     if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
@@ -89,12 +90,16 @@ app.post('/api/signupCustomer', async(req, res) => {
 });
 
 app.post('/api/updateAccount', async (req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  let recaptchaPassed = false;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
-    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
-    else return res.json({"success": true, "msg":"Captcha passed"});
+    if(!body.success) recaptchaPassed = false;
+    else recaptchaPassed = true;
   })
+  if (!recaptchaPassed) res.json({recaptcha: 'invalid recaptcha'})
+  else {
+  }
   // !todo, update account settings
 });
 
@@ -120,35 +125,39 @@ app.post('/api/updateAccount', async (req, res) => {
 // req.body.password
 
 app.post('/api/signin', async (req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  let recaptchaPassed = false;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
-    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
-    else return res.json({"success": true, "msg":"Captcha passed"});
+    if(!body.success) recaptchaPassed = false;
+    else recaptchaPassed = true;
   })
-  const email = req.body.email;
-  const outcome = await AccountInfo.find({'email' : email}).limit(1)
-  if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
-    // !todo, currently this code makes the terrible assumption that if the code is found X amount of times that the next key in the line must be valid...
-    // this is stupid and should be changed but for now it will do.
-    let loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    let keyAndEmailObject = {
-      loggedInKey: loggedInKey,
-      email: email
+  if (!recaptchaPassed) res.json({recaptcha: 'invalid recaptcha'})
+  else {
+    const email = req.body.email;
+    const outcome = await AccountInfo.find({'email' : email}).limit(1)
+    if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
+      // !todo, currently this code makes the terrible assumption that if the code is found X amount of times that the next key in the line must be valid...
+      // this is stupid and should be changed but for now it will do.
+      let loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let keyAndEmailObject = {
+        loggedInKey: loggedInKey,
+        email: email
+      }
+      // redisHelper.get(loggedInKey, isKeyUnique)
+      // function isKeyUnique(key) {
+      //   // if 
+      // }
+      redisHelper.set(loggedInKey, keyAndEmailObject, 21600)
+      res.json({loggedInKey: loggedInKey});
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
+        { "upsert" : true } 
+      );
     }
-    // redisHelper.get(loggedInKey, isKeyUnique)
-    // function isKeyUnique(key) {
-    //   // if 
-    // }
-    redisHelper.set(loggedInKey, keyAndEmailObject, 21600)
-    res.json({loggedInKey: loggedInKey});
-    await AccountInfo.updateOne(
-      { "_id" : outcome[0]._id }, 
-      { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
-      { "upsert" : true } 
-    );
+    else res.json({recaptcha: 'invalid recaptcha'})
   }
-  else res.json({loggedInKey: 'invalid login'})
 });
 
 app.post(`/api/signout`, async(req, res) => { // req = request
@@ -174,45 +183,49 @@ app.post(`/api/signout`, async(req, res) => { // req = request
 
 app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   // const lengthInDays = req.body.length.replace(/\D/g,'');
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  let recaptchaPassed = false;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
-    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
-    else return res.json({"success": true, "msg":"Captcha passed"});
+    if(!body.success) recaptchaPassed = false;
+    else recaptchaPassed = true;
   })
-  redisHelper.get(loggedInKey, searchForKey)
-  async function searchForKey(accountBoundToKey) {
-    const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
-    if (outcome) {
-      // !todo, check if membership is still valid below
-      if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-    } else {
-      const amountCoupons = req.body.amountCoupons;
-      let couponCodes = [];
-      for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-      const saveCoupon = async () => {
-        const coupon = new Coupon({
-          _id: new mongoose.Types.ObjectId(),
-          title: req.body.title,
-          address: req.body.address,
-          city: req.body.city.toLowerCase(),
-          amountCoupons: amountCoupons,
-          // lengthInDays: lengthInDays,
-          currentPrice: req.body.currentPrice,
-          discountedPrice: req.body.discountedPrice,
-          category: req.body.category,
-          textarea: req.body.textarea,
-          base64image: req.body.imagePreviewUrl,
-          superCoupon: req.body.superCoupon,
-          couponCodes: couponCodes,
-          couponStillValid: true
-        })
-        await coupon.save()
-          .catch(err => console.log(err))
+  if (!recaptchaPassed) res.json({response: 'invalid recaptcha'})
+  else {
+    redisHelper.get(loggedInKey, searchForKey)
+    async function searchForKey(accountBoundToKey) {
+      const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
+      if (outcome) {
+        // !todo, check if membership is still valid below
+        if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+      } else {
+        const amountCoupons = req.body.amountCoupons;
+        let couponCodes = [];
+        for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+        const saveCoupon = async () => {
+          const coupon = new Coupon({
+            _id: new mongoose.Types.ObjectId(),
+            title: req.body.title,
+            address: req.body.address,
+            city: req.body.city.toLowerCase(),
+            amountCoupons: amountCoupons,
+            // lengthInDays: lengthInDays,
+            currentPrice: req.body.currentPrice,
+            discountedPrice: req.body.discountedPrice,
+            category: req.body.category,
+            textarea: req.body.textarea,
+            base64image: req.body.imagePreviewUrl,
+            superCoupon: req.body.superCoupon,
+            couponCodes: couponCodes,
+            couponStillValid: true
+          })
+          await coupon.save()
+            .catch(err => console.log(err))
+        }
+        saveCoupon();
+        // res.json({response: 'Coupon Created'})
+        res.json({response: 'Coupon Created'})
       }
-      saveCoupon();
-      // res.json({response: 'Coupon Created'})
-      res.json({response: 'Coupon Created'})
     }
   }
 })
@@ -233,24 +246,28 @@ app.get('/api/getSponseredCoupons/:city', async (req, res) => {
 });
 
 app.post('/api/searchCoupons', async (req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  let recaptchaPassed = false;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
-    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
-    else return res.json({"success": true, "msg":"Captcha passed"});
+    if(!body.success) recaptchaPassed = false;
+    else recaptchaPassed = true;
   })
-  let coupons;
-  const city = req.body.city.toLowerCase()
-  const zip = req.body.zip
-  const category = req.body.category
-  if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
-  else if(city && zip) coupons = await Coupon.find({'city' : city, 'zip' : zip})
-  else if(category && zip) coupons = await Coupon.find({'zip' : zip, 'category' : category})
-  else if(category && city) coupons = await Coupon.find({'city' : city, 'category' : category})
-  else if(category) coupons = await Coupon.find({'category' : category})
-  else if(city) coupons = await Coupon.find({'city' : city})
-  else if(zip) coupons = await Coupon.find({'zip' : zip})
-  res.json({coupons: coupons});
+  if (!recaptchaPassed) res.json({coupons: 'invalid recaptcha'})
+  else {
+    let coupons;
+    const city = req.body.city.toLowerCase()
+    const zip = req.body.zip
+    const category = req.body.category
+    if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
+    else if(city && zip) coupons = await Coupon.find({'city' : city, 'zip' : zip})
+    else if(category && zip) coupons = await Coupon.find({'zip' : zip, 'category' : category})
+    else if(category && city) coupons = await Coupon.find({'city' : city, 'category' : category})
+    else if(category) coupons = await Coupon.find({'category' : category})
+    else if(city) coupons = await Coupon.find({'city' : city})
+    else if(zip) coupons = await Coupon.find({'zip' : zip})
+    res.json({coupons: coupons});
+  }
 });
 
 app.post("/charge", async (req, res) => {
