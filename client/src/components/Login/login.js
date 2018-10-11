@@ -46,8 +46,10 @@ class Login extends Component {
     e.preventDefault();
     const data = {
       email: this.state.email,
-      password: this.state.password
+      password: this.state.password,
+      recaptchaToken: this.state.recaptchaToken
     }
+    alert(this.state.recaptchaToken, 'this.state.recaptchaToken')
     const url = `/api/signin`
     const response = await fetch(url, {
       method: "POST", 
@@ -60,9 +62,11 @@ class Login extends Component {
       body: JSON.stringify(data),
     })
     const json = await response.json()
-    alert(JSON.stringify(json.loggedInKey))
-    this.props.parentMethod();
-    sessionStorage.setItem('couponerkey', JSON.stringify(json.loggedInKey))
+    alert(JSON.stringify(json))
+    if (json.loggedInKey){
+      this.props.parentMethod();
+      sessionStorage.setItem('couponerkey', JSON.stringify(json.loggedInKey))
+    } else alert("Invalid Login")
   }
     
   render() {
