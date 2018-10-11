@@ -10,6 +10,7 @@ const Coupon = require('./models/coupons')
 const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
 const stripe = require("stripe")("sk_test_0Mebt2KJK4aP2PGMoiya8LEj");
+const request = require('request');
 //!todo, change recaptcha key and put in .env
 const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 
@@ -35,7 +36,7 @@ mongoose.connect(
 
 
 app.post('/api/signupCustomer', async(req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
     if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
@@ -89,7 +90,7 @@ app.post('/api/signupCustomer', async(req, res) => {
 });
 
 app.post('/api/updateAccount', async (req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
     if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
@@ -120,7 +121,7 @@ app.post('/api/updateAccount', async (req, res) => {
 // req.body.password
 
 app.post('/api/signin', async (req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
     if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
@@ -174,7 +175,7 @@ app.post(`/api/signout`, async(req, res) => { // req = request
 
 app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   // const lengthInDays = req.body.length.replace(/\D/g,'');
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
     if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
@@ -233,7 +234,7 @@ app.get('/api/getSponseredCoupons/:city', async (req, res) => {
 });
 
 app.post('/api/searchCoupons', async (req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
     body = JSON.parse(body);
     if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});

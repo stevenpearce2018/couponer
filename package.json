@@ -32,6 +32,7 @@
     "react-radio": "^2.1.2",
     "react-router": "^4.3.1",
     "redis": "^2.8.0",
+    "request": "^2.88.0",
     "stripe": "^6.11.0"
   }
 }
