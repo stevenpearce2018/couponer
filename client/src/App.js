@@ -109,8 +109,10 @@ componentDidMount () {
   }
   async logout(){
     const loggedInKey = sessionStorage.getItem('couponerkey');
+    const email = sessionStorage.getItem('couponeremail');
     const data = {
-      loggedInKey: loggedInKey
+      loggedInKey: loggedInKey,
+      email: email
     }
     const url = `/api/signout`;
     const response = await fetch(url, {

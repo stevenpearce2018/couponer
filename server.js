@@ -90,6 +90,7 @@ app.post('/api/signupCustomer', async(req, res) => {
 });
 
 app.post('/api/updateAccount', async (req, res) => {
+  //!todo, flush out updateAccount api
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   let recaptchaPassed = false;
   await request(verifyUrl, (err, response, body) => {
@@ -104,54 +105,20 @@ app.post('/api/updateAccount', async (req, res) => {
   if (!recaptchaPassed) res.json({recaptcha: 'invalid recaptcha'})
   else {
   }
-  // !todo, update account settings
 });
-
-// app.post("/charge", async (req, res) => {
-//   console.log('charge works')
-//   try {
-//     let {status} = await stripe.charges.create({
-//       amount: 2000,
-//       currency: "usd",
-//       description: "An example charge",
-//       source: req.body
-//     });
-//     res.json({status});
-//   } catch (err) {
-//     console.log(JSON.stringify(err))
-//     res.status(500).end();
-//   }
-// });
-
-
-
-// req.body.email
-// req.body.password
 
 app.post('/api/signin', async (req, res) => {
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   let recaptchaPassed = false;
   request(verifyUrl, async(err, response, body) => {
     body = JSON.parse(body);
-    console.log(body.success)
     recaptchaPassed = body.success;
     if (recaptchaPassed === false) res.json({recaptcha: 'invalid recaptcha'})
     else {
       const email = req.body.email;
-      const outcome = await AccountInfo.find({'email' : email}).limit(1)
+      const outcome = await AccountInfo.findOne({'email' : email}).limit(1)
       if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
-        // !todo, currently this code makes the terrible assumption that if the code is found X amount of times that the next key in the line must be valid...
-        // this is stupid and should be changed but for now it will do.
-        let loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        let keyAndEmailObject = {
-          loggedInKey: loggedInKey,
-          email: email
-        }
-        // redisHelper.get(loggedInKey, isKeyUnique)
-        // function isKeyUnique(key) {
-        //   // if 
-        // }
-        redisHelper.set(loggedInKey, keyAndEmailObject, 21600)
+        const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         res.json({loggedInKey: loggedInKey});
         await AccountInfo.updateOne(
           { "_id" : outcome[0]._id }, 
@@ -164,23 +131,24 @@ app.post('/api/signin', async (req, res) => {
   })
 });
 
-app.post(`/api/signout`, async(req, res) => { // req = request
-  // const outcome = await AccountInfo.find({'loggedInKey' : req.body.loggedInKey}).limit(1)
-  const loggedInKey = req.body.loggedInKey
-  const outcome = await AccountInfo.find({'loggedInKey': loggedInKey}).limit(1)
-  redisHelper.get(loggedInKey, searchForKey)
-  async function searchForKey(accountBoundToKey) {
-    const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
-    if (outcome) {
+app.post(`/api/signout`, async(req, res) => {
+  const email = req.body.email;
+  const loggedInKey = req.body.loggedInKey;
+  const outcome = await AccountInfo.find({'email':email})
+  const ip = req.headers['x-forwarded-for'] || 
+    req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  if (outcome) {
+    if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
       res.json({response:"Logout Successful"})
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
         { "$set" : { "ip" : ''}, loggedInKey:'' }, 
         { "upsert" : true } 
       );
-    }
-    else res.json({response:"Logout Failed"})
-  }
+    } else res.json({response:"Logout Failed"})
+  } else res.json({response:"Logout Failed"})
 })
 
 app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
@@ -192,40 +160,38 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
     recaptchaPassed = body.success;
     if (recaptchaPassed === false) res.json({response: 'invalid recaptcha'})
     else {
-      redisHelper.get(loggedInKey, searchForKey)
-      async function searchForKey(accountBoundToKey) {
-        const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
+        const outcome = await AccountInfo.find({'email':req.body.email })
         if (outcome) {
           // !todo, check if membership is still valid below
-          if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
         } else {
-          const amountCoupons = req.body.amountCoupons;
-          let couponCodes = [];
-          for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-          const saveCoupon = async () => {
-            const coupon = new Coupon({
-              _id: new mongoose.Types.ObjectId(),
-              title: req.body.title,
-              address: req.body.address,
-              city: req.body.city.toLowerCase(),
-              amountCoupons: amountCoupons,
-              // lengthInDays: lengthInDays,
-              currentPrice: req.body.currentPrice,
-              discountedPrice: req.body.discountedPrice,
-              category: req.body.category,
-              textarea: req.body.textarea,
-              base64image: req.body.imagePreviewUrl,
-              superCoupon: req.body.superCoupon,
-              couponCodes: couponCodes,
-              couponStillValid: true
-            })
-            await coupon.save()
-              .catch(err => console.log(err))
-          }
-          saveCoupon();
-          // res.json({response: 'Coupon Created'})
-          res.json({response: 'Coupon Created'})
-        }
+          if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+          if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+            const amountCoupons = req.body.amountCoupons;
+            let couponCodes = [];
+            for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+            const saveCoupon = async () => {
+              const coupon = new Coupon({
+                _id: new mongoose.Types.ObjectId(),
+                title: req.body.title,
+                address: req.body.address,
+                city: req.body.city.toLowerCase(),
+                amountCoupons: amountCoupons,
+                // lengthInDays: lengthInDays,
+                currentPrice: req.body.currentPrice,
+                discountedPrice: req.body.discountedPrice,
+                category: req.body.category,
+                textarea: req.body.textarea,
+                base64image: req.body.imagePreviewUrl,
+                superCoupon: req.body.superCoupon,
+                couponCodes: couponCodes,
+                couponStillValid: true
+              })
+              await coupon.save()
+                .catch(err => console.log(err))
+            }
+            saveCoupon();
+            res.json({response: 'Coupon Created'})
+        } else res.json({response: "You are not logged in!"});
       }
     }
   })
@@ -293,15 +259,13 @@ app.post(`/api/getCoupon`, async(req, res) => { // req = request
   req.connection.remoteAddress || 
   req.socket.remoteAddress ||
   (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  redisHelper.get(loggedInKey, searchForKey)
-  async function searchForKey(accountBoundToKey) {
-    const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
+    const outcome = await AccountInfo.findOne({'email':req.body.email })
     if (outcome) {
       // !todo, check if membership is still valid below
       if (outcome.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
       else {
         if (outcome.couponsCurrentlyClaimed < 5) {
-          res.json({response: "Coupon Claimed!"});
+          res.json({response: "Coupon Claimed!"});-
           await AccountInfo.updateOne(
             { "_id" : outcome[0]._id }, 
             { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
@@ -311,7 +275,6 @@ app.post(`/api/getCoupon`, async(req, res) => { // req = request
       }
     }
     else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
-  }
 })
 
 const port = 4000;
