@@ -29,6 +29,8 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] Login Support <br />
 [X] Account details Encryption <br />
 [X] Autoload Sponsered Coupons <br />
+[/] Stripe payment support <br />
+[ ] Paid membership support <br />
 [X] Display Coupons <br />
 [X] Create Coupons <br />
 [/] Login Security/Validation <br />
