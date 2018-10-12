@@ -9,6 +9,12 @@ import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
 import Checkout from '../Checkout/checkout';
 
+// Checkout button is clicked
+// Check if info inputted is valid                 // if failed break
+// Check number by sending twilio sms 5 digit code // if Xed out then break. Allow retries
+// If number is valid save result unless number changes
+// Attempt credit card checkout
+
 class SignUp extends Component {
   constructor(props) {
     super(props)
@@ -43,22 +49,15 @@ class SignUp extends Component {
     this.checkInfo = this.checkInfo.bind(this);
   }
   componentDidMount() {
-    try {
       if (this.captchaDemo) {
         this.captchaDemo.reset();
         this.captchaDemo.execute();
-    }   
-    } catch (error) {
-      if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
     }
   }
   onLoadRecaptcha() {
     if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
+      this.captchaDemo.reset();
+      this.captchaDemo.execute();
     }
   }
   verifyCallback(recaptchaToken) {
