@@ -25,7 +25,6 @@ class SignUp extends Component {
       yourPick: '',
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
-      validAddress: '',
       recaptchaToken: '',
       membershipExperationDate: '',
       numberOfMonths: 0,
@@ -39,16 +38,22 @@ class SignUp extends Component {
     this.updateCity = this.updateCity.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this);
-    this.setInitialState = this.setInitialState.bind(this);
     this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.verifyCallback = this.verifyCallback.bind(this);
+    this.checkInfo = this.checkInfo.bind(this);
   }
   componentDidMount() {
-    if (this.captchaDemo) {
+    try {
+      if (this.captchaDemo) {
+        this.captchaDemo.reset();
+        this.captchaDemo.execute();
+    }   
+    } catch (error) {
+      if (this.captchaDemo) {
         this.captchaDemo.reset();
         this.captchaDemo.execute();
     }
-    this.setInitialState();
+    }
   }
   onLoadRecaptcha() {
     if (this.captchaDemo) {
@@ -58,9 +63,6 @@ class SignUp extends Component {
   }
   verifyCallback(recaptchaToken) {
     this.setState({recaptchaToken: recaptchaToken})
-  }
-  setInitialState () {
-    this.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>})
   }
   updatePassword(event) {
     this.setState({password : event.target.value})
@@ -81,6 +83,11 @@ class SignUp extends Component {
   }
   updateBuisnessName(event){
     this.setState({buisnessName : event.target.value})
+  }
+  checkInfo(){
+    console.log(this.state.phoneNumber)
+    if (this.state.city && this.state.email && this.state.yourPick === ' Customer' && this.state.password === this.state.passwordConfirm && this.state.phoneNumber &&this.state.membershipExperationDate) return true;
+    else return false;
   }
 
   async handleSingup(e){
@@ -229,11 +236,16 @@ class SignUp extends Component {
     />
   </div>
   <div className='buttonAndForgot'>
+  <div className={this.state.showOrHideAccountMem}>
+  <br/>
+  <br/>
     <Checkout
+      parentMethod = {this.checkInfo}
       name={'Couponer Membership'}
       description={this.state.numberOfMonths + ' Months of Unlimted Coupons'}
       amount={this.state.numberOfMonths * 4.99}
     />
+  </div>
     <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
   </div>
       <div className='forgotPass'>

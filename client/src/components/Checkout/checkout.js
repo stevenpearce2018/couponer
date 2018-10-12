@@ -70,30 +70,36 @@ const CURRENCY = 'USD';
     };
 
     onToken = (amount, description) => (token) => {
-      const data = {
-        description,
-        source: token.id,
-        currency: CURRENCY,
-        amount: this.fromEuroToCent(amount)
+      const result = this.props.parentMethod()
+      if (result !== true) {
+        alert('Failed')
+      } else {
+        const data = {
+          description,
+          source: token.id,
+          currency: CURRENCY,
+          amount: this.fromEuroToCent(amount)
+        }
+        const url = '/api/charge'
+        fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(data),
+        }).then(this.successPayment)
+        .catch(this.errorPayment);
       }
-      const url = '/api/charge'
-      fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data),
-      }).then(this.successPayment)
-      .catch(this.errorPayment);
     }
     render() {
       return (
         <StripeCheckout
         name={this.props.name}
+        parentMethod = {this.props.parentMethod}
         description={this.props.description}
         amount={this.fromEuroToCent(this.props.amount)}
         token={this.onToken(this.props.amount, this.props.description)}

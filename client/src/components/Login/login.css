@@ -31,6 +31,10 @@
     color: #000080;
     background-color: #fde428;
 }
+.signupbtnn{
+    margin-left:0%;
+    width: 104%;
+}
 
 .signIn:hover, .searchButton:hover, .signupbtn:hover {
     background-color: gold;

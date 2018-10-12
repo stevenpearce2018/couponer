@@ -75,7 +75,7 @@ width: 90%;
 
 .forgotPass{
   text-decoration: none;
-  width:95%;
+  width:100%;
   text-align:center;
 }
 
@@ -142,11 +142,6 @@ margin-left:-6.5%;
   height: 0;
   width: 0;
   opacity: 0;
-}
-
-.forgotPass{
-  margin-left:5px;
-  width: 100%;
 }
 
 
