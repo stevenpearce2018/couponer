@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './home.css';
 // import CouponsMaker from '../../couponsMaker';
+import Checkout from '../Checkout/checkout';
 
 class Home extends Component {
   constructor(props) {
@@ -52,7 +53,8 @@ class Home extends Component {
           <p>{coupons.address}</p>
           <hr/>
           <br/>
-        <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
+          <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
+        {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
         </div>
         <br/>
       </div>
@@ -72,6 +74,7 @@ class Home extends Component {
     } 
     const that = this;
     const google = window.google
+    // eslint-disable-next-line
     const geocoder = new google.maps.Geocoder;
     async function cityNotFound () {
       try {
@@ -109,27 +112,7 @@ class Home extends Component {
   }
 
   async getCoupons(id) {
-    const loggedInKey = sessionStorage.getItem('couponerkey')
-    if (!loggedInKey) alert('You are not logged in!')
-    else {
-      const data = {
-        _id: id,
-        loggedInKey: loggedInKey
-      }
-      const url = `/api/getCoupon`
-      const response = await fetch(url, {
-        method: "POST", 
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
-      alert(JSON.stringify(json))
-    }
+    this.props.parentMethod(id)
   }
 
   render() {
@@ -148,6 +131,11 @@ class Home extends Component {
         </form> */}
         <div className="center">
           <h2>Coupons near you</h2>
+          <Checkout
+            name={'Couponer'}
+            description={'Some Coupons'}
+            amount={1}
+          />
         </div>
         {this.state.coupons}
       </div>

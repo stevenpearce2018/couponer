@@ -10,6 +10,7 @@
     "react-recaptcha-google": "^1.1.1",
     "react-redux": "^5.0.6",
     "react-scripts": "1.0.17",
+    "react-stripe-checkout": "^2.6.3",
     "react-stripe-elements": "^2.0.1",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0"

@@ -65,6 +65,7 @@ class SignUp extends Component {
         this.captchaDemo.reset();
         this.captchaDemo.execute();
     }
+    this.setInitialState();
   }
   onLoadRecaptcha() {
     if (this.captchaDemo) {
@@ -77,9 +78,6 @@ class SignUp extends Component {
   }
   setInitialState () {
     this.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>})
-  }
-  componentDidMount () {
-    this.setInitialState();
   }
   updateCountry (e) {
     this.setState({ country: e.target.value });

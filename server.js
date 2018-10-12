@@ -9,8 +9,8 @@ const MongoClient = require('mongodb').MongoClient
 const Coupon = require('./models/coupons')
 const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
-const stripe = require("stripe")("sk_test_0Mebt2KJK4aP2PGMoiya8LEj");
 const request = require('request');
+const stripe = require('./stripe');
 //!todo, change recaptcha key and put in .env
 const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 
@@ -33,7 +33,18 @@ mongoose.connect(
   "mongodb+srv://Steve:Password@cluster0-bpsap.mongodb.net/test?authSource=test&w=1",
 ).then(console.log('Connected to mongoDB'));
 
+const postStripeCharge = res => (stripeErr, stripeRes) => {
+  if (stripeErr) {
+    res.status(500).send({ error: stripeErr });
+  } else {
+    res.status(200).send({ success: stripeRes });
+  }
+}
 
+app.post('/api/charge', (req, res) => {
+  console.log(JSON.stringify(req.body))
+  stripe.charges.create(req.body, postStripeCharge(res));
+});
 
 app.post('/api/signupCustomer', async(req, res) => {
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
@@ -116,7 +127,7 @@ app.post('/api/signin', async (req, res) => {
     if (recaptchaPassed === false) res.json({recaptcha: 'invalid recaptcha'})
     else {
       const email = req.body.email;
-      const outcome = await AccountInfo.findOne({'email' : email}).limit(1)
+      const outcome = await AccountInfo.find({'email' : email}).limit(1)
       if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
         const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         res.json({loggedInKey: loggedInKey});
@@ -133,14 +144,16 @@ app.post('/api/signin', async (req, res) => {
 
 app.post(`/api/signout`, async(req, res) => {
   const email = req.body.email;
+  if (email === "stevenn") console.log('dasdasdasd')
+  else console.log('nope')
   const loggedInKey = req.body.loggedInKey;
-  const outcome = await AccountInfo.find({'email':email})
   const ip = req.headers['x-forwarded-for'] || 
     req.connection.remoteAddress || 
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  if (outcome) {
-    if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+  const outcome = await AccountInfo.find({'email' : email }).limit(1)
+  if (outcome.length !== 0) {
+    if(outcome[0].loggedInKey === loggedInKey) {
       res.json({response:"Logout Successful"})
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
@@ -236,21 +249,6 @@ app.post('/api/searchCoupons', async (req, res) => {
   })
 });
 
-app.post("/charge", async (req, res) => {
-  console.log('charge works')
-  try {
-    let {status} = await stripe.charges.create({
-      amount: 2000,
-      currency: "usd",
-      description: "An example charge",
-      source: req.body
-    });
-    res.json({status});
-  } catch (err) {
-    console.log(JSON.stringify(err))
-    res.status(500).end();
-  }
-});
 
 app.post(`/api/getCoupon`, async(req, res) => { // req = request
   const loggedInKey = req.body.loggedInKey;
@@ -259,7 +257,7 @@ app.post(`/api/getCoupon`, async(req, res) => { // req = request
   req.connection.remoteAddress || 
   req.socket.remoteAddress ||
   (req.connection.socket ? req.connection.socket.remoteAddress : null);
-    const outcome = await AccountInfo.findOne({'email':req.body.email })
+    const outcome = await AccountInfo.find({'email':req.body.email })
     if (outcome) {
       // !todo, check if membership is still valid below
       if (outcome.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});

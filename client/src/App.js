@@ -9,8 +9,6 @@ import Login from './components/Login/login';
 import Search from './components/Search/search'
 import About from './components/About/about'
 import history from './history';
-import CheckoutForm from './components/CheckoutForm/checkoutForm'
-import { Elements, StripeProvider } from 'react-stripe-elements';
 
 
 // For routing
@@ -36,7 +34,9 @@ class App extends Component {
     this.state = { 
       mainContent: '',
       loginButton: 'notHidden',
-      logoutButton: 'hidden'
+      logoutButton: 'hidden',
+      email: '',
+      loggedInKey: ''
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -48,7 +48,8 @@ class App extends Component {
   this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
   this.setSignupToMain = this.setSignupToMain.bind(this);
   this.logout = this.logout.bind(this);
-  this.setMainToAbout= this.setMainToAbout.bind(this);
+  this.setMainToAbout = this.setMainToAbout.bind(this);
+  this.getCoupons = this.getCoupons.bind(this);
 }
 componentDidMount () {
   const urlHandler = (currentURL) => {
@@ -81,7 +82,7 @@ componentDidMount () {
           this.setMainToAbout();
           break;
       default:
-          this.setState({mainContent: <Home/>})
+          this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
           break;
     }
   }
@@ -94,40 +95,64 @@ componentDidMount () {
       urlHandler(urlPath)
     }
   }
-  if (sessionStorage.getItem('couponerkey')) this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
+  if (sessionStorage.getItem('couponerkey') && sessionStorage.getItem('couponerkey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
 
   setSignupToMain(){
-    this.setState({mainContent: <Home/>})
+    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
   }
   setMainToAbout(){
     this.setState({mainContent: <About/>})
   }
 
-  setStateLoggedIn() {
-    this.setState({mainContent: <Home/>, logoutButton: 'notHidden', loginButton: 'hidden'})
+  setStateLoggedIn(key, email) {
+    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+  }
+  async getCoupons(_id){
+    const loggedInKey = this.state.loggedInKey;
+    const email = this.state.email;
+    if (loggedInKey === '' || email === '') alert('You are not logged in!')
+    else {
+      const data = {
+        _id: _id,
+        loggedInKey: this.state.loggedInKey,
+        email: this.state.email
+      }
+      const url = `/api/getCoupon`
+      const response = await fetch(url, {
+        method: "POST", 
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+      alert(JSON.stringify(json))
+    }
   }
   async logout(){
-    const loggedInKey = sessionStorage.getItem('couponerkey');
-    const email = sessionStorage.getItem('couponeremail');
     const data = {
-      loggedInKey: loggedInKey,
-      email: email
+      loggedInKey: this.state.loggedInKey,
+      email: this.state.email
     }
     const url = `/api/signout`;
-    const response = await fetch(url, {
-      method: "POST", 
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
+    const response =  await fetch(url, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, cors, *same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, same-origin, *omit
       headers: {
         "Content-Type": "application/json; charset=utf-8",
+        // "Content-Type": "application/x-www-form-urlencoded",
       },
       body: JSON.stringify(data),
     })
     const json = await response.json()
-    alert(JSON.stringify(json))
-    this.setState({mainContent: <Home/>, loginButton: 'notHidden', logoutButton: 'hidden'})
+    if(json.response === "Logout Failed") alert(json.response)
+    this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden'})
     sessionStorage.setItem('couponerkey', '')
   }
 
@@ -141,13 +166,13 @@ componentDidMount () {
     this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
   }
   setMainHome(e){
-    this.setState({mainContent: <Home/>})
+    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
   }
   setMainLogin(e){
     this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
   }
   setMainSearch(e){
-    this.setState({mainContent: <Search/>})
+    this.setState({mainContent: <Search parentMethod={this.getCoupons}/>})
   }
 
   render () {
@@ -177,7 +202,7 @@ componentDidMount () {
           <nav className='navPopup'>
             <ul>
               <Link href = '/Home'><li onClick={this.setMainHome}><div><i className="icon-home"></i>Home</div></li></Link>
-              <Link href = '/About'><li onClick={this.setMainAbout}><div><i className="fa fa-info-circle"></i>About</div></li></Link>
+              <Link href = '/About'><li onClick={this.setMainToAbout}><div><i className="fa fa-info-circle"></i>About</div></li></Link>
               <div className={this.state.loginButton}><Link href = '/Login'><li onClick={this.setMainLogin}><div><i className="icon-signin"></i>Login</div></li></Link></div>
               <div className={this.state.loginButton}><Link href = '/SignUp'><li onClick={this.setMainSignUp}><div><i className="icon-user"></i>Sign up</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="icon-user"></i>Logout</div></li></Link></div>
@@ -191,14 +216,6 @@ componentDidMount () {
           {this.state.mainContent}
           <br/>
           <br/>
-          <StripeProvider apiKey="pk_test_3eBW9BZ4UzRNsmtPCk9gc8F2">
-        <div className="example">
-          {/* <h1>React Stripe Elements Example</h1>
-          <Elements>
-            <CheckoutForm />
-          </Elements> */}
-        </div>
-      </StripeProvider>
           {/* {this.state.signinSignoutButton}
           {this.state.signupButton} */}
 
