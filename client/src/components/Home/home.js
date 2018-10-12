@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './home.css';
 // import CouponsMaker from '../../couponsMaker';
-import Checkout from '../Checkout/checkout';
 
 class Home extends Component {
   constructor(props) {
@@ -131,11 +130,6 @@ class Home extends Component {
         </form> */}
         <div className="center">
           <h2>Coupons near you</h2>
-          <Checkout
-            name={'Couponer'}
-            description={'Some Coupons'}
-            amount={1}
-          />
         </div>
         {this.state.coupons}
       </div>

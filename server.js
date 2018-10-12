@@ -3,9 +3,11 @@ const app = express();
 const redisHelper = require('./redisHelper')
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
-app.use(bodyParser.json({limit:'50mb'})) // handle json data
-app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' })) // handle URL-encoded data
-const MongoClient = require('mongodb').MongoClient
+app.use(bodyParser.json({limit:'50mb'}))
+app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
+const accountSid = 'AC6c753b616e86fd0c2721fbd3cfb19428'; // !todo, dev keys, change for production
+const authToken = '2c5d015a77ebd80650410099823f3c5d';
+const client = require('twilio')(accountSid, authToken);
 const Coupon = require('./models/coupons')
 const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
@@ -63,30 +65,34 @@ app.post('/api/signupCustomer', async(req, res) => {
   const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   const result = await AccountInfo.find({ 'email': req.body.email })
     if (result.length === 0) {
-      if (req.body.email && req.body.password && req.body.phoneNumber && req.body.cardNumber && req.body.CCV && req.body.zipCode && req.body.experationDate && req.body.address &&
-        req.body.cardholderName && req.body.city && req.body.country && req.body.region && yourPick && ip) {
-          if (yourPick === ' Buisness Owner' || yourPick === ' Customer') {
+      if (req.body.email && req.body.password && req.body.phoneNumber &&
+        // req.body.cardNumber && req.body.CCV && req.body.zipCode && req.body.experationDate && req.body.address &&
+        // req.body.cardholderName && req.body.city && req.body.country && req.body.region &&
+        yourPick && ip) {
+          if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
             const hashedPass = await bcrypt.hashSync(req.body.password, 10);
             const email = req.body.email;
+            const membershipExperationDate = req.body.buisnessName ? "N/A" : req.body.membershipExperationDate;
             const accountInfo = new AccountInfo({
               _id: new mongoose.Types.ObjectId(),
               email: email,
               buisnessName: req.body.buisnessName,
               password: hashedPass,
               phoneNumber: req.body.phoneNumber,
-              creditCardNumber: req.body.cardNumber,
-              CCV: req.body.CCV,
-              zipCode: req.body.zipCode,
-              experationDate: req.body.experationDate,
-              address: req.body.address,
-              cardholderName: req.body.cardholderName,
-              city: req.body.city.toLowerCase(),
-              country: req.body.country,
-              region: req.body.region,
+              // creditCardNumber: req.body.cardNumber,
+              // CCV: req.body.CCV,
+              // zipCode: req.body.zipCode,
+              // experationDate: req.body.experationDate,
+              // address: req.body.address,
+              // cardholderName: req.body.cardholderName,
+              // city: req.body.city.toLowerCase(),
+              // country: req.body.country,
+              // region: req.body.region,
               yourPick: req.body.yourPick,
               loggedInKey: loggedInKey,
               couponIds: [],
               couponsCurrentlyClaimed: 0,
+              membershipExperationDate: membershipExperationDate,
               ip: ip
             })
             await accountInfo.save()

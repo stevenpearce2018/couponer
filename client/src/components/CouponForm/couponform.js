@@ -5,6 +5,7 @@ import Input from '../SubComponents/Input/input';
 import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
 import { ReCaptcha } from 'react-recaptcha-google';
+import Checkout from '../Checkout/checkout';
 
 class CouponForm extends Component {
   constructor(props) {
@@ -17,7 +18,6 @@ class CouponForm extends Component {
       amountCoupons: '100',
       currentPrice: '10.00',
       discountedPrice: '5.00',
-      // length: '1 day ',
       superCoupon: 'Make a Selection',
       textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.',
       file: '',
@@ -35,7 +35,6 @@ class CouponForm extends Component {
     this.handleAddressChange = this.handleAddressChange.bind(this);
     this.handleDiscountedPriceChange = this.handleDiscountedPriceChange.bind(this);
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
-    // this.handleLengthChange = this.handleLengthChange.bind(this);
     this.handleSuperChange = this.handleSuperChange.bind(this);
     this.handleZipChange = this.handleZipChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
@@ -105,7 +104,6 @@ class CouponForm extends Component {
           else if (this.state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') alert('You must upload a custom description!')
           else if (this.state.city === '') alert('You must have a city!')
           else if (this.state.category === '') alert('You must have a category!')
-          else if (this.state.length === '1 day ') alert('You must have a length!')
           else if (this.state.currentPrice <= this.state.discountedPrice) alert('Your discounted price must be lower than your current price!')
           else if (this.state.city === '') alert('You must have a city!')
           else if (this.state.zip === '' || this.state.zip.length < 3) alert('You must have a zipcode!')
@@ -120,7 +118,6 @@ class CouponForm extends Component {
               amountCoupons: this.state.amountCoupons,
               currentPrice: this.state.currentPrice,
               discountedPrice: this.state.discountedPrice,
-              length: this.state.length,
               superCoupon: this.state.superCoupon,
               textarea: this.state.textarea,
               imagePreviewUrl: this.state.imagePreviewUrl,
@@ -191,10 +188,6 @@ class CouponForm extends Component {
         else this.setState({currentPrice: e.target.value + '0'})
       } else this.setState({currentPrice: e.target.value + '.00'})
     }
-    // handleLengthChange(e) {
-    //   if (e.target.value === 1) this.setState({length: e.target.value + ' day '})
-    //   this.setState({length: e.target.value + ' days '})
-    // }
     handleTextareaChange(e) {
       if(e.target.value === '') this.setState({textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.'})
       else this.setState({ textarea: e.target.value})
@@ -339,15 +332,6 @@ class CouponForm extends Component {
           value={this.state.length}
           onChange={this.handleCategoryChange} />
         <br/>
-        {/* <Input
-          hasLabel='true'
-          htmlFor='length'
-          label='How many days?'
-          type='number'
-          required={true}
-          value={this.state.length}
-          onChange={this.handleLengthChange} />
-        <br/> */}
         <Textarea
           hasLabel='true'
           htmlFor='textarea'
@@ -396,6 +380,11 @@ class CouponForm extends Component {
             >
           Upload Coupons
           </button>
+          <Checkout
+            name={'Couponer Coupons'}
+            description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
+            amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
+          />
           <ReCaptcha
             ref={(el) => {this.captchaDemo = el;}}
             size="invisible"

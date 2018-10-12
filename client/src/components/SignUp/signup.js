@@ -7,6 +7,7 @@ import PhoneInput from 'react-phone-number-input'
 import 'react-flags-select/css/react-flags-select.css';
 import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
+import Checkout from '../Checkout/checkout';
 
 class SignUp extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class SignUp extends Component {
       validAddress: '',
       recaptchaToken: '',
       membershipExperationDate: '',
+      numberOfMonths: 0,
       phoneNumber: ''
     }
     this.handleSingup = this.handleSingup.bind(this);
@@ -73,12 +75,9 @@ class SignUp extends Component {
     this.setState({city : event.target.value})
   }
   updateMembershipExperationDate(event){
-    var dt = new Date();
-    alert(dt)
-    dt.setMonth( dt.getMonth() + event.target.value );
-    alert( dt );
-    // const nembershipExperationDate = addMonths(new Date(), event.target.value);
-    // alert(nembershipExperationDate, 'nembershipExperationDate')
+    let d = new Date();
+    d.setMonth( d.getMonth() + Number(event.target.value));
+    this.setState({numberOfMonths: Number(event.target.value), nembershipExperationDate: d})
   }
   updateBuisnessName(event){
     this.setState({buisnessName : event.target.value})
@@ -230,6 +229,11 @@ class SignUp extends Component {
     />
   </div>
   <div className='buttonAndForgot'>
+    <Checkout
+      name={'Couponer Membership'}
+      description={this.state.numberOfMonths + ' Months of Unlimted Coupons'}
+      amount={this.state.numberOfMonths * 4.99}
+    />
     <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
   </div>
       <div className='forgotPass'>
@@ -243,7 +247,7 @@ class SignUp extends Component {
     if (e.target.value === ' Customer') {
       this.setState({
         yourPick: e.target.value,
-        membershipExperationDate: 0,
+        membershipExperationDate: '',
         showOrHideBuisInput: 'hideBuissnessIfCustomer',
         showOrHideAccountMem: 'showBuissnessIfCustomer'
       })
