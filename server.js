@@ -44,7 +44,6 @@ const postStripeCharge = res => (stripeErr, stripeRes) => {
 }
 
 app.post('/api/charge', (req, res) => {
-  console.log(JSON.stringify(req.body))
   stripe.charges.create(req.body, postStripeCharge(res));
 });
 
