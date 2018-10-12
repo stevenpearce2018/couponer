@@ -3,6 +3,16 @@
   margin-bottom: 15px;
   margin-top: 15px;
 }
+.signupbtn{
+  width: 96.5%;
+  margin-left: -2.5%;
+}
+.phoneHolder{
+  width: 77%;
+  margin-top: 331px;
+  margin-right:100px;
+  margin-left: 10%;
+}
 @media only screen and (min-width: 959px) {
 .signupBox {
   width: 45%;
@@ -19,8 +29,6 @@
   background-color:#fde428;
   border-radius:5px;
   color: #000080;
-  width:34.3%;
-  margin-left:6px;
   padding-top:10px;
   padding-left:10px;
   padding-right:10px;
@@ -82,8 +90,13 @@ width: 90%;
     }
     .signupbtn{
       margin-left:6px; 
-      width: 33.333%;
+      width: 100%;
       margin-right: 5%;
+    }
+    .phoneHolder{
+      margin-top: 0px;
+      margin-left: 6%;
+      width: 85%;
     }
 }
 
@@ -92,7 +105,6 @@ width: 90%;
         width:97.5%;
     }
     .signupbtn{
-      width: 33.333%;
       margin-right: 5%;
       margin-top:30px;
     }
@@ -165,9 +177,7 @@ text-align: center;
 text-align: center;
 margin-left:-55px;
 }
-.signupbtn{
-  width: 100%;
-}
+
 
 @media only screen and (max-width: 990px) {
 .radioPad__wrapper{

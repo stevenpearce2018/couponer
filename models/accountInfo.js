@@ -6,18 +6,18 @@ const accountInfo = mongoose.Schema({
     buisnessName: String,
     password: String,
     phoneNumber: String,
-    creditCardNumber: String,
-    CCV: Number,
-    zipCode: Number,
-    experationDate: String,
-    street: String,
-    cardholderName: String,
+    // creditCardNumber: String,
+    // CCV: Number,
+    // zipCode: Number,
+    // experationDate: String,
+    // street: String,
+    // cardholderName: String,
     city: String,
-    country: String,
-    region: String,
+    // country: String,
+    // region: String,
     yourPick: String,
     loggedInKey: String,
-    membershipExperationDate: String,
+    membershipExperationDate: [Date | String], // date or string
     ip: String
 })
 

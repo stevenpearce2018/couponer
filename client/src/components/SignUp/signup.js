@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import './signup.css';
-import ReactFlagsSelect from 'react-flags-select';
 import { ReCaptcha } from 'react-recaptcha-google';
+import PhoneInput from 'react-phone-number-input'
  
 //import css module
 import 'react-flags-select/css/react-flags-select.css';
+import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
 
 class SignUp extends Component {
@@ -18,43 +19,23 @@ class SignUp extends Component {
       email: '',
       password: '',
       passwordConfirm: '',
-      address: '',
-      cardNumber: '',
-      cardholderName: '',
-      CCV: '',
       city: '',
-      experationDate: '',
-      zipCode: '',
       buisnessName: '',
       yourPick: '',
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
-      phoneNumber: '',
-      country: 'US',
-      region: '',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
-      monthLength: '',
       validAddress: '',
-      latitude:'',
-      longitude:'',
-      recaptchaToken: ''
+      recaptchaToken: '',
+      membershipExperationDate: '',
+      phoneNumber: ''
     }
     this.handleSingup = this.handleSingup.bind(this);
-    this.updateMonthLength = this.updateMonthLength.bind(this);
+    this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
     this.updateBuisnessName = this.updateBuisnessName.bind(this);
     this.handleRadio = this.handleRadio.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
-    this.updateRegion =this.updateRegion.bind(this);
-    this.updateAddress = this.updateAddress.bind(this);
-    this.updateCCV = this.updateCCV.bind(this);
-    this.updatePhoneNumber = this.updatePhoneNumber.bind(this);
-    this.updateZipcode = this.updateZipcode.bind(this);
     this.updateCity = this.updateCity.bind(this);
-    this.updateCardNumber = this.updateCardNumber.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
-    this.updateAddress = this.updateAddress.bind(this);
-    this.updateExperationDate = this.updateExperationDate.bind(this);
-    this.onSelectFlag = this.onSelectFlag.bind(this);
-    this.updateCardholderName = this.updateCardholderName.bind(this);
     this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this);
     this.setInitialState = this.setInitialState.bind(this);
     this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
@@ -79,15 +60,6 @@ class SignUp extends Component {
   setInitialState () {
     this.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>})
   }
-  updateCountry (e) {
-    this.setState({ country: e.target.value });
-  }
-  onSelectFlag(countryCode){
-    this.setState({ country: countryCode});
-}
-  updateRegion (e) {
-    this.setState({ region: e.target.value });
-  }
   updatePassword(event) {
     this.setState({password : event.target.value})
   }
@@ -97,71 +69,31 @@ class SignUp extends Component {
   updateEmail(event) {
     this.setState({email : event.target.value})
   }
-  updateAddress(event) {
-    this.setState({address : event.target.value})
-    let that = this;
-    if (event.target.value === '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
-    else this.setState({address: event.target.value})
-    const google = window.google
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
-    try {
-      if (results[0] && that.state.address.length > 5) {
-        that.setState({
-          latitude:results[0].geometry.location.lat(),
-          longitude: results[0].geometry.location.lng(),
-          validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/valid.svg' alt="Address is valid"></img>
-        })
-      }
-    }
-    catch (error) { that.setState({validAddress: <img className="icon" src='https://storage.googleapis.com/csstest/invalid.svg' alt="Invalid address"></img>}) }
-    });
-  }
-  updateCardNumber(event) {
-    this.setState({cardNumber : event.target.value})
-  }
-  updateCardholderName(event) {
-    this.setState({cardholderName : event.target.value})
-  }
-  updateCCV(event) {
-    this.setState({CCV : event.target.value})
-  }
   updateCity(event) {
     this.setState({city : event.target.value})
   }
-  updateExperationDate(event) {
-    this.setState({experationDate : event.target.value});
+  updateMembershipExperationDate(event){
+    var dt = new Date();
+    alert(dt)
+    dt.setMonth( dt.getMonth() + event.target.value );
+    alert( dt );
+    // const nembershipExperationDate = addMonths(new Date(), event.target.value);
+    // alert(nembershipExperationDate, 'nembershipExperationDate')
   }
-  updateZipcode(event) {
-    this.setState({zipCode : event.target.value})
-  }
-  updateBuisnessName(event) {
+  updateBuisnessName(event){
     this.setState({buisnessName : event.target.value})
   }
-  updatePhoneNumber(event){
-    this.setState({phoneNumber : event.target.value})
-  }
-  updateMonthLength(event){
-    this.setState({monthLength : event.target.value})
-  }
+
   async handleSingup(e){
     e.preventDefault();
     const data = {
-      address: this.state.address,
       buisnessName: this.state.buisnessName,
-      cardholderName: this.state.cardholderName,
-      cardNumber: this.state.cardNumber,
-      CCV: this.state.CCV,
       city: this.state.city,
       email: this.state.email,
-      region: this.state.region,
-      experationDate: this.state.experationDate,
       yourPick: this.state.yourPick,
       password: this.state.password,
-      zipCode: this.state.zipCode,
       phoneNumber: this.state.phoneNumber,
-      country: this.state.country,
-      monthLength: this.state.monthLength
+      membershipExperationDate: this.state.membershipExperationDate
     }
     const url = `/api/signupCustomer`
     const response = await fetch(url, {
@@ -245,55 +177,7 @@ class SignUp extends Component {
           onChange={this.updatePasswordConfirmation}
           required
           />
-          <InputField
-          htmlFor="Phone Number"
-          type="number"
-          labelHTML="Full Phone Number"
-          placeholder="(1)123-456-7890"
-          onChange={this.updatePhoneNumber}
-          required
-          />
-          <InputField
-          htmlFor="Credit Card Number"
-          type="number"
-          labelHTML="Credit Card Number"
-          placeholder="0000-0000-0000-0000"
-          onChange={this.updateCardNumber}
-          required
-          />
-          <InputField
-          htmlFor="CCV"
-          type="number"
-          labelHTML="CCV"
-          placeholder="555"
-          onChange={this.updateCCV}
-          required
-          />
-          <InputField
-          htmlFor="Zip Code"
-          type="number"
-          labelHTML="Zip Code"
-          placeholder="55555"
-          onChange={this.updateZipcode}
-          required
-          />
-          <InputField
-          htmlFor="Experation Date"
-          type="text"
-          labelHTML="Experation Date"
-          placeholder="MM/YY"
-          onChange={this.updateExperationDate}
-          required
-          />
-          <InputField
-          htmlFor="Street"
-          type="text"
-          labelHTML="Full Address"
-          icon={this.state.validAddress}
-          placeholder="12345 189th Savings St"
-          onChange={this.updateAddress}
-          required
-          />
+
           <InputField
           htmlFor="Cardholder Name"
           type="text"
@@ -310,14 +194,6 @@ class SignUp extends Component {
           onChange={this.updateCity}
           required
           />
-      <InputField
-        htmlFor="State/Provience"
-        type="text"
-        labelHTML="State/Provience"
-        placeholder="New York"
-        onChange={this.updateRegion}
-        required
-      />
       <div className={this.state.showOrHideBuisInput}>
       <InputField
         htmlFor="Buisness Name"
@@ -333,20 +209,8 @@ class SignUp extends Component {
         type="text"
         labelHTML="Subscription Length"
         placeholder="Subscription Length 4.99$ per month for unlimited coupons"
-        onChange={this.updateMonthLength}
+        onChange={this.updateMembershipExperationDate}
       />
-      </div>
-      
-      <div className="signupBox">
-        <div className='inputLabel'>
-        <label className='signupLabel' htmlFor="City">
-          <strong>Country</strong>
-        </label>
-        </div>
-        <ReactFlagsSelect
-          defaultCountry="US"
-          onSelect={this.onSelectFlag} 
-          required />
       </div>
       <ReCaptcha
         ref={(el) => {this.captchaDemo = el;}}
@@ -358,6 +222,13 @@ class SignUp extends Component {
         verifyCallback={this.verifyCallback}
       />
   </form>
+  <div className="phoneHolder">
+    <PhoneInput
+      placeholder="Enter phone number"
+      value={ this.state.phoneNumber }
+      onChange={ phoneNumber => this.setState({ phoneNumber }) } 
+    />
+  </div>
   <div className='buttonAndForgot'>
     <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
   </div>
@@ -372,7 +243,7 @@ class SignUp extends Component {
     if (e.target.value === ' Customer') {
       this.setState({
         yourPick: e.target.value,
-        monthLength: 0,
+        membershipExperationDate: 0,
         showOrHideBuisInput: 'hideBuissnessIfCustomer',
         showOrHideAccountMem: 'showBuissnessIfCustomer'
       })
@@ -380,7 +251,7 @@ class SignUp extends Component {
     else if(e.target.value === ' Buisness Owner') {
       this.setState({
         yourPick: e.target.value,
-        monthLength: 'notCustomer',
+        membershipExperationDate: 'notCustomer',
         showOrHideBuisInput: 'showBuissnessIfCustomer',
         showOrHideAccountMem: 'hideBuissnessIfCustomer'
       })
