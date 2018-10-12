@@ -83,10 +83,31 @@ class SignUp extends Component {
   updateBuisnessName(event){
     this.setState({buisnessName : event.target.value})
   }
-  checkInfo(){
+  async checkInfo(){
     console.log(this.state.phoneNumber)
-    if (this.state.city && this.state.email && this.state.yourPick === ' Customer' && this.state.password === this.state.passwordConfirm && this.state.phoneNumber &&this.state.membershipExperationDate) return true;
-    else return false;
+    const that = this;
+    if(this.state.phoneNumber[0] !== "+") return false;
+    else {
+      const phoneNumber = that.state.phoneNumber.substring(1);
+      const data = {
+        phoneNumber: phoneNumber,
+      }
+      const url = `/api/phoneTest`
+      const response = await fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+      if (this.state.city && this.state.email && this.state.yourPick === ' Customer' && this.state.password === this.state.passwordConfirm && this.state.phoneNumber &&this.state.membershipExperationDate) return true;
+      else return false;
+    }
   }
 
   async handleSingup(e){

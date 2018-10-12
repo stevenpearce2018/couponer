@@ -105,6 +105,22 @@ app.post('/api/signupCustomer', async(req, res) => {
     } else res.json({resp:'Email address is taken!'});
 });
 
+app.post('/api/phoneTest', async (req, res) => {
+  const randomNumber = Math.floor(Math.random()*90000) + 10000;
+  redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
+  client.messages
+      .create({from: '+13124108678', body: 'Your Security code is: ', to: req.body.phoneNumber})
+      .then(message => console.log(message.sid))
+      .done();
+})
+app.post('/api/phoneTestValidateNumber', async (req, res) => {
+  redisHelper.set(req.body.phoneNumber, compareRandomNumber) // 3 minutes
+  function compareRandomNumber(randomNumber){
+    if (randomNumber === req.body.randomNumber) res.json({success:true})
+    else res.json({success:false})
+  }
+})
+
 app.post('/api/updateAccount', async (req, res) => {
   //!todo, flush out updateAccount api
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
