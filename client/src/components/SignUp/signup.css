@@ -200,3 +200,8 @@ color: blue;
 .icon{
   margin-right: -.6em;
 }
+
+.moveUp{
+  margin-top:-25px;
+  margin-right: -30px;
+}

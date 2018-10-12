@@ -105,8 +105,7 @@ const CURRENCY = 'USD';
         token={this.onToken(this.props.amount, this.props.description)}
         currency={this.props.CURRENCY}
         stripeKey={"pk_test_1grvOEC6DvjC9afFJN2OxhWI"}
-        image="https://www.vidhub.co/assets/logos/vidhub-icon-2e5c629f64ced5598a56387d4e3d0c7c.png"
-        panelLabel="Give Money" 
+        panelLabel={this.props.panelLabel}
         alipay
         bitcoin
       />

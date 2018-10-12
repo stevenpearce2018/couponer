@@ -34,7 +34,8 @@ class SignUp extends Component {
       recaptchaToken: '',
       membershipExperationDate: '',
       numberOfMonths: 0,
-      phoneNumber: ''
+      phoneNumber: '',
+      validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>
     }
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
@@ -88,9 +89,8 @@ class SignUp extends Component {
     const that = this;
     if(this.state.phoneNumber[0] !== "+") return false;
     else {
-      const phoneNumber = that.state.phoneNumber.substring(1);
       const data = {
-        phoneNumber: phoneNumber,
+        phoneNumber: that.state.phoneNumber,
       }
       const url = `/api/phoneTest`
       const response = await fetch(url, {
@@ -254,6 +254,7 @@ class SignUp extends Component {
       value={ this.state.phoneNumber }
       onChange={ phoneNumber => this.setState({ phoneNumber }) } 
     />
+    {this.state.validPhoneNumber}
   </div>
   <div className='buttonAndForgot'>
   <div className={this.state.showOrHideAccountMem}>
@@ -264,6 +265,7 @@ class SignUp extends Component {
       name={'Couponer Membership'}
       description={this.state.numberOfMonths + ' Months of Unlimted Coupons'}
       amount={this.state.numberOfMonths * 4.99}
+      panelLabel="Get membership"
     />
   </div>
     <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>

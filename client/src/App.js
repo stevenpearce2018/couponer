@@ -9,7 +9,6 @@ import Login from './components/Login/login';
 import Search from './components/Search/search'
 import About from './components/About/about'
 import history from './history';
-import { loadReCaptcha } from 'react-recaptcha-google'
 
 
 // For routing
@@ -53,7 +52,7 @@ class App extends Component {
   this.getCoupons = this.getCoupons.bind(this);
 }
 componentDidMount () {
-  loadReCaptcha();
+  
   const urlHandler = (currentURL) => {
     switch (currentURL.toLowerCase()) {
       case '':
