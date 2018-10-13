@@ -36,11 +36,8 @@ mongoose.connect(
 ).then(console.log('Connected to mongoDB'));
 
 const postStripeCharge = res => (stripeErr, stripeRes) => {
-  if (stripeErr) {
-    res.status(500).send({ error: stripeErr });
-  } else {
-    res.status(200).send({ success: stripeRes });
-  }
+  if (stripeErr) res.status(500).send({ error: stripeErr });
+  else res.status(200).send({ success: stripeRes });
 }
 
 app.post('/api/charge', (req, res) => {
@@ -50,9 +47,13 @@ app.post('/api/charge', (req, res) => {
 app.post('/api/signupCustomer', async(req, res) => {
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
-    body = JSON.parse(body);
-    if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
-    else return res.json({"success": true, "msg":"Captcha passed"});
+    try {
+      body = JSON.parse(body);
+      if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
+      else return res.json({"success": true, "msg":"Captcha passed"}); 
+    } catch (error) {
+      return res.json({"success": false, "msg":"Failed captcha verification"});
+    }
   })
   const yourPick = req.body.yourPick
   // ' Customer'
@@ -109,7 +110,7 @@ app.post('/api/phoneTest', async (req, res) => {
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
   redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
   client.messages
-      .create({from: '+13124108678', body: 'Your Security code is: ', to: req.body.phoneNumber})
+      .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})
       .then(message => console.log(message.sid))
       .done();
 })
@@ -247,9 +248,10 @@ app.get('/api/getSponseredCoupons/:city', async (req, res) => {
 });
 
 app.post('/api/searchCoupons', async (req, res) => {
+  console.log("works")
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   let recaptchaPassed = false;
-  await request(verifyUrl, async(err, response, body) => {
+  request(verifyUrl, async(err, response, body) => {
     body = JSON.parse(body);
     recaptchaPassed = body.success;
     if (recaptchaPassed === false) res.json({coupons: 'invalid recaptcha'})
@@ -288,7 +290,7 @@ app.post(`/api/getCoupon`, async(req, res) => { // req = request
           await AccountInfo.updateOne(
             { "_id" : outcome[0]._id }, 
             { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
-            { "upsert" : true } 
+            { "upsert" : false } 
           );
         } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
       }

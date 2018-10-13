@@ -34,7 +34,9 @@ class SignUp extends Component {
       recaptchaToken: '',
       membershipExperationDate: '',
       numberOfMonths: 0,
+      fiveDigitCode: '',
       phoneNumber: '',
+      popupClass: 'hiddenOverlay',
       validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>
     }
     this.handleSingup = this.handleSingup.bind(this);
@@ -42,12 +44,14 @@ class SignUp extends Component {
     this.updateBuisnessName = this.updateBuisnessName.bind(this);
     this.handleRadio = this.handleRadio.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
+    this.updateFiveDigitCode = this.updateFiveDigitCode.bind(this);
     this.updateCity = this.updateCity.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this);
     this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.verifyCallback = this.verifyCallback.bind(this);
     this.checkInfo = this.checkInfo.bind(this);
+    this.togglePopup = this.togglePopup.bind(this);
   }
   componentDidMount() {
       if (this.captchaDemo) {
@@ -72,6 +76,9 @@ class SignUp extends Component {
   }
   updateEmail(event) {
     this.setState({email : event.target.value})
+  }
+  updateFiveDigitCode(event) {
+    this.setState({fiveDigitCode : event.target.value})
   }
   updateCity(event) {
     this.setState({city : event.target.value})
@@ -138,7 +145,12 @@ class SignUp extends Component {
       this.props.parentMethod();
       sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
     }
-}
+  }
+  togglePopup(){
+    let newClass = "hiddenOverlay";
+    if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
+    this.setState({popupClass: newClass})
+  }
   render() {
     const yourPick = this.state.yourPick
     const options = this.state.customerOrBuisness.map((loan, key) => {
@@ -167,6 +179,11 @@ class SignUp extends Component {
     })
     return (
       <div className="container text-center">
+                    <a className="icon-button" onClick={this.togglePopup}>
+                <i 
+                className="icon-question">
+                </i>
+                </a>
         <div className="row">
           <p className="lead">
             <strong>I am a{yourPick}</strong>
@@ -178,6 +195,22 @@ class SignUp extends Component {
           <br/>
           {options}
         </div>
+        <div className={this.state.popupClass}>
+            <div className="popup">
+              <h2>Please Enter Your 5 digit security code</h2>
+              <a className="close" onClick={this.togglePopup}>&times;</a>
+              <div className="popupcontent">
+              <InputField
+              htmlFor="5 digit code"
+              type="number"
+              labelHTML="5 digit code"
+              placeholder="12345"
+              onChange={this.updateFiveDigitCode}
+              required
+              />
+              </div>
+            </div>
+          </div>
           <form className='signinForm'>
           <InputField
           htmlFor="Email"
@@ -204,14 +237,6 @@ class SignUp extends Component {
           required
           />
 
-          <InputField
-          htmlFor="Cardholder Name"
-          type="text"
-          labelHTML="Cardholder Name"
-          placeholder="Billy Bob"
-          onChange={this.updateCardholderName}
-          required
-          />
           <InputField
           htmlFor="City"
           type="text"
@@ -254,7 +279,6 @@ class SignUp extends Component {
       value={ this.state.phoneNumber }
       onChange={ phoneNumber => this.setState({ phoneNumber }) } 
     />
-    {this.state.validPhoneNumber}
   </div>
   <div className='buttonAndForgot'>
   <div className={this.state.showOrHideAccountMem}>
@@ -263,7 +287,7 @@ class SignUp extends Component {
     <Checkout
       parentMethod = {this.checkInfo}
       name={'Couponer Membership'}
-      description={this.state.numberOfMonths + ' Months of Unlimted Coupons'}
+      description={this.state.numberOfMonths + ' Month(s) of Unlimted Coupons'}
       amount={this.state.numberOfMonths * 4.99}
       panelLabel="Get membership"
     />

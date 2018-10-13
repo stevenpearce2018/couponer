@@ -94,7 +94,7 @@ class Search extends Component {
       city: this.state.city,
       zip: this.state.zip,
       category: this.state.category,
-      keywords: this.state.keywords,
+      // keywords: this.state.keywords,
       recaptchaToken: this.state.recaptchaToken
     }
     const that = this;
@@ -161,8 +161,9 @@ class Search extends Component {
           </div>
         );
       }
-      that.setState({coupons: CouponsMaker(json.coupons)})
-    }
+      if (json.coupons !== "invalid recaptcha") that.setState({coupons: CouponsMaker(json.coupons)})
+      else alert('Recaptcha failed! Try refreshing the page or redirecting.')
+    } else alert('You need to search for something!')
 }                
   render() {
     return (
@@ -187,12 +188,12 @@ class Search extends Component {
       className='searchCategory'
       onChange={this.updateCategory}
       />
-      <br/>
+      {/* <br/>
       <SearchField
       htmlFor="Keywords: Seperate keywords by commas"
       className='searchCategory'
       onChange={this.updateKeywords}
-      />
+      /> */}
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
       <ReCaptcha
         ref={(el) => {this.captchaDemo = el;}}
