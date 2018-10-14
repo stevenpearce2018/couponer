@@ -92,14 +92,17 @@ class SignUp extends Component {
     this.setState({buisnessName : event.target.value})
   }
   async checkInfo(){
-    console.log(this.state.phoneNumber)
     const that = this;
+    console.log('1')
+    that.togglePopup()
+    console.log('2')
     if(this.state.phoneNumber[0] !== "+") return false;
     else {
       const data = {
         phoneNumber: that.state.phoneNumber,
       }
       const url = `/api/phoneTest`
+      console.log('3')
       const response = await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin
@@ -111,6 +114,7 @@ class SignUp extends Component {
         },
         body: JSON.stringify(data),
       })
+      console.log('3')
       const json = await response.json()
       if (this.state.city && this.state.email && this.state.yourPick === ' Customer' && this.state.password === this.state.passwordConfirm && this.state.phoneNumber &&this.state.membershipExperationDate) return true;
       else return false;
@@ -126,6 +130,7 @@ class SignUp extends Component {
       yourPick: this.state.yourPick,
       password: this.state.password,
       phoneNumber: this.state.phoneNumber,
+      fiveDigitCode: this.state.fiveDigitCode,
       membershipExperationDate: this.state.membershipExperationDate
     }
     const url = `/api/signupCustomer`
@@ -179,11 +184,6 @@ class SignUp extends Component {
     })
     return (
       <div className="container text-center">
-                    <a className="icon-button" onClick={this.togglePopup}>
-                <i 
-                className="icon-question">
-                </i>
-                </a>
         <div className="row">
           <p className="lead">
             <strong>I am a{yourPick}</strong>
@@ -208,6 +208,9 @@ class SignUp extends Component {
               onChange={this.updateFiveDigitCode}
               required
               />
+              <div className="popupbtn">
+              <button className='signupbtn signupbtnn' value="send" onClick={this.handleSingup}><strong>Submit</strong></button>
+              </div>
               </div>
             </div>
           </div>

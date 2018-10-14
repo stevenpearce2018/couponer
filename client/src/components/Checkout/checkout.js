@@ -70,6 +70,7 @@ const CURRENCY = 'USD';
     };
 
     onToken = (amount, description) => (token) => {
+      console.log('onToken called')
       const result = this.props.parentMethod()
       if (result !== true) {
         alert('Failed')
