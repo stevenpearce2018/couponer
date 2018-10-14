@@ -15,6 +15,7 @@ const request = require('request');
 const stripe = require('./stripe');
 //!todo, change recaptcha key and put in .env
 const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
+const db = require('./config/db')
 
 // const fs = require('fs')
 // const htttpsOptions = {
@@ -31,9 +32,7 @@ const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 
 
 //!todo, get production mongodb account and login string. Use .env for connection string
-mongoose.connect(
-  "mongodb+srv://Steve:Password@cluster0-bpsap.mongodb.net/test?authSource=test&w=1",
-).then(console.log('Connected to mongoDB'));
+mongoose.connect(db).then(console.log('Connected to mongoDB'));
 
 const postStripeCharge = res => (stripeErr, stripeRes) => {
   if (stripeErr) res.status(500).send({ error: stripeErr });
@@ -45,65 +44,72 @@ app.post('/api/charge', (req, res) => {
 });
 
 app.post('/api/signupCustomer', async(req, res) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, (err, response, body) => {
-    try {
+  let passedNumberCheck = false;
+  redisHelper.get(req.body.phoneNumber, compareRandomNumber)
+  function compareRandomNumber(randomNumber){
+    if (randomNumber === req.body.randomNumber) passedNumberCheck = true;
+    else passedNumberCheck = false;
+  }
+  if (passedNumberCheck === true) {
+    const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+    let recaptchaPassed = false;
+    await request(verifyUrl, (err, response, body) => {
       body = JSON.parse(body);
-      if(!body.success) return res.json({"success": false, "msg":"Failed captcha verification"});
-      else return res.json({"success": true, "msg":"Captcha passed"}); 
-    } catch (error) {
-      return res.json({"success": false, "msg":"Failed captcha verification"});
-    }
-  })
-  const yourPick = req.body.yourPick
-  // ' Customer'
-  // 'Buisness Owner'
-  const ip = req.headers['x-forwarded-for'] || 
-     req.connection.remoteAddress || 
-     req.socket.remoteAddress ||
-     (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-  const result = await AccountInfo.find({ 'email': req.body.email })
-    if (result.length === 0) {
-      if (req.body.email && req.body.password && req.body.phoneNumber &&
-        // req.body.cardNumber && req.body.CCV && req.body.zipCode && req.body.experationDate && req.body.address &&
-        // req.body.cardholderName && req.body.city && req.body.country && req.body.region &&
-        yourPick && ip) {
-          if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
-            const hashedPass = await bcrypt.hashSync(req.body.password, 10);
-            const email = req.body.email;
-            const membershipExperationDate = req.body.buisnessName ? "N/A" : req.body.membershipExperationDate;
-            const accountInfo = new AccountInfo({
-              _id: new mongoose.Types.ObjectId(),
-              email: email,
-              buisnessName: req.body.buisnessName,
-              password: hashedPass,
-              phoneNumber: req.body.phoneNumber,
-              // creditCardNumber: req.body.cardNumber,
-              // CCV: req.body.CCV,
-              // zipCode: req.body.zipCode,
-              // experationDate: req.body.experationDate,
-              // address: req.body.address,
-              // cardholderName: req.body.cardholderName,
-              // city: req.body.city.toLowerCase(),
-              // country: req.body.country,
-              // region: req.body.region,
-              yourPick: req.body.yourPick,
-              loggedInKey: loggedInKey,
-              couponIds: [],
-              couponsCurrentlyClaimed: 0,
-              membershipExperationDate: membershipExperationDate,
-              ip: ip
-            })
-            await accountInfo.save()
-            .catch(err => console.log(err))
-            redisHelper.set(loggedInKey, loggedInKey)
-            res.json({
-              loggedInKey:loggedInKey
-            });
-          } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
-    } else res.json({resp:'You need to fill out all fields!'});
-    } else res.json({resp:'Email address is taken!'});
+      if(!body.success) recaptchaPassed = false;
+      else recaptchaPassed = true;
+    })
+    if (recaptchaPassed === true) {
+    const yourPick = req.body.yourPick
+    // ' Customer'
+    // 'Buisness Owner'
+    const ip = req.headers['x-forwarded-for'] || 
+      req.connection.remoteAddress || 
+      req.socket.remoteAddress ||
+      (req.connection.socket ? req.connection.socket.remoteAddress : null);
+    const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const result = await AccountInfo.find({ 'email': req.body.email })
+      if (result.length === 0) {
+        if (req.body.email && req.body.password && req.body.phoneNumber &&
+          // req.body.cardNumber && req.body.CCV && req.body.zipCode && req.body.experationDate && req.body.address &&
+          // req.body.cardholderName && req.body.city && req.body.country && req.body.region &&
+          yourPick && ip) {
+            if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
+              const hashedPass = await bcrypt.hashSync(req.body.password, 10);
+              const email = req.body.email;
+              const membershipExperationDate = req.body.buisnessName ? "N/A" : req.body.membershipExperationDate;
+              const accountInfo = new AccountInfo({
+                _id: new mongoose.Types.ObjectId(),
+                email: email,
+                buisnessName: req.body.buisnessName,
+                password: hashedPass,
+                phoneNumber: req.body.phoneNumber,
+                // creditCardNumber: req.body.cardNumber,
+                // CCV: req.body.CCV,
+                // zipCode: req.body.zipCode,
+                // experationDate: req.body.experationDate,
+                // address: req.body.address,
+                // cardholderName: req.body.cardholderName,
+                // city: req.body.city.toLowerCase(),
+                // country: req.body.country,
+                // region: req.body.region,
+                yourPick: req.body.yourPick,
+                loggedInKey: loggedInKey,
+                couponIds: [],
+                couponsCurrentlyClaimed: 0,
+                membershipExperationDate: membershipExperationDate,
+                ip: ip
+              })
+              await accountInfo.save()
+              .catch(err => console.log(err))
+              redisHelper.set(loggedInKey, loggedInKey)
+              res.json({
+                loggedInKey:loggedInKey
+              });
+            } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
+        } else res.json({resp:'You need to fill out all fields!'});
+      } else res.json({resp:'Email address is taken!'});
+    } else res.json({resp:'Recaptcha failed! Try reloading the page.'});
+  } else res.json({resp:'Wrong number, please try again!'});
 });
 
 app.post('/api/phoneTest', async (req, res) => {
