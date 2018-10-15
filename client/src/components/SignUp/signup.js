@@ -91,7 +91,8 @@ class SignUp extends Component {
   updateBuisnessName(event){
     this.setState({buisnessName : event.target.value})
   }
-  async checkInfo(){
+  async checkInfo(data){
+    console.log({data})
     const that = this;
     console.log('1')
     that.togglePopup()
@@ -184,13 +185,11 @@ class SignUp extends Component {
     })
     return (
       <div className="container text-center">
+        <section id="portfolio" className="content">
+          <h2 className="textHeader">Sign up</h2>
+          <p className="text">First, validate your phone number. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee.  </p>
+        </section>
         <div className="row">
-          <p className="lead">
-            <strong>I am a{yourPick}</strong>
-            {yourPick ? 
-              '' : '...'
-            }
-          </p>
           <hr />
           <br/>
           {options}
@@ -266,15 +265,6 @@ class SignUp extends Component {
         onChange={this.updateMembershipExperationDate}
       />
       </div>
-      <ReCaptcha
-        ref={(el) => {this.captchaDemo = el;}}
-        size="invisible"
-        render="explicit"
-        sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
-        data-theme="dark"
-        onloadCallback={this.onLoadRecaptcha}
-        verifyCallback={this.verifyCallback}
-      />
   </form>
   <div className="phoneHolder">
     <PhoneInput
@@ -282,8 +272,10 @@ class SignUp extends Component {
       value={ this.state.phoneNumber }
       onChange={ phoneNumber => this.setState({ phoneNumber }) } 
     />
+    <div className="phoneImage">{this.state.validPhoneNumber}</div>
   </div>
   <div className='buttonAndForgot'>
+  <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Validate Phone Number</strong></button>
   <div className={this.state.showOrHideAccountMem}>
   <br/>
   <br/>
@@ -300,7 +292,15 @@ class SignUp extends Component {
       <div className='forgotPass'>
         <strong>Forgot Password?</strong>
       </div>
-      
+      <ReCaptcha
+        ref={(el) => {this.captchaDemo = el;}}
+        size="invisible"
+        render="explicit"
+        sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
+        data-theme="dark"
+        onloadCallback={this.onLoadRecaptcha}
+        verifyCallback={this.verifyCallback}
+      />
     </div>
     )
   }

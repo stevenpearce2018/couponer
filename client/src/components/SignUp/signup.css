@@ -1,7 +1,10 @@
-
 .signupBox {
   margin-bottom: 15px;
   margin-top: 15px;
+}
+.phoneImage{
+  margin-right:12.8%;
+  margin-top:-18px;
 }
 .signupbtn{
   width: 96.5%;
@@ -91,6 +94,9 @@ width: 90%;
   cursor: pointer;
 }
 @media only screen and (max-width: 959px) {
+  .phoneImage{
+    margin-right:8.8%;
+  }
     .forgotPass {
       width:98.5%;
       margin-left:6px;   

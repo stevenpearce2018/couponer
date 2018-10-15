@@ -9,6 +9,7 @@ import Login from './components/Login/login';
 import Search from './components/Search/search'
 import About from './components/About/about'
 import history from './history';
+import { loadReCaptcha } from 'react-recaptcha-google'
 
 
 // For routing
@@ -22,9 +23,11 @@ const Link = (props) => {
         }
     };
     return (
+      <div className="notHidden">
         <a href={props.href} onClick={onClick}>
             {props.children}
         </a>
+      </div>
     );
 };
 
@@ -36,7 +39,8 @@ class App extends Component {
       loginButton: 'notHidden',
       logoutButton: 'hidden',
       email: '',
-      loggedInKey: ''
+      loggedInKey: '',
+      showOrHideNav: 'navPopup'
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -50,9 +54,10 @@ class App extends Component {
   this.logout = this.logout.bind(this);
   this.setMainToAbout = this.setMainToAbout.bind(this);
   this.getCoupons = this.getCoupons.bind(this);
+  this.showOrHideNav = this.showOrHideNav.bind(this);
 }
-componentDidMount () {
-  
+async componentDidMount () {
+  await loadReCaptcha();
   const urlHandler = (currentURL) => {
     switch (currentURL.toLowerCase()) {
       case '':
@@ -98,7 +103,11 @@ componentDidMount () {
   }
   if (sessionStorage.getItem('couponerkey') && sessionStorage.getItem('couponerkey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
-
+showOrHideNav(){
+  if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hide"})
+  else this.setState({showOrHideNav:"navPopup"})
+  console.log(this.state.showOrHideNav)
+}
   setSignupToMain(){
     this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
   }
@@ -198,9 +207,9 @@ componentDidMount () {
                 <li ></li>
               </ul>
             </label>
-            <input type="checkbox" id="toggle-1"/>
+            {/* <input type="checkbox" id="toggle-1" onClick={this.showOrHideNav}/> */}
 
-          <nav className='navPopup'>
+          <nav className='navBar' onClick={this.showOrHideNav}>
             <ul>
               <Link href = '/Home'><li onClick={this.setMainHome}><div><i className="icon-home"></i>Home</div></li></Link>
               <Link href = '/About'><li onClick={this.setMainToAbout}><div><i className="fa fa-info-circle"></i>About</div></li></Link>

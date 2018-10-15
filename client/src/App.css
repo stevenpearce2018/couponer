@@ -1,4 +1,5 @@
 *{text-decoration:none; list-style:none; margin:0px; padding:0px; outline:none;}
+input:focus { background: ghostwhite }
 body{margin:0px; padding:0px; font-family: 'Open Sans', sans-serif;}
 section{width:100%; max-width:1200px; margin:0px auto; display:table; position:relative;}
 h1{margin:0px auto; display:table; font-size:26px; padding:40px 0px; color:#002e5b; text-align:center;}
@@ -31,9 +32,9 @@ section{max-width:95%;}
 header{padding:20px 0px;}
 #logo{padding:0px;}
 input[type=checkbox] {position: absolute; top: -9999px; left: -9999px; background:none;}
-input[type=checkbox]:fous{background:none;}
+input[type=checkbox]:focus{background:none;}
 .toggle-menu {float:right; padding:8px 0px; display:inline-block; cursor:pointer; }
-input[type=checkbox]:checked ~ nav {display:block;}
+
 
 nav{display:none; position:absolute; right:0px; top:53px; background-color:#002e5b; padding:0px; z-index:99;}
 nav ul{width:auto;}
@@ -72,3 +73,9 @@ h1 {padding: 20px 0px;}
 .notHidden{
     display: inline;
 }
+
+nav {margin-top:8px;display:block;}
+nav ul li div{color:#fde428; font-size:18px; padding: 15px 10px; display:inline-block; transition: all 0.5s ease 0s; width: 220px;}
+nav ul li div i{color:#fde428; font-size:18px;display:inline-block; transition: all 0.5s ease 0s;}
+nav ul li div:hover {background-color:#fde428; color:#002e5b; transition: all 0.5s ease 0s;}
+nav ul li div:hover i {background-color:#fde428; color:#002e5b; transition: all 0.5s ease 0s;}

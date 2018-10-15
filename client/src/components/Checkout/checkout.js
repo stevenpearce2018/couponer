@@ -71,16 +71,17 @@ const CURRENCY = 'USD';
 
     onToken = (amount, description) => (token) => {
       console.log('onToken called')
-      const result = this.props.parentMethod()
-      if (result !== true) {
-        alert('Failed')
-      } else {
+      // const result = this.props.parentMethod(data)
+      // if (result !== true) {
+      //   alert('Failed')
+      // } else {
         const data = {
           description,
           source: token.id,
           currency: CURRENCY,
           amount: this.fromEuroToCent(amount)
         }
+        const result = this.props.parentMethod(data)
         const url = '/api/charge'
         fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -94,7 +95,7 @@ const CURRENCY = 'USD';
         body: JSON.stringify(data),
         }).then(this.successPayment)
         .catch(this.errorPayment);
-      }
+      // }
     }
     render() {
       return (
