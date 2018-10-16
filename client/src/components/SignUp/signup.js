@@ -37,6 +37,7 @@ class SignUp extends Component {
       fiveDigitCode: '',
       phoneNumber: '',
       popupClass: 'hiddenOverlay',
+      boolValidPhoneNumber: false,
       validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>,
       showOrHidePhoneValidationButton:'signupbtn'
     }
@@ -100,7 +101,7 @@ class SignUp extends Component {
     const json = await response.json()
     if (json.success) {
       alert("Phone number is valid, woohoo!")
-      this.setState({showOrHidePhoneValidationButton: 'hidden', validPhoneNumber:<img className='icon moveUp' src='https://storage.googleapis.com/csstest/valid.svg' alt="Phone number not validated"></img>})
+      this.setState({showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber:<img className='icon moveUp' src='https://storage.googleapis.com/csstest/valid.svg' alt="Phone number not validated"></img>})
       this.togglePopup();
     }
     else {
@@ -148,6 +149,7 @@ class SignUp extends Component {
   }
 
   async handleSingup(e){
+    if(this.state.boolValidPhoneNumber === false) return alert("You must validate your phone number!")
     e.preventDefault();
     const data = {
       buisnessName: this.state.buisnessName,
@@ -177,6 +179,7 @@ class SignUp extends Component {
     }
   }
   async handleCustomerSignup(dataFromStripe){
+    if(this.state.boolValidPhoneNumber === false) return alert("You must validate your phone number!")
     const data = {
       buisnessName: this.state.buisnessName,
       city: this.state.city,
@@ -244,7 +247,7 @@ class SignUp extends Component {
       <div className="container text-center">
         <section id="portfolio" className="content">
           <h2 className="textHeader">Sign up</h2>
-          <p className="text">First, validate your phone number. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee.  </p>
+          <p className="text">First, validate your phone number. Couponer needs your phone number in order to text you claimed coupons and to allow easy verification of coupons. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee.  </p>
         </section>
         <div className="row">
           <hr />
