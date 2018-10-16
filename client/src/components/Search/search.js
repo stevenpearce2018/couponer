@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './search.css';
 import { ReCaptcha } from 'react-recaptcha-google';
+import { loadReCaptcha } from 'react-recaptcha-google';
 
 // Private component, keep scoped to search component
 class SearchField extends Component {
@@ -99,6 +100,7 @@ class Search extends Component {
     }
     const that = this;
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '') {
+      that.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       const url = `/api/searchCoupons`
       const response =  await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -161,9 +163,8 @@ class Search extends Component {
           </div>
         );
       }
-      if (json.coupons !== "invalid recaptcha") that.setState({coupons: CouponsMaker(json.coupons)})
-      else alert('Recaptcha failed! Try refreshing the page or redirecting.')
-    } else alert('You need to search for something!')
+      that.setState({coupons: CouponsMaker(json.coupons)})
+    }
 }                
   render() {
     return (

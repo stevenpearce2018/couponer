@@ -9,7 +9,7 @@ class Home extends Component {
       geolocation: '',
       latitude: '',
       longitude: '',
-      coupons: ''
+      coupons: <div className="loaderContainer"><div className="loader"></div></div>
     };
   }
 
