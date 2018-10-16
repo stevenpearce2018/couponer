@@ -115,15 +115,19 @@ app.post('/api/signupCustomer', async(req, res) => {
 app.post('/api/phoneTest', async (req, res) => {
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
   redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
-  client.messages
-      .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})
-      .then(message => console.log(message.sid))
-      .done();
+  try {
+    client.messages
+    .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})
+    .then(message => res.json({success:true}))
+    .done();
+  } catch (error) {
+    res.json({success:false})
+  }
 })
 app.post('/api/phoneTestValidateNumber', async (req, res) => {
-  redisHelper.set(req.body.phoneNumber, compareRandomNumber) // 3 minutes
+  redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
   function compareRandomNumber(randomNumber){
-    if (randomNumber === req.body.randomNumber) res.json({success:true})
+    if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
     else res.json({success:false})
   }
 })

@@ -37,7 +37,8 @@ class SignUp extends Component {
       fiveDigitCode: '',
       phoneNumber: '',
       popupClass: 'hiddenOverlay',
-      validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>
+      validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>,
+      showOrHidePhoneValidationButton:'signupbtn'
     }
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
@@ -52,6 +53,7 @@ class SignUp extends Component {
     this.verifyCallback = this.verifyCallback.bind(this);
     this.checkInfo = this.checkInfo.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
+    this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
   }
   componentDidMount() {
       if (this.captchaDemo) {
@@ -77,6 +79,33 @@ class SignUp extends Component {
   updateEmail(event) {
     this.setState({email : event.target.value})
   }
+  async validatePhoneNumber(){
+    const data = {
+      phoneNumber: this.state.phoneNumber,
+      randomNumber: this.state.fiveDigitCode
+    }
+    const url = `/api/phoneTestValidateNumber`
+    const response = await fetch(url, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, cors, *same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, same-origin, *omit
+      headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: JSON.stringify(data),
+    })
+    const json = await response.json()
+    if (json.success) {
+      alert("Phone number is valid, woohoo!")
+      this.setState({showOrHidePhoneValidationButton: 'hidden', validPhoneNumber:<img className='icon moveUp' src='https://storage.googleapis.com/csstest/valid.svg' alt="Phone number not validated"></img>})
+      this.togglePopup();
+    }
+    else {
+      alert("The number you have entered is incorrect")
+    }
+  }
   updateFiveDigitCode(event) {
     this.setState({fiveDigitCode : event.target.value})
   }
@@ -92,9 +121,8 @@ class SignUp extends Component {
     this.setState({buisnessName : event.target.value})
   }
   async checkInfo(data){
-    console.log({data})
     const that = this;
-    that.togglePopup()
+    this.togglePopup()
     if(this.state.phoneNumber[0] !== "+") return false;
     else {
       const data = {
@@ -127,8 +155,7 @@ class SignUp extends Component {
       yourPick: this.state.yourPick,
       password: this.state.password,
       phoneNumber: this.state.phoneNumber,
-      fiveDigitCode: this.state.fiveDigitCode,
-      membershipExperationDate: this.state.membershipExperationDate
+      membershipExperationDate: this.state.membershipExperationDate,
     }
     const url = `/api/signupCustomer`
     const response = await fetch(url, {
@@ -204,7 +231,7 @@ class SignUp extends Component {
               required
               />
               <div className="popupbtn">
-              <button className='signupbtn signupbtnn' value="send" onClick={this.handleSingup}><strong>Submit</strong></button>
+              <button className='signupbtn signupbtnn' value="send" onClick={this.validatePhoneNumber}><strong>Submit</strong></button>
               </div>
               </div>
             </div>
@@ -271,7 +298,7 @@ class SignUp extends Component {
     <div className="phoneImage">{this.state.validPhoneNumber}</div>
   </div>
   <div className='buttonAndForgot'>
-  <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Validate Phone Number</strong></button>
+  <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.checkInfo}><strong>Validate Phone Number</strong></button>
   <div className={this.state.showOrHideAccountMem}>
   <br/>
   <br/>
