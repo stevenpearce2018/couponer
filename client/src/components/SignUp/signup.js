@@ -52,6 +52,7 @@ class SignUp extends Component {
     this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.verifyCallback = this.verifyCallback.bind(this);
     this.checkInfo = this.checkInfo.bind(this);
+    this.handleCustomerSignup = this.handleCustomerSignup.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
   }
@@ -175,6 +176,39 @@ class SignUp extends Component {
       sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
     }
   }
+  async handleCustomerSignup(dataFromStripe){
+    const data = {
+      buisnessName: this.state.buisnessName,
+      city: this.state.city,
+      email: this.state.email,
+      yourPick: this.state.yourPick,
+      password: this.state.password,
+      phoneNumber: this.state.phoneNumber,
+      membershipExperationDate: this.state.membershipExperationDate,
+      description: dataFromStripe.description,
+      source: dataFromStripe.source,
+      currency: dataFromStripe.currency,
+      amount: dataFromStripe.amount
+    }
+    const url = `/api/signupCustomer`
+    const response = await fetch(url, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, cors, *same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, same-origin, *omit
+      headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: JSON.stringify(data),
+  })
+    const json = await response.json()
+    if (json.loggedInKey) {
+      this.props.parentMethod();
+      sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+    }
+  }
+
   togglePopup(){
     let newClass = "hiddenOverlay";
     if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
@@ -298,20 +332,22 @@ class SignUp extends Component {
     <div className="phoneImage">{this.state.validPhoneNumber}</div>
   </div>
   <div className='buttonAndForgot'>
-  <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.checkInfo}><strong>Validate Phone Number</strong></button>
-  <div className={this.state.showOrHideAccountMem}>
-  <br/>
-  <br/>
-    <Checkout
-      parentMethod = {this.checkInfo}
+    <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.checkInfo}><strong>Validate Phone Number</strong></button>
+    <div className={this.state.showOrHideAccountMem}>
+      <Checkout
+      parentMethod = {this.handleCustomerSignup}
       name={'Couponer Membership'}
       description={this.state.numberOfMonths + ' Month(s) of Unlimted Coupons'}
       amount={this.state.numberOfMonths * 4.99}
       panelLabel="Get membership"
-    />
-  </div>
-    <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Submit</strong></button>
-  </div>
+      />
+      <br/>
+      <br/>
+    </div>
+    <div className={this.state.showOrHideBuisInput}>
+      <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>
+    </div>
+    </div>
       <div className='forgotPass'>
         <strong>Forgot Password?</strong>
       </div>

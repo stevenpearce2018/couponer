@@ -35,7 +35,6 @@
 }
 }
 .signupbtn{
-  margin-top:10px;
   background-color:#fde428;
   border-radius:5px;
   color: #000080;
@@ -49,7 +48,7 @@
 .signinForm {
 width: 80%;
 margin: 0 auto;
-} */
+}
 
 
 /*Filler text alignment*/
@@ -162,7 +161,7 @@ margin-left:-6.5%;
 display: none;
 }
 .showBuissnessIfCustomer{
-display: block;
+  display: block;
 }
 
 .buttonAndForgot{

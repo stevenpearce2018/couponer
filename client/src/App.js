@@ -104,10 +104,8 @@ async componentDidMount () {
   if (sessionStorage.getItem('couponerkey') && sessionStorage.getItem('couponerkey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
 showOrHideNav(){
-  console.log('Called showOrHideNav')
   if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden"})
   else this.setState({showOrHideNav:"navPopup"})
-  console.log(this.state.showOrHideNav)
 }
   setSignupToMain(){
     this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})

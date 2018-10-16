@@ -60,12 +60,12 @@ const CURRENCY = 'USD';
     fromEuroToCent = amount => amount * 100;
 
     successPayment = data => {
-      alert('Payment Successful');
+      alert('Account created, payment successful');
       console.log(data);
     };
 
     errorPayment = data => {
-      alert('Payment Error');
+      alert('Account creation failed, payment error');
       console.log(data);
     };
 
@@ -82,19 +82,21 @@ const CURRENCY = 'USD';
           amount: this.fromEuroToCent(amount)
         }
         const result = this.props.parentMethod(data)
-        const url = '/api/charge'
-        fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: JSON.stringify(data),
-        }).then(this.successPayment)
+        .then(this.successPayment)
         .catch(this.errorPayment);
+        // const url = '/api/charge'
+        // fetch(url, {
+        // method: "POST", // *GET, POST, PUT, DELETE, etc.
+        // mode: "cors", // no-cors, cors, *same-origin
+        // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        // credentials: "same-origin", // include, same-origin, *omit
+        // headers: {
+        //   "Content-Type": "application/json; charset=utf-8",
+        //   // "Content-Type": "application/x-www-form-urlencoded",
+        // },
+        // body: JSON.stringify(data),
+        // }).then(this.successPayment)
+        // .catch(this.errorPayment);
       // }
     }
     render() {
