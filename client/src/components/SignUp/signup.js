@@ -94,16 +94,13 @@ class SignUp extends Component {
   async checkInfo(data){
     console.log({data})
     const that = this;
-    console.log('1')
     that.togglePopup()
-    console.log('2')
     if(this.state.phoneNumber[0] !== "+") return false;
     else {
       const data = {
         phoneNumber: that.state.phoneNumber,
       }
       const url = `/api/phoneTest`
-      console.log('3')
       const response = await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin
@@ -115,7 +112,6 @@ class SignUp extends Component {
         },
         body: JSON.stringify(data),
       })
-      console.log('3')
       const json = await response.json()
       if (this.state.city && this.state.email && this.state.yourPick === ' Customer' && this.state.password === this.state.passwordConfirm && this.state.phoneNumber &&this.state.membershipExperationDate) return true;
       else return false;

@@ -40,7 +40,7 @@ class App extends Component {
       logoutButton: 'hidden',
       email: '',
       loggedInKey: '',
-      showOrHideNav: 'navPopup'
+      showOrHideNav: 'hide'
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -104,6 +104,7 @@ async componentDidMount () {
   if (sessionStorage.getItem('couponerkey') && sessionStorage.getItem('couponerkey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
 showOrHideNav(){
+  console.log('Called showOrHideNav')
   if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hide"})
   else this.setState({showOrHideNav:"navPopup"})
   console.log(this.state.showOrHideNav)
@@ -200,7 +201,7 @@ showOrHideNav(){
                 Couponer
               </strong>
             </a>
-            <label htmlFor="toggle-1" className="toggle-menu">
+            <label htmlFor="toggle-1" className="toggle-menu" onClick={this.showOrHideNav}>
               <ul>
                 <li ></li>
                 <li ></li>
@@ -208,8 +209,7 @@ showOrHideNav(){
               </ul>
             </label>
             {/* <input type="checkbox" id="toggle-1" onClick={this.showOrHideNav}/> */}
-
-          <nav className='navBar' onClick={this.showOrHideNav}>
+          <nav className = {this.state.showOrHideNav} onClick={this.showOrHideNav}>
             <ul>
               <Link href = '/Home'><li onClick={this.setMainHome}><div><i className="icon-home"></i>Home</div></li></Link>
               <Link href = '/About'><li onClick={this.setMainToAbout}><div><i className="fa fa-info-circle"></i>About</div></li></Link>

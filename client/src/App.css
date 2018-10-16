@@ -19,8 +19,6 @@ nav ul li div i{padding-right:10px; color:#002e5b; transition: all 0.5s ease 0s;
 .toggle-menu ul li{width:100%; height:3px; background-color:#002e5b; margin-bottom:4px;}
 .toggle-menu ul li:last-child{margin-bottom:0px;}
 
-input[type=checkbox], label{display:none;}
-
 .toggle-menu{
     display: none;
 }
@@ -36,11 +34,17 @@ input[type=checkbox]:focus{background:none;}
 .toggle-menu {float:right; padding:8px 0px; display:inline-block; cursor:pointer; }
 
 
-nav{display:none; position:absolute; right:0px; top:53px; background-color:#002e5b; padding:0px; z-index:99;}
+nav{position:absolute; right:-22px; top:53px; background-color:#002e5b; padding:0px; z-index:99;}
 nav ul{width:auto;}
 nav ul li{float:none; padding:0px; width:100%; display:table;}
 nav ul li a{color:#FFF; font-size:15px; padding:10px 20px; display:block; border-bottom: 1px solid rgba(225,225,225,0.1);}
 nav ul li a i{color:#fde428; padding-right:13px;}
+ 
+nav {margin-top:8px;display:block;}
+nav ul li div{color:#fde428; font-size:18px; padding: 15px 10px; display:inline-block; transition: all 0.5s ease 0s; width: 220px;}
+nav ul li div i{color:#fde428; font-size:18px;display:inline-block; transition: all 0.5s ease 0s;}
+nav ul li div:hover {background-color:#fde428; color:#002e5b; transition: all 0.5s ease 0s;}
+nav ul li div:hover i {background-color:#fde428; color:#002e5b; transition: all 0.5s ease 0s;}
 }
 
 @media only screen and (max-width: 980px) {
@@ -67,15 +71,5 @@ nav{top:47px;}
 h1 {padding: 20px 0px;}
 }
 
-.hidden{
-    display: none;
-}
-.notHidden{
-    display: inline;
-}
+.hide{display: none;}
 
-nav {margin-top:8px;display:block;}
-nav ul li div{color:#fde428; font-size:18px; padding: 15px 10px; display:inline-block; transition: all 0.5s ease 0s; width: 220px;}
-nav ul li div i{color:#fde428; font-size:18px;display:inline-block; transition: all 0.5s ease 0s;}
-nav ul li div:hover {background-color:#fde428; color:#002e5b; transition: all 0.5s ease 0s;}
-nav ul li div:hover i {background-color:#fde428; color:#002e5b; transition: all 0.5s ease 0s;}
