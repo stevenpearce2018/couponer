@@ -40,7 +40,7 @@ class App extends Component {
       logoutButton: 'hidden',
       email: '',
       loggedInKey: '',
-      showOrHideNav: 'hide'
+      showOrHideNav: 'hidden'
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -105,7 +105,7 @@ async componentDidMount () {
 }
 showOrHideNav(){
   console.log('Called showOrHideNav')
-  if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hide"})
+  if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden"})
   else this.setState({showOrHideNav:"navPopup"})
   console.log(this.state.showOrHideNav)
 }

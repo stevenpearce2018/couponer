@@ -90,23 +90,28 @@ class Home extends Component {
         longitude: position.coords.longitude,
       })
       const latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
-      geocoder.geocode({'location': latlng}, async (results, status) => {
-        if (status === 'OK') {
-          if (results[0]) {
-            let city = results[0].address_components.filter((addr) => {
-              return (addr.types[0] === 'locality')?1:(addr.types[0] === 'administrative_area_level_1')?1:0;
-            });
-            if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
-            if (city.length > 0 || city.length > 1) {
-              const url = '/api/getSponseredCoupons/'+city
-              const response = await fetch(url);
-              const data = await response.json();
-              // CouponsMaker(data.coupons)
-              that.setState({coupons: CouponsMaker(data.coupons)})
+      try {
+        geocoder.geocode({location: latlng}, async (results, status) => {
+          if (status === 'OK') {
+            if (results[0]) {
+              let city = results[0].address_components.filter((addr) => {
+                return (addr.types[0] === 'locality')?1:(addr.types[0] === 'administrative_area_level_1')?1:0;
+              });
+              if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
+              if (city.length > 0 || city.length > 1) {
+                const url = '/api/getSponseredCoupons/'+city
+                const response = await fetch(url);
+                const data = await response.json();
+                // CouponsMaker(data.coupons)
+                that.setState({coupons: CouponsMaker(data.coupons)})
+              } else cityNotFound();
             } else cityNotFound();
           } else cityNotFound();
-        } else cityNotFound();
-      });
+        });
+      } catch (error) {
+        alert("We could not find your location. Please search manually.")
+        that.setState({coupons: <h3>No Coupons found based on your location or we could not get your location. Please try searching manually.</h3>})
+      }
     }
   }
 
