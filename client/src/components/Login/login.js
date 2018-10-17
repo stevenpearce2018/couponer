@@ -4,6 +4,7 @@ import './login.css';
 import { ReCaptcha } from 'react-recaptcha-google';
 import { loadReCaptcha } from 'react-recaptcha-google';
 import InputField from '../SubComponents/InputField/inputField'
+import validateEmail from '../../validateEmail';
 
 class Login extends Component {
   constructor(props, context) {
@@ -55,10 +56,6 @@ class Login extends Component {
     this.setState({recaptchaToken: recaptchaToken})
   }
   async sendRecoveryEmail(){
-    const validateEmail = (email) => {
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
-    }
     if (this.state.email === '') return alert("You need to enter a valid email")
     if (validateEmail(this.state.email) === false) return alert("You need to enter a valid email")
     const data = {
@@ -82,10 +79,6 @@ class Login extends Component {
   }
   async handleSubmit(e){
     e.preventDefault();
-    const validateEmail = (email) => {
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
-    }
     if (this.state.email === '') return alert("You need to enter a valid email")
     if (validateEmail(this.state.email) === false) return alert("You need to enter a valid email")
     if (this.state.password === '') return alert("You need to enter a password")

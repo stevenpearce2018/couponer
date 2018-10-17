@@ -31,7 +31,10 @@ const mailOptions = {
   subject: 'Welcome!', // Subject line
   html: '<p>Welcome to couponer</p>'// plain text body
 };
-
+const validateEmail = (email) => {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
 // const fs = require('fs')
 // const htttpsOptions = {
 //   cert: fs.readFileSync('./ssl/server.crt'),
@@ -119,10 +122,6 @@ app.post('/api/signupCustomer', async(req, res) => {
             if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
               const hashedPass = await bcrypt.hashSync(req.body.password, 10);
               const email = req.body.email;
-              const validateEmail = (email) => {
-                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return re.test(String(email).toLowerCase());
-              }
               if(validateEmail(email)){
                 const membershipExperationDate = req.body.buisnessName ? "N/A" : req.body.membershipExperationDate;
                 const accountInfo = new AccountInfo({

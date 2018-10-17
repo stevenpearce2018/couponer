@@ -8,6 +8,7 @@ import 'react-flags-select/css/react-flags-select.css';
 import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
 import Checkout from '../Checkout/checkout';
+import validateEmail from '../../validateEmail';
 
 // Checkout button is clicked
 // Check if info inputted is valid                 // if failed break
@@ -160,10 +161,6 @@ class SignUp extends Component {
       phoneNumber: this.state.phoneNumber,
       membershipExperationDate: this.state.membershipExperationDate,
     }
-    const validateEmail = (email) => {
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
-    }
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
       const response = await fetch(url, {
@@ -198,10 +195,6 @@ class SignUp extends Component {
       source: dataFromStripe.source,
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount
-    }
-    const validateEmail = (email) => {
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
     }
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
@@ -342,7 +335,7 @@ class SignUp extends Component {
     <PhoneInput
       placeholder="Enter phone number"
       value={ this.state.phoneNumber }
-      onChange={ phoneNumber => this.setState({ phoneNumber }) } 
+      onChange={ phoneNumber => this.setState({ phoneNumber: phoneNumber, validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>, showOrHidePhoneValidationButton: "signupbtn"}) } 
     />
     <div className="phoneImage">{this.state.validPhoneNumber}</div>
   </div>
