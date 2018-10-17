@@ -88,6 +88,7 @@ async componentDidMount () {
           this.setMainToAbout();
           break;
       default:
+          window.location.pathname = '/Home'
           this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
           break;
     }
