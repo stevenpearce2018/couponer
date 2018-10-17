@@ -85,7 +85,8 @@ class SignUp extends Component {
   async validatePhoneNumber(){
     const data = {
       phoneNumber: this.state.phoneNumber,
-      randomNumber: this.state.fiveDigitCode
+      randomNumber: this.state.fiveDigitCode,
+      recaptchaToken: this.state.recaptchaToken
     }
     const url = `/api/phoneTestValidateNumber`
     const response = await fetch(url, {
@@ -130,6 +131,7 @@ class SignUp extends Component {
     else {
       const data = {
         phoneNumber: that.state.phoneNumber,
+        recaptchaToken: that.state.recaptchaToken
       }
       const url = `/api/phoneTest`
       const response = await fetch(url, {
