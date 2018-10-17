@@ -13,9 +13,18 @@ const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
 const request = require('request');
 const stripe = require('./stripe');
+const nodemailer = require('nodemailer');
 //!todo, change recaptcha key and put in .env
 const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 const db = require('./config/db')
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+         user: 'youremail@address.com',
+         pass: 'yourpassword'
+     }
+ });
 
 // const fs = require('fs')
 // const htttpsOptions = {

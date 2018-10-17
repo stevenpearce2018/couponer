@@ -20,6 +20,7 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] === Done
 
 [X] Search Functionality <br />
+[ ] Restructure of server code to help simplify the serverside logic <br />
 [ ] Docker Containers <br />
 [X] Stateless Server <br />
 [ ] Load Balancer <br />

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './login.css';
 import { ReCaptcha } from 'react-recaptcha-google';
 import { loadReCaptcha } from 'react-recaptcha-google';
+import InputField from '../SubComponents/InputField/inputField'
 
 class Login extends Component {
   constructor(props, context) {
@@ -11,12 +12,17 @@ class Login extends Component {
         email: '',
         password: '',
         recaptchaToken: '',
+        popupClass: 'hiddenOverlay',
+        recoveryEmail: ''
     };
     this.updateEmail = this.updateEmail.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.verifyCallback = this.verifyCallback.bind(this);
+    this.togglePopup = this.togglePopup.bind(this);
+    this.updateRecoveryEmail = this.updateRecoveryEmail.bind(this);
+    this.sendRecoveryEmail = this.sendRecoveryEmail.bind(this);
   }
   updatePassword(event) {
     this.setState({password : event.target.value})
@@ -24,7 +30,14 @@ class Login extends Component {
   updateEmail(event) {
     this.setState({email : event.target.value})
   }
-
+  updateRecoveryEmail(event){
+    this.setState({recoveryEmail : event.target.value})
+  }
+  togglePopup(){
+    let newClass = "hiddenOverlay";
+    if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
+    this.setState({popupClass: newClass})
+  }
   componentDidMount() {
     loadReCaptcha()
     if (this.captchaDemo) {
@@ -41,9 +54,41 @@ class Login extends Component {
   verifyCallback(recaptchaToken) {
     this.setState({recaptchaToken: recaptchaToken})
   }
-
+  async sendRecoveryEmail(){
+    const validateEmail = (email) => {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
+    }
+    if (this.state.email === '') return alert("You need to enter a valid email")
+    if (validateEmail(this.state.email) === false) return alert("You need to enter a valid email")
+    const data = {
+      recoveryEmail: this.state.recoveryEmail,
+      recaptchaToken: this.state.recaptchaToken
+    }
+    alert(this.state.recaptchaToken, 'this.state.recaptchaToken')
+    const url = `/api/recoverAccount`
+    const response = await fetch(url, {
+      method: "POST", 
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(data),
+    })
+    const json = await response.json()
+    alert(JSON.stringify(json))
+  }
   async handleSubmit(e){
     e.preventDefault();
+    const validateEmail = (email) => {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
+    }
+    if (this.state.email === '') return alert("You need to enter a valid email")
+    if (validateEmail(this.state.email) === false) return alert("You need to enter a valid email")
+    if (this.state.password === '') return alert("You need to enter a password")
     const data = {
       email: this.state.email,
       password: this.state.password,
@@ -83,8 +128,30 @@ class Login extends Component {
                   <input type="password" id="passwordSignin" onChange={this.updatePassword}/>
                   <br/>
                 <button className='signupbtn signupbtnn' value="send" onClick={this.handleSubmit}><strong>Sign In</strong></button>
+                <div className='forgotPass'>
+                  <strong onClick={this.togglePopup}>Forgot Password?</strong>
+                </div>
               </div>
             </div>
+            <div className={this.state.popupClass}>
+            <div className="popup">
+              <h2>Please Enter Your Email</h2>
+              <a className="close" onClick={this.togglePopup}>&times;</a>
+              <div className="popupcontent">
+              <InputField
+              htmlFor="Recover account"
+              type="text"
+              labelHTML="Your Email"
+              placeholder="helpme@ohno.com"
+              onChange={this.updateRecoveryEmail}
+              required
+              />
+              <div className="popupbtn">
+              <button className='signupbtn signupbtnn' value="send" onClick={this.sendRecoveryEmail}><strong>Recover</strong></button>
+              </div>
+              </div>
+            </div>
+          </div>
             <ReCaptcha
             ref={(el) => {this.captchaDemo = el;}}
             size="invisible"

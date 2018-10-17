@@ -363,9 +363,6 @@ class SignUp extends Component {
       <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>
     </div>
     </div>
-      <div className='forgotPass'>
-        <strong>Forgot Password?</strong>
-      </div>
       <ReCaptcha
         ref={(el) => {this.captchaDemo = el;}}
         size="invisible"

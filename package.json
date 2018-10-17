@@ -23,6 +23,7 @@
     "https": "^1.0.0",
     "mongodb": "^3.1.4",
     "mongoose": "^5.2.12",
+    "nodemailer": "^4.6.8",
     "nodemon": "^1.14.7",
     "npm": "^6.4.1",
     "redis": "^2.8.0",
