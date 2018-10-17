@@ -21,10 +21,16 @@ const db = require('./config/db')
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-         user: 'youremail@address.com',
-         pass: 'yourpassword'
-     }
- });
+    user: 'youremail@address.com',
+    pass: 'yourpassword'
+  }
+});
+const mailOptions = {
+  from: 'sender@email.com', // sender address
+  to: 'to@email.com', // list of receivers
+  subject: 'Welcome!', // Subject line
+  html: '<p>Welcome to couponer</p>'// plain text body
+};
 
 // const fs = require('fs')
 // const htttpsOptions = {
@@ -48,8 +54,36 @@ const postStripeCharge = res => (stripeErr, stripeRes) => {
   else res.status(200).send({ success: stripeRes });
 }
 
+const didRecaptchaPass = async(req) => {
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  await request(verifyUrl, (err, response, body) => {
+    body = JSON.parse(body);
+    if(!body.success) return false;
+    return true;
+  })
+}
+
 app.post('/api/charge', (req, res) => {
   stripe.charges.create(req.body, postStripeCharge(res));
+});
+app.post('/api/recoverAccount', async(req, res) => {
+  console.log(didRecaptchaPass(req))
+  const email = req.body.recoveryEmail;
+  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  let recaptchaPassed = false;
+  await request(verifyUrl, (err, response, body) => {
+    body = JSON.parse(body);
+    if(!body.success) recaptchaPassed = false;
+    else recaptchaPassed = true;
+  })
+  if (recaptchaPassed === true) {
+    const mailOptions = {
+      from: 'sender@email.com', // sender address
+      to: email, // list of receivers
+      subject: 'Recover Account', // Subject line
+      html: '<p>Welcome to couponer</p>'// plain text body
+    };
+  }
 });
 
 app.post('/api/signupCustomer', async(req, res) => {
