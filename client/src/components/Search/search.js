@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './search.css';
 import { ReCaptcha } from 'react-recaptcha-google';
 import { loadReCaptcha } from 'react-recaptcha-google';
+import Select from '../SubComponents/Select/select';
 
 // Private component, keep scoped to search component
 class SearchField extends Component {
@@ -28,7 +29,8 @@ class Search extends Component {
       category: '',
       coupons: '',
       keywords: '',
-      recaptchaToken: ''
+      recaptchaToken: '',
+      length: 0
     }
     this.updateCity = this.updateCity.bind(this);
     this.updateZip = this.updateZip.bind(this);
@@ -60,7 +62,9 @@ class Search extends Component {
     this.setState({ zip: e.target.value });
   }
   updateCategory (e) {
-    this.setState({ category: e.target.value });
+    const choices = ["Food", "Entertainment", "Health and Fitness", "Retail", "Home Improvement", "Activities", "Other", "Any" ]
+    if (e.target.value == 7) this.setState({ category: '' });
+    else this.setState({ category: choices[e.target.value] });
   }
   updateKeywords(e){
     this.setState({ keywords: e.target.value });
@@ -91,6 +95,7 @@ class Search extends Component {
 
   async handleSearch(e){
     e.preventDefault();
+    console.log(this.state.category)
     const data = {
       city: this.state.city,
       zip: this.state.zip,
@@ -184,11 +189,19 @@ class Search extends Component {
       onChange={this.updateZip}
       />
       <br/>
-      <SearchField
+      {/* <SearchField
       htmlFor="Category"
       className='searchCategory'
       onChange={this.updateCategory}
-      />
+      /> */}
+      <Select
+          hasLabel='true'
+          htmlFor='select'
+          label='Coupon Category'
+          options='Food, Entertainment, Health and Fitness, Retail, Home Improvement, Activities, Other'
+          required={true}
+          value={this.state.length}
+          onChange={this.updateCategory} />
       {/* <br/>
       <SearchField
       htmlFor="Keywords: Seperate keywords by commas"
