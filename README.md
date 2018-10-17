@@ -53,6 +53,7 @@ You will need a redis server running locally for the server to compile. I plan o
 [/] Strip Unused dependacies <br />
 [/] Mongoose Models <br />
 [ ] Production MongoDB Setup <br />
+[X] Preact config <br />
 [ ] Production Redis Setup <br />
 [ ] Enviromnet of MongoDB String Setup <br />
 [ ] Production Payment Setup <br />
