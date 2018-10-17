@@ -76,35 +76,41 @@ app.post('/api/signupCustomer', async(req, res) => {
             if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
               const hashedPass = await bcrypt.hashSync(req.body.password, 10);
               const email = req.body.email;
-              const membershipExperationDate = req.body.buisnessName ? "N/A" : req.body.membershipExperationDate;
-              const accountInfo = new AccountInfo({
-                _id: new mongoose.Types.ObjectId(),
-                email: email,
-                buisnessName: req.body.buisnessName,
-                password: hashedPass,
-                phoneNumber: req.body.phoneNumber,
-                // creditCardNumber: req.body.cardNumber,
-                // CCV: req.body.CCV,
-                // zipCode: req.body.zipCode,
-                // experationDate: req.body.experationDate,
-                // address: req.body.address,
-                // cardholderName: req.body.cardholderName,
-                // city: req.body.city.toLowerCase(),
-                // country: req.body.country,
-                // region: req.body.region,
-                yourPick: req.body.yourPick,
-                loggedInKey: loggedInKey,
-                couponIds: [],
-                couponsCurrentlyClaimed: 0,
-                membershipExperationDate: membershipExperationDate,
-                ip: ip
-              })
-              await accountInfo.save()
-              .catch(err => console.log(err))
-              redisHelper.set(loggedInKey, loggedInKey)
-              res.json({
-                loggedInKey:loggedInKey
-              });
+              const validateEmail = (email) => {
+                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+              }
+              if(validateEmail(email)){
+                const membershipExperationDate = req.body.buisnessName ? "N/A" : req.body.membershipExperationDate;
+                const accountInfo = new AccountInfo({
+                  _id: new mongoose.Types.ObjectId(),
+                  email: email,
+                  buisnessName: req.body.buisnessName,
+                  password: hashedPass,
+                  phoneNumber: req.body.phoneNumber,
+                  // creditCardNumber: req.body.cardNumber,
+                  // CCV: req.body.CCV,
+                  // zipCode: req.body.zipCode,
+                  // experationDate: req.body.experationDate,
+                  // address: req.body.address,
+                  // cardholderName: req.body.cardholderName,
+                  // city: req.body.city.toLowerCase(),
+                  // country: req.body.country,
+                  // region: req.body.region,
+                  yourPick: req.body.yourPick,
+                  loggedInKey: loggedInKey,
+                  couponIds: [],
+                  couponsCurrentlyClaimed: 0,
+                  membershipExperationDate: membershipExperationDate,
+                  ip: ip
+                })
+                await accountInfo.save()
+                .catch(err => console.log(err))
+                redisHelper.set(loggedInKey, loggedInKey)
+                res.json({
+                  loggedInKey:loggedInKey
+                });
+              } else res.json({resp:'Your email is not valid!'});
             } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
         } else res.json({resp:'You need to fill out all fields!'});
       } else res.json({resp:'Email address is taken!'});

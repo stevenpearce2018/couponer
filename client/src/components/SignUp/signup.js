@@ -160,23 +160,29 @@ class SignUp extends Component {
       phoneNumber: this.state.phoneNumber,
       membershipExperationDate: this.state.membershipExperationDate,
     }
-    const url = `/api/signupCustomer`
-    const response = await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data),
-  })
-    const json = await response.json()
-    if (json.loggedInKey) {
-      this.props.parentMethod();
-      sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+    const validateEmail = (email) => {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
     }
+    if (validateEmail(this.state.email)){
+      const url = `/api/signupCustomer`
+      const response = await fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+      if (json.loggedInKey) {
+        this.props.parentMethod();
+        sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+      }
+    } else alert("Your email is not valid!")
   }
   async handleCustomerSignup(dataFromStripe){
     if(this.state.boolValidPhoneNumber === false) return alert("You must validate your phone number!")
@@ -193,23 +199,29 @@ class SignUp extends Component {
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount
     }
-    const url = `/api/signupCustomer`
-    const response = await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data),
-  })
-    const json = await response.json()
-    if (json.loggedInKey) {
-      this.props.parentMethod();
-      sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+    const validateEmail = (email) => {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
     }
+    if (validateEmail(this.state.email)){
+      const url = `/api/signupCustomer`
+      const response = await fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(data),
+      })
+      const json = await response.json()
+      if (json.loggedInKey) {
+        this.props.parentMethod();
+        sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+      }
+    } else alert("Your email is not valid!")
   }
 
   togglePopup(){
