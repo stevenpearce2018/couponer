@@ -61,6 +61,7 @@ class CouponForm extends Component {
     this.handleTextareaChange = this.handleTextareaChange.bind(this);
     this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.verifyCallback = this.verifyCallback.bind(this);
+    this.parentMethod = this.parentMethod.bind(this);
   }
   componentDidMount() {
     if (this.captchaDemo) {
@@ -97,6 +98,11 @@ class CouponForm extends Component {
     } catch (error) {
       alert('You must select an image!')
     }
+  }
+
+  parentMethod(data){
+    console.log('called parent')
+    console.log({data}, 'data from checkout')
   }
 
   uploadFile(e) {
@@ -386,6 +392,7 @@ class CouponForm extends Component {
           Upload Coupons
           </button>
           <Checkout
+            parentMethod={this.parentMethod}
             name={'Couponer Coupons'}
             description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
             amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
@@ -402,7 +409,7 @@ class CouponForm extends Component {
       </form>
       </div>
       </div>
-        </div>
+      </div>
     )
   }
 }

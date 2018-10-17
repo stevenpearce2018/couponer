@@ -81,9 +81,12 @@ const CURRENCY = 'USD';
           currency: CURRENCY,
           amount: this.fromEuroToCent(amount)
         }
-        const result = this.props.parentMethod(data)
-        .then(this.successPayment)
-        .catch(this.errorPayment);
+        console.log({data}, 'called child')
+        this.props.parentMethod(data) // call function based on success/failure
+        // .then(this.successPayment)
+        // .catch(this.errorPayment);
+
+
         // const url = '/api/charge'
         // fetch(url, {
         // method: "POST", // *GET, POST, PUT, DELETE, etc.
