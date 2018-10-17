@@ -1,8 +1,11 @@
 const redis = require('redis')
 const client = redis.createClient()
 client.on('connect', () => {
-  console.log('connected to redis')
+  console.log('Connected to redis')
 })
+client.on('error', (err) => {
+    console.log('Failed to connect to redis, :(. Error: ' + err);
+});
 
 // Convert object to string if value is an object
 // if a time to live is defined then give the data a time to expire

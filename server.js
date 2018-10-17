@@ -50,8 +50,12 @@ const validateEmail = (email) => {
 
 
 //!todo, get production mongodb account and login string. Use .env for connection string
-mongoose.connect(db).then(console.log('Connected to mongoDB'));
 
+try {
+  mongoose.connect(db).then(console.log('Connected to mongoDB'));
+} catch (error) {
+  console.log(error, "Failed to connect to mongoDB. :(")
+}
 const postStripeCharge = res => (stripeErr, stripeRes) => {
   if (stripeErr) res.status(500).send({ error: stripeErr });
   else res.status(200).send({ success: stripeRes });
