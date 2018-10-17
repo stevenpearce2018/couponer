@@ -57,7 +57,7 @@ class App extends Component {
   this.showOrHideNav = this.showOrHideNav.bind(this);
 }
 async componentDidMount () {
-  await loadReCaptcha();
+  loadReCaptcha();
   const urlHandler = (currentURL) => {
     switch (currentURL.toLowerCase()) {
       case '':
@@ -194,7 +194,7 @@ showOrHideNav(){
           </h1>
         <header className='homeHeader'>
           <section>
-            <a href=" " onClick={this.setMainHome} id="logo">
+            <a href="/Home" onClick={this.setMainHome} id="logo">
               <strong>
                 Couponer
               </strong>
