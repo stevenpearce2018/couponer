@@ -7,6 +7,23 @@ import Textarea from '../SubComponents/Textarea/textarea';
 import { ReCaptcha } from 'react-recaptcha-google';
 import Checkout from '../Checkout/checkout';
 
+const validateCouponForm = (state) => {
+  // do you like hacky code?
+  // here is some hacky code.
+  // else if  else if  else if  else if  else if  else if  else if  else if  else if  else if  else if  else if 
+  if (state.latitude === '' || state.longitude === '') return alert('Invalid Address, please check address!');
+  else if (state.title === 'Rent your very own kitten today!') return alert('You must have a unique title!');
+  else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') return alert('You must have an address!');
+  else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your old price');
+  else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') return alert('You must upload an image!');
+  else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') return alert('You must upload a custom description!');
+  else if (state.city === '') return alert('You must have a city!')
+  else if (state.category === '') return alert('You must have a category!')
+  else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your current price!')
+  else if (state.city === '') return alert('You must have a city!')
+  else if (state.zip === '' || state.zip.length < 3) return alert('You must have a zipcode!')
+}
+
 class CouponForm extends Component {
   constructor(props) {
     super(props);
@@ -96,49 +113,37 @@ class CouponForm extends Component {
             latitude:results[0].geometry.location.lat(),
             longitude: results[0].geometry.location.lng()
           })
-          if (this.state.latitude === '' || this.state.longitude === '') alert('Invalid Address, please check address!')
-          else if (this.state.title === 'Rent your very own kitten today!') alert('You must have a unique title!')
-          else if (this.state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') alert('You must have an address!')
-          else if (this.state.currentPrice <= this.state.discountedPrice) alert('Your discounted price must be lower than your old price')
-          else if (this.state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') alert('You must upload an image!')
-          else if (this.state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') alert('You must upload a custom description!')
-          else if (this.state.city === '') alert('You must have a city!')
-          else if (this.state.category === '') alert('You must have a category!')
-          else if (this.state.currentPrice <= this.state.discountedPrice) alert('Your discounted price must be lower than your current price!')
-          else if (this.state.city === '') alert('You must have a city!')
-          else if (this.state.zip === '' || this.state.zip.length < 3) alert('You must have a zipcode!')
-          else {
-            const url = `/api/uploadCoupons`
-            alert(JSON.stringify(this.state))
-            const data = {
-              title: this.state.title,
-              longitude: this.state.longitude,
-              latitude: this.state.latitude,
-              address: this.state.address,
-              amountCoupons: this.state.amountCoupons,
-              currentPrice: this.state.currentPrice,
-              discountedPrice: this.state.discountedPrice,
-              superCoupon: this.state.superCoupon,
-              textarea: this.state.textarea,
-              imagePreviewUrl: this.state.imagePreviewUrl,
-              category: this.state.category,
-              city: this.state.city,
-              zip: this.state.zip
-            }
-            const response = await fetch(url, {
-              method: "POST", 
-              mode: "cors",
-              cache: "no-cache",
-              credentials: "same-origin",
-              headers: {
-                "Content-Type": "application/json; charset=utf-8",
-              },
-              body: JSON.stringify(data),
-            })
-            const json = await response.json()
-            alert(JSON.stringify(json))
-            // !todo, reroute user to homepage
+          validateCouponForm(this.state)
+          const url = `/api/uploadCoupons`
+          alert(JSON.stringify(this.state))
+          const data = {
+            title: this.state.title,
+            longitude: this.state.longitude,
+            latitude: this.state.latitude,
+            address: this.state.address,
+            amountCoupons: this.state.amountCoupons,
+            currentPrice: this.state.currentPrice,
+            discountedPrice: this.state.discountedPrice,
+            superCoupon: this.state.superCoupon,
+            textarea: this.state.textarea,
+            imagePreviewUrl: this.state.imagePreviewUrl,
+            category: this.state.category,
+            city: this.state.city,
+            zip: this.state.zip
           }
+          const response = await fetch(url, {
+            method: "POST", 
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify(data),
+          })
+          const json = await response.json()
+          alert(JSON.stringify(json))
+          // !todo, reroute user to homepage
         }
       } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });
