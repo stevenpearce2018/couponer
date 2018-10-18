@@ -17,6 +17,26 @@ const nodemailer = require('nodemailer');
 //!todo, change recaptcha key and put in .env
 const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 const db = require('./config/db')
+const QRCode = require('qrcode');
+
+const generateQR = async text => {
+  try {
+    return await QRCode.toDataURL(text)
+  } catch (err) {
+    console.error("Failed to make qrcode: " + err)
+  }
+}
+app.post('/api/generateQR', async(req, res) => {
+  try {
+    client.messages
+    .create({from: '+13124108678', mediaUrl: await generateQR("Hello world"), to: "+15614807156"})
+    .then(message => res.json({success:true}))
+    .done();
+  } catch (error) {
+    res.json({success:false})
+  }
+});
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
