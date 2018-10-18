@@ -49,7 +49,7 @@ const mailOptions = {
   from: 'sender@email.com', // sender address
   to: 'to@email.com', // list of receivers
   subject: 'Welcome!', // Subject line
-  html: '<p>Welcome to couponer</p>'// plain text body
+  html: '<p>Welcome to UnlimitedCouponer</p>'// plain text body
 };
 const validateEmail = (email) => {
   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -102,7 +102,7 @@ app.post('/api/recoverAccount', async(req, res) => {
       from: 'sender@email.com', // sender address
       to: email, // list of receivers
       subject: 'Recover Account', // Subject line
-      html: '<p>Welcome to couponer</p>'// plain text body
+      html: '<p>Welcome to UnlimitedCouponer</p>'// plain text body
     };
   }
 });

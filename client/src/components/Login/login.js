@@ -103,7 +103,7 @@ class Login extends Component {
     alert(JSON.stringify(json))
     if (json.loggedInKey){
       this.props.parentMethod(json.loggedInKey, this.state.email);
-      sessionStorage.setItem('couponerkey', JSON.stringify(json.loggedInKey))
+      sessionStorage.setItem('UnlimitedCouponerkey', JSON.stringify(json.loggedInKey))
     } else alert("Invalid Login")
   }
     

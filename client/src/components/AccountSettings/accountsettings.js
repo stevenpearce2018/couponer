@@ -149,7 +149,7 @@ class AccountSettings extends Component {
           htmlFor="Email"
           type="email"
           labelHTML="Email"
-          placeholder="ProSaver@Couponer.com"
+          placeholder="ProSaver@UnlimitedCouponer.com"
           onChange={this.updateEmail}
           />
 

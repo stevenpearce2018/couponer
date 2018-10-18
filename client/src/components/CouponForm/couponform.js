@@ -64,7 +64,7 @@ class CouponForm extends Component {
     this.parentMethod = this.parentMethod.bind(this);
   }
   componentDidMount() {
-    const loggedInKey = sessionStorage.getItem('couponerkey')
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
     if (!loggedInKey) {
         window.location.pathname = '/Home';
         alert('You are not logged in!')
@@ -410,7 +410,7 @@ class CouponForm extends Component {
           </button>
           <Checkout
             parentMethod={this.parentMethod}
-            name={'Couponer Coupons'}
+            name={'UnlimitedCouponer Coupons'}
             description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
             amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
           />

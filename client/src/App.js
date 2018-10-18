@@ -99,7 +99,7 @@ async componentDidMount () {
       urlHandler(urlPath)
     }
   }
-  if (sessionStorage.getItem('couponerkey') && sessionStorage.getItem('couponerkey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
+  if (sessionStorage.getItem('UnlimitedCouponerkey') && sessionStorage.getItem('UnlimitedCouponerkey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
 showOrHideNav(){
   if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden"})
@@ -150,7 +150,7 @@ showOrHideNav(){
     const json = await response.json()
     if(json.response === "Logout Failed") alert(json.response)
     this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden'})
-    sessionStorage.setItem('couponerkey', '')
+    sessionStorage.setItem('UnlimitedCouponerkey', '')
   }
 
   setMainAccountSettings(e) {
@@ -193,7 +193,7 @@ showOrHideNav(){
           <section>
             <a href="/Home" onClick={this.setMainHome} id="logo">
               <strong>
-                Couponer
+                UnlimitedCouponer
               </strong>
             </a>
             <label htmlFor="toggle-1" className="toggle-menu" onClick={this.showOrHideNav}>

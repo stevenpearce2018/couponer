@@ -1,7 +1,7 @@
 # Copyright 2018 Steven Pearce
 <strong> You will need a twilio key to create accounts because the current twilio key is bound to my phone number.</strong>
 
-1) cd Couponer
+1) cd UnlimitedCouponer
 2) npm install
 3) cd client
 4) npm install

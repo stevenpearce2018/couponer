@@ -68,7 +68,7 @@ class Search extends Component {
     this.setState({ keywords: e.target.value });
   }
   async getCoupons(id){
-    const loggedInKey = sessionStorage.getItem('couponerkey')
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
     if (!loggedInKey) alert('You are not logged in!')
     else {
       const data = {
