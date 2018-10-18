@@ -19,7 +19,7 @@ class Textarea extends Component {
             name={this.props.name || ''}
             required={this.props.required || ''}
             rows={this.props.rows || ''}
-            value = {this.props.textarea || ''}
+            value = {this.props.textarea}
             onChange={this.props.onChange || ''}
             className={this.props.className}
           >

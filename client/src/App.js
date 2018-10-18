@@ -211,8 +211,8 @@ showOrHideNav(){
               <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="icon-user"></i>Logout</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/MyCoupons'><li onClick={this.logout}><div><i className="icon-money"></i>My Coupons</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><div><i className="icon-gear"></i>Account Settings</div></li></Link></div>
-              <Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="icon-money"></i>Coupons</div></li></Link>
-              <Link href = '/Search'><li onClick={this.setMainSearch}><div><i className="icon-search"></i>Search</div></li></Link>
+              <Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="icon-money"></i>Upload Coupons</div></li></Link>
+              <Link href = '/Search'><li onClick={this.setMainSearch}><div><i className="icon-search"></i>Search Coupons</div></li></Link>
             </ul>
           </nav>
           </section>

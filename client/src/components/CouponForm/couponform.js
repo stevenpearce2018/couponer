@@ -104,6 +104,18 @@ class CouponForm extends Component {
     console.log('called parent')
     console.log({data}, 'data from checkout')
   }
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.title !== nextState.title) return true;
+    if (this.state.address !== nextState.address) return true;
+    if (this.state.city !== nextState.city) return true;
+    if (this.state.amountCoupons !== nextState.amountCoupons) return true;
+    if (this.state.currentPrice !== nextState.currentPrice) return true;
+    if (this.state.discountedPrice !== nextState.discountedPrice) return true;
+    if (this.state.category !== nextState.category) return true;
+    if (this.state.popupClass !== nextState.popupClass) return true;
+    if (this.state.textarea !== nextState.textarea) return true;
+    return false;
+  }
 
   uploadFile(e) {
     // after a response is gotten from the server

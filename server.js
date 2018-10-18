@@ -198,12 +198,12 @@ app.post('/api/signin', async (req, res) => {
     const outcome = await AccountInfo.find({'email' : email}).limit(1)
     if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
       const loginStringBase = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      const loggedInKey = outcome[0].yourPick === " Customer" ? loginStringBase+":c" : loginStringBase + ":b"
+      const loggedInKey = outcome[0].yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b"
       res.json({loggedInKey: loggedInKey});
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
         { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
-        { "upsert" : true } 
+        { "upsert" : false } 
       );
     }
     else res.json({recaptcha: 'invalid recaptcha'})
@@ -224,7 +224,7 @@ app.post(`/api/signout`, async(req, res) => {
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
         { "$set" : { "ip" : ''}, loggedInKey:'' }, 
-        { "upsert" : true } 
+        { "upsert" : false } 
       );
     } else res.json({response:"Logout Failed"})
   } else res.json({response:"Logout Failed"})
@@ -284,6 +284,12 @@ app.get('/api/getSponseredCoupons/:city', async (req, res) => {
       if (coupons.length > 0 ) res.json({ coupons });
       else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
   }
+});
+
+app.post('/api/getYourCoupons', async (req, res) => {
+  let coupons;
+  if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
+  res.json({coupons: coupons});
 });
 
 app.post('/api/searchCoupons', async (req, res) => {
