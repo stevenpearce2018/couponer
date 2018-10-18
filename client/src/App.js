@@ -1,16 +1,16 @@
-import React, { Component } from 'react'
-import './App.css'
-import CouponForm from './components/CouponForm/couponform'
-import SignUp from './components/SignUp/signup'
+import React, { Component } from 'react';
+import './App.css';
+import CouponForm from './components/CouponForm/couponform';
+import SignUp from './components/SignUp/signup';
 import AccountSettings from './components/AccountSettings/accountsettings';
-import Home from './components/Home/home'
+import Home from './components/Home/home';
 import Footer from './components/Footer/footer';
 import Login from './components/Login/login';
-import Search from './components/Search/search'
-import About from './components/About/about'
+import Search from './components/Search/search';
+import About from './components/About/about';
 import history from './history';
-import { loadReCaptcha } from 'react-recaptcha-google'
-
+import { loadReCaptcha } from 'react-recaptcha-google';
+import MyCoupons from './components/MyCoupons/myCoupons';
 
 // For routing
 const Link = (props) => {
@@ -48,48 +48,44 @@ class App extends Component {
   this.setMainAccountSettings = this.setMainAccountSettings.bind(this);
   this.setMainHome = this.setMainHome.bind(this);
   this.setMainLogin = this.setMainLogin.bind(this);
-  this.setSignupToMain = this.setSignupToMain.bind(this);
   this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
-  this.setSignupToMain = this.setSignupToMain.bind(this);
   this.logout = this.logout.bind(this);
   this.setMainToAbout = this.setMainToAbout.bind(this);
   this.getCoupons = this.getCoupons.bind(this);
   this.showOrHideNav = this.showOrHideNav.bind(this);
+  this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
 }
 async componentDidMount () {
   loadReCaptcha();
   const urlHandler = (currentURL) => {
     switch (currentURL.toLowerCase()) {
-      case '':
-          this.setMainHome()
-          break;
       case 'home':
-          this.setMainHome()
+          this.setMainHome();
           break;
-      case 'uploadcoupon':       
-          this.setMainUploadCoupon()
+      case 'uploadcoupon':
+          this.setMainUploadCoupon();
           break;
-      case 'accountsettings': 
-          this.setMainAccountSettings()
+      case 'accountsettings':
+          this.setMainAccountSettings();
           break;
       case 'signup':
-          this.setMainSignUp()
+          this.setMainSignUp();
           break;
       case 'search':
-          this.setMainSearch()
+          this.setMainSearch();
           break;
       case 'login':
-          this.setMainLogin()
-          break;
-      case 'signin':
-          this.setSignInToMain();
+          this.setMainLogin();
           break;
       case 'about':
           this.setMainToAbout();
           break;
+      case 'mycoupons':
+          this.setMainToMyCoupons();
+          break;
       default:
-          window.location.pathname = '/Home'
-          this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
+          window.location.pathname = '/Home';
+          this.setMainHome();
           break;
     }
   }
@@ -108,16 +104,6 @@ showOrHideNav(){
   if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden"})
   else this.setState({showOrHideNav:"navPopup"})
 }
-  setSignupToMain(){
-    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
-  }
-  setMainToAbout(){
-    this.setState({mainContent: <About/>})
-  }
-
-  setStateLoggedIn(key, email) {
-    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
-  }
   async getCoupons(_id){
     const loggedInKey = this.state.loggedInKey;
     const email = this.state.email;
@@ -184,7 +170,15 @@ showOrHideNav(){
   setMainSearch(e){
     this.setState({mainContent: <Search parentMethod={this.getCoupons}/>})
   }
-
+  setMainToAbout(){
+    this.setState({mainContent: <About/>})
+  }
+  setMainToMyCoupons(){
+    this.setState({mainContent: <MyCoupons parentMethod={this.getCoupons}/>})
+  }
+  setStateLoggedIn(key, email) {
+    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+  }
   render () {
     return (
         <div className="home">
@@ -215,6 +209,7 @@ showOrHideNav(){
               <div className={this.state.loginButton}><Link href = '/Login'><li onClick={this.setMainLogin}><div><i className="icon-signin"></i>Login</div></li></Link></div>
               <div className={this.state.loginButton}><Link href = '/SignUp'><li onClick={this.setMainSignUp}><div><i className="icon-user"></i>Sign up</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="icon-user"></i>Logout</div></li></Link></div>
+              <div className={this.state.logoutButton}><Link href = '/MyCoupons'><li onClick={this.logout}><div><i className="icon-money"></i>My Coupons</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><div><i className="icon-gear"></i>Account Settings</div></li></Link></div>
               <Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="icon-money"></i>Coupons</div></li></Link>
               <Link href = '/Search'><li onClick={this.setMainSearch}><div><i className="icon-search"></i>Search</div></li></Link>
