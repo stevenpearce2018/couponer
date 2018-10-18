@@ -69,7 +69,10 @@ class MyCoupons extends Component {
       }
     }
     const loggedInKey = sessionStorage.getItem('couponerkey')
-    if (!loggedInKey) alert('You are not logged in!')
+    if (!loggedInKey) {
+        window.location.pathname = '/Home';
+        alert('You are not logged in!')
+    }
     else {
       const data = {
         loggedinkeykey: loggedInKey

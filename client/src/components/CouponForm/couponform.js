@@ -64,6 +64,11 @@ class CouponForm extends Component {
     this.parentMethod = this.parentMethod.bind(this);
   }
   componentDidMount() {
+    const loggedInKey = sessionStorage.getItem('couponerkey')
+    if (!loggedInKey) {
+        window.location.pathname = '/Home';
+        alert('You are not logged in!')
+    }
     if (this.captchaDemo) {
         this.captchaDemo.reset();
         this.captchaDemo.execute();
