@@ -40,7 +40,8 @@ class App extends Component {
       logoutButton: 'hidden',
       email: '',
       loggedInKey: '',
-      showOrHideNav: 'hidden'
+      showOrHideNav: 'hidden',
+      loggedInBuisness: 'hidden'
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -177,7 +178,8 @@ showOrHideNav(){
     this.setState({mainContent: <MyCoupons parentMethod={this.getCoupons}/>})
   }
   setStateLoggedIn(key, email) {
-    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+    if(key.substring(key.length-1, key.length) === "c") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+    else if(key.substring(key.length-1, key.length) === "b") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
   }
   render () {
     return (
@@ -211,7 +213,7 @@ showOrHideNav(){
               <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="icon-user"></i>Logout</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/MyCoupons'><li onClick={this.logout}><div><i className="icon-money"></i>My Coupons</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><div><i className="icon-gear"></i>Account Settings</div></li></Link></div>
-              <Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="icon-money"></i>Upload Coupons</div></li></Link>
+              <div className={this.state.loggedInBuisness}><Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="icon-money"></i>Upload Coupons</div></li></Link></div>
               <Link href = '/Search'><li onClick={this.setMainSearch}><div><i className="icon-search"></i>Search Coupons</div></li></Link>
             </ul>
           </nav>

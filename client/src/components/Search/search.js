@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './search.css';
 import { ReCaptcha } from 'react-recaptcha-google';
-import { loadReCaptcha } from 'react-recaptcha-google';
 import Select from '../SubComponents/Select/select';
 
 // Private component, keep scoped to search component
@@ -63,8 +62,7 @@ class Search extends Component {
   }
   updateCategory (e) {
     const choices = ["Food", "Entertainment", "Health and Fitness", "Retail", "Home Improvement", "Activities", "Other", "Any" ]
-    if (e.target.value == 7) this.setState({ category: '' });
-    else this.setState({ category: choices[e.target.value] });
+    this.setState({ category: choices[e.target.value] });
   }
   updateKeywords(e){
     this.setState({ keywords: e.target.value });
