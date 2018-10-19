@@ -137,6 +137,16 @@ class Home extends Component {
           <h2>Coupons near you</h2>
         </div>
         {this.state.coupons}
+        <a className="icon-button">
+                <i 
+                className="fa-arrow-left">
+                </i>
+                </a>
+                <a className="icon-button">
+                <i 
+                className="fa-arrow-right">
+                </i>
+                </a>
       </div>
     );
   }

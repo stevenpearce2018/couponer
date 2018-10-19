@@ -56,13 +56,11 @@ class Login extends Component {
     this.setState({recaptchaToken: recaptchaToken})
   }
   async sendRecoveryEmail(){
-    if (this.state.email === '') return alert("You need to enter a valid email")
-    if (validateEmail(this.state.email) === false) return alert("You need to enter a valid email")
+    if (validateEmail(this.state.recoveryEmail) === false) return alert("You need to enter a valid email")
     const data = {
       recoveryEmail: this.state.recoveryEmail,
       recaptchaToken: this.state.recaptchaToken
     }
-    alert(this.state.recaptchaToken, 'this.state.recaptchaToken')
     const url = `/api/recoverAccount`
     const response = await fetch(url, {
       method: "POST", 
@@ -76,6 +74,10 @@ class Login extends Component {
     })
     const json = await response.json()
     alert(JSON.stringify(json))
+    if (json.success === true) {
+      alert("A message has been sent to your email, please check it to recover your account")
+      this.togglePopup();
+    } else alert("Something went wrong, please try again.")
   }
   async handleSubmit(e){
     e.preventDefault();
@@ -126,7 +128,17 @@ class Login extends Component {
                 </div>
               </div>
             </div>
-            <div className={this.state.popupClass}>
+            <ReCaptcha
+            ref={(el) => {this.captchaDemo = el;}}
+            size="invisible"
+            render="explicit"
+            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
+            data-theme="dark"
+            onloadCallback={this.onLoadRecaptcha}
+            verifyCallback={this.verifyCallback}
+            />
+          </form>
+          <div className={this.state.popupClass}>
             <div className="popup">
               <h2>Please Enter Your Email</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
@@ -145,16 +157,6 @@ class Login extends Component {
               </div>
             </div>
           </div>
-            <ReCaptcha
-            ref={(el) => {this.captchaDemo = el;}}
-            size="invisible"
-            render="explicit"
-            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
-            data-theme="dark"
-            onloadCallback={this.onLoadRecaptcha}
-            verifyCallback={this.verifyCallback}
-            />
-          </form>
       </div>
     );
   }
