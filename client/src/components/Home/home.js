@@ -9,9 +9,12 @@ class Home extends Component {
       geolocation: '',
       latitude: '',
       longitude: '',
+      city: '',
       pageNumber: 1,
       coupons: <div className="loaderContainer"><div className="loader"></div></div>
     };
+    this.decreasePage = this.decreasePage.bind(this);
+    this.incrementPage = this.incrementPage.bind(this);
   }
 
   componentDidMount () {
@@ -96,10 +99,12 @@ class Home extends Component {
               });
               if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
               if (city.length > 0 || city.length > 1) {
+                that.setState({city: city})
                 const url = '/api/getSponseredCoupons/'+city+'/'+that.state.pageNumber
                 const response = await fetch(url);
                 const data = await response.json();
                 // CouponsMaker(data.coupons)
+                console.log(JSON.stringify(data.coupons))
                 that.setState({coupons: CouponsMaker(data.coupons)})
               } else cityNotFound();
             } else cityNotFound();
@@ -115,7 +120,14 @@ class Home extends Component {
   async getCoupons(id) {
     this.props.parentMethod(id)
   }
-
+  decreasePage(){
+    const pageNumber = this.state.pageNumber;
+    if (pageNumber > 1) this.setState({pageNumber : pageNumber - 1})
+    else alert("You cannot go lower than page one!")
+  }
+  incrementPage(){
+    this.setState({pageNumber : this.state.pageNumber + 1})
+  }
   render() {
     return (
       <div>
@@ -134,16 +146,14 @@ class Home extends Component {
           <h2>Coupons near you</h2>
         </div>
         {this.state.coupons}
-        <a className="icon-button">
-                <i 
-                className="fa-arrow-left">
-                </i>
-                </a>
-                <a className="icon-button">
-                <i 
-                className="fa-arrow-right">
-                </i>
-                </a>
+        <div className="center">
+          <a className="icon-button incrementIcons backgroundCircle" onClick={this.decreasePage}>
+            <i className="fa-arrow-left"></i>
+          </a>
+          <a className="icon-button backgroundCircle" onClick={this.incrementPage}>
+            <i className="fa-arrow-right"></i>
+          </a>
+        </div>
       </div>
     );
   }
