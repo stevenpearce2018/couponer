@@ -355,18 +355,19 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   }
 })
 
-app.get('/api/getSponseredCoupons/:city', async (req, res) => {
+app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
   let coupons;
   const cityUserIsIn = req.params.city.toLowerCase()
-  if(req.body.city && nocityfound !== 'nocityfound') {
+  console.log(cityUserIsIn)
+  if(cityUserIsIn) {
     coupons = await Coupon.find({city : cityUserIsIn} ).limit(20)
     if (coupons.length > 0 ) res.json({ coupons: coupons });
     else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
   }
-  else {    
-      coupons = await Coupon.find().limit(20)
-      if (coupons.length > 0 ) res.json({ coupons });
-      else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+  else {
+    coupons = await Coupon.find().limit(20)
+    if (coupons.length > 0 ) res.json({ coupons });
+    else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
   }
 });
 

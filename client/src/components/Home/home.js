@@ -9,6 +9,7 @@ class Home extends Component {
       geolocation: '',
       latitude: '',
       longitude: '',
+      pageNumber: 1,
       coupons: <div className="loaderContainer"><div className="loader"></div></div>
     };
   }
@@ -76,12 +77,8 @@ class Home extends Component {
     // eslint-disable-next-line
     const geocoder = new google.maps.Geocoder;
     async function cityNotFound () {
-      try {
-        const url = '/api/getSponseredCoupons/nocityfound'
-        const response = await fetch(url);
-        const data = await response.json();
-        that.setState({coupons: CouponsMaker(data.coupons)})     
-      } catch (error) {}
+      console.log("city not found called")
+      that.setState({coupons: <h3>We were unable to get your location :(. Try searching manually.</h3>})     
     }
     function showPosition(position) {
       that.setState({
@@ -99,7 +96,7 @@ class Home extends Component {
               });
               if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
               if (city.length > 0 || city.length > 1) {
-                const url = '/api/getSponseredCoupons/'+city
+                const url = '/api/getSponseredCoupons/'+city+'/'+that.state.pageNumber
                 const response = await fetch(url);
                 const data = await response.json();
                 // CouponsMaker(data.coupons)
