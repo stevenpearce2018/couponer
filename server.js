@@ -431,6 +431,21 @@ app.post(`/api/getCoupon`, async(req, res) => { // req = request
     else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
 })
 
+app.post(`/api/doRedis`, async(req, res) => {
+  const someObject = {
+    thing1: "thing1",
+    array1: ["cat", "dog", "potatoe"],
+    complex: {
+      someArray: ['why', "are", "you", "embbedding", "arrays"]
+    }
+  }
+  redisHelper.set("someObject", someObject)
+  redisHelper.get("someObject", gotStuff)
+  function gotStuff(data) {
+    console.log(data.complex.someArray[0])
+  }
+})
+
 const port = 4000;
 
 app.listen(port, () => `Server running on port ${port}`);
