@@ -39,6 +39,7 @@ You will need a redis server running locally for the server to compile. I plan o
 [/] Login Security/Validation <br />
 [/] React Native App (Waiting till webapp is Fully Complete to Resume) <br />
 [ ] Refactoring of CSS <br />
+[X] Website logo and AWS s3 hosting <br />
 [ ] Global CSS Classes to Reduce Css Bloat <br />
 [/] Refactoring of JS Components <br />
 [X] Router Support <br />
