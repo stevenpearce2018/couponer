@@ -89,7 +89,6 @@ class Login extends Component {
       password: this.state.password,
       recaptchaToken: this.state.recaptchaToken
     }
-    alert(this.state.recaptchaToken, 'this.state.recaptchaToken')
     const url = `/api/signin`
     const response = await fetch(url, {
       method: "POST", 
@@ -102,7 +101,6 @@ class Login extends Component {
       body: JSON.stringify(data),
     })
     const json = await response.json()
-    alert(JSON.stringify(json))
     if (json.loggedInKey){
       this.props.parentMethod(json.loggedInKey, this.state.email);
       sessionStorage.setItem('UnlimitedCouponerkey', JSON.stringify(json.loggedInKey))

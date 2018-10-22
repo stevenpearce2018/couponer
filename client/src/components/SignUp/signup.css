@@ -213,3 +213,6 @@ color: blue;
 .popupbtn{
   width: 96.5%;
 }
+.trueHidden{
+  display: hidden;
+}

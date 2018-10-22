@@ -178,6 +178,7 @@ showOrHideNav(){
     this.setState({mainContent: <MyCoupons parentMethod={this.getCoupons}/>})
   }
   setStateLoggedIn(key, email) {
+    sessionStorage.setItem('UnlimitedCouponerkey', key)
     if(key.substring(key.length-1, key.length) === "c") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
     else if(key.substring(key.length-1, key.length) === "b") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
   }
@@ -211,7 +212,7 @@ showOrHideNav(){
               <div className={this.state.loginButton}><Link href = '/Login'><li onClick={this.setMainLogin}><div><i className="icon-signin"></i>Login</div></li></Link></div>
               <div className={this.state.loginButton}><Link href = '/SignUp'><li onClick={this.setMainSignUp}><div><i className="icon-user"></i>Sign up</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="icon-user"></i>Logout</div></li></Link></div>
-              <div className={this.state.logoutButton}><Link href = '/MyCoupons'><li onClick={this.logout}><div><i className="icon-money"></i>My Coupons</div></li></Link></div>
+              <div className={this.state.logoutButton}><Link href = '/MyCoupons'><li onClick={this.setMainToMyCoupons}><div><i className="icon-money"></i>My Coupons</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><div><i className="icon-gear"></i>Account Settings</div></li></Link></div>
               <div className={this.state.loggedInBuisness}><Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="icon-money"></i>Upload Coupons</div></li></Link></div>
               <Link href = '/Search'><li onClick={this.setMainSearch}><div><i className="icon-search"></i>Search Coupons</div></li></Link>

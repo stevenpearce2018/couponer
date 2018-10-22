@@ -121,9 +121,11 @@ app.post('/api/signupCustomer', async(req, res) => {
   let passedNumberCheck = false;
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
+    console.log(randomNumber, req.body.randomNumber)
     if (randomNumber === req.body.randomNumber) passedNumberCheck = true;
     else passedNumberCheck = false;
     if (passedNumberCheck === true) {
+      console.log(2)
       // let recaptchaPassed = false
       // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
       // await request(verifyUrl, async(err, response, body) => {
@@ -137,15 +139,19 @@ app.post('/api/signupCustomer', async(req, res) => {
               req.connection.remoteAddress || 
               req.socket.remoteAddress ||
               (req.connection.socket ? req.connection.socket.remoteAddress : null);
-            const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "c";
             const result = await AccountInfo.find({ 'email': req.body.email })
               if (result.length === 0) {
+                console.log(3)
                 if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
+                  console.log(4)
                   if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
+                    console.log(5)
                     const hashedPass = await bcrypt.hashSync(req.body.password, 10);
                     const email = req.body.email;
                     if(validateEmail(email)){
-                      const membershipExperationDate = req.body.buisnessName ? "N/A" : req.body.membershipExperationDate;
+                      console.log(6)
+                      const membershipExperationDate = req.body.buisnessName ? req.body.buisnessName : "N/A" ;
                       const accountInfo = new AccountInfo({
                         _id: new mongoose.Types.ObjectId(),
                         email: email,
@@ -241,15 +247,15 @@ app.post('/api/updateAccount', async (req, res) => {
 });
 
 app.post('/api/signin', async (req, res) => {
-  let recaptchaPassed = false
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, async(err, response, body) => {
-    if (!body) res.json({recaptcha: 'invalid recaptcha'})
-    else {
-      body = JSON.parse(body);
-      recaptchaPassed = body.success;
-      if (recaptchaPassed === false) res.json({recaptcha: 'invalid recaptcha'})
-      else {
+  // let recaptchaPassed = false
+  // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  // await request(verifyUrl, async(err, response, body) => {
+  //   if (!body) res.json({recaptcha: 'invalid recaptcha'})
+  //   else {
+  //     body = JSON.parse(body);
+  //     recaptchaPassed = body.success;
+  //     if (recaptchaPassed === false) res.json({recaptcha: 'invalid recaptcha'})
+  //     else {
         const email = req.body.email;
         const outcome = await AccountInfo.find({'email' : email}).limit(1)
         if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
@@ -262,10 +268,10 @@ app.post('/api/signin', async (req, res) => {
             { "upsert" : false } 
           );
         }
-        else res.json({loggedInKey: 'invalid login'})
-      }
-    }
-  })
+  //       else res.json({loggedInKey: 'invalid login'})
+  //     }
+  //   }
+  // })
 });
 
 app.post(`/api/signout`, async(req, res) => {

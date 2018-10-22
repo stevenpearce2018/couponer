@@ -106,9 +106,7 @@ class SignUp extends Component {
       this.setState({showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber:<img className='icon moveUp' src='https://storage.googleapis.com/csstest/valid.svg' alt="Phone number not validated"></img>})
       this.togglePopup();
     }
-    else {
-      alert("The number you have entered is incorrect")
-    }
+    else alert("The number you have entered is incorrect")
   }
   updateFiveDigitCode(event) {
     this.setState({fiveDigitCode : event.target.value})
@@ -162,6 +160,7 @@ class SignUp extends Component {
       password: this.state.password,
       phoneNumber: this.state.phoneNumber,
       membershipExperationDate: this.state.membershipExperationDate,
+      randomNumber: Number(this.state.fiveDigitCode)
     }
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
@@ -178,7 +177,7 @@ class SignUp extends Component {
       })
       const json = await response.json()
       if (json.loggedInKey) {
-        this.props.parentMethod();
+        this.props.parentMethod(json.loggedInKey, this.state.email);
         sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
       }
     } else alert("Your email is not valid!")
@@ -213,12 +212,11 @@ class SignUp extends Component {
       })
       const json = await response.json()
       if (json.loggedInKey) {
-        this.props.parentMethod();
+        this.props.parentMethod(json.loggedInKey, this.state.email)
         sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
       }
     } else alert("Your email is not valid!")
   }
-
   togglePopup(){
     let newClass = "hiddenOverlay";
     if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
@@ -261,25 +259,6 @@ class SignUp extends Component {
           <br/>
           {options}
         </div>
-        <div className={this.state.popupClass}>
-            <div className="popup">
-              <h2>Please Enter Your 5 digit security code</h2>
-              <a className="close" onClick={this.togglePopup}>&times;</a>
-              <div className="popupcontent">
-              <InputField
-              htmlFor="5 digit code"
-              type="number"
-              labelHTML="5 digit code"
-              placeholder="12345"
-              onChange={this.updateFiveDigitCode}
-              required
-              />
-              <div className="popupbtn">
-              <button className='signupbtn signupbtnn' value="send" onClick={this.validatePhoneNumber}><strong>Submit</strong></button>
-              </div>
-              </div>
-            </div>
-          </div>
           <form className='signinForm'>
           <InputField
           htmlFor="Email"
@@ -343,6 +322,25 @@ class SignUp extends Component {
   </div>
   <div className='buttonAndForgot'>
     <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.checkInfo}><strong>Validate Phone Number</strong></button>
+    <div className={this.state.popupClass}>
+            <div className="popup">
+              <h2>Please Enter Your 5 digit security code</h2>
+              <a className="close" onClick={this.togglePopup}>&times;</a>
+              <div className="popupcontent">
+              <InputField
+              htmlFor="5 digit code"
+              type="number"
+              labelHTML="5 digit code"
+              placeholder="12345"
+              onChange={this.updateFiveDigitCode}
+              required
+              />
+              <div className="popupbtn">
+              <button className='signupbtn signupbtnn' value="send" onClick={this.validatePhoneNumber}><strong>Submit</strong></button>
+              </div>
+              </div>
+            </div>
+          </div>
     <div className={this.state.showOrHideAccountMem}>
       <Checkout
       parentMethod = {this.handleCustomerSignup}
