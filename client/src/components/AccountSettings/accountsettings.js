@@ -24,8 +24,8 @@ class AccountSettings extends Component {
 
     };
     this.updateEmail = this.updateEmail.bind(this);
-    this.updateOldPassword = this.updateOldPassword.bind(this);
-    this.updateNewPassword = this.updateNewPassword.bind(this);
+    // this.updateOldPassword = this.updateOldPassword.bind(this);
+    // this.updateNewPassword = this.updateNewPassword.bind(this);
     this.updateAddress= this.updateAddress.bind(this);
     this.updateCardNumber = this.updateCardNumber.bind(this);
     this.updateCardholderName= this.updateCardholderName.bind(this);
@@ -49,6 +49,11 @@ class AccountSettings extends Component {
   //   })
   // }
   componentDidMount() {
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
+    if (!loggedInKey) {
+      window.location.pathname = '/Home';
+      alert('You are not logged in!')
+    }
     if (this.captchaDemo) {
         this.captchaDemo.reset();
         this.captchaDemo.execute();
@@ -68,12 +73,12 @@ class AccountSettings extends Component {
     this.setState({phoneNumber: event.target.value}) 
   }
 
-  updateOldPassword(event) {
-    this.setState({oldPassword : event.target.value})
-  }
-  updateNewPassword(event) {
-    this.setState({newPassword : event.target.value})
-  }
+  // updateOldPassword(event) {
+  //   this.setState({oldPassword : event.target.value})
+  // }
+  // updateNewPassword(event) {
+  //   this.setState({newPassword : event.target.value})
+  // }
   updateEmail(event) {
     this.setState({email : event.target.value})
   }
@@ -153,7 +158,7 @@ class AccountSettings extends Component {
           onChange={this.updateEmail}
           />
 
-          <InputField
+          {/* <InputField
           htmlFor="Password"
           type="password"
           labelHTML="Old Password"
@@ -167,7 +172,7 @@ class AccountSettings extends Component {
           labelHTML="Password"
           placeholder="Password"
           onChange={this.updateOldPassword}
-          />
+          /> */}
 
           <InputField
           htmlFor="Phone Number"
