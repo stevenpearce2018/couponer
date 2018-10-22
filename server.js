@@ -96,17 +96,17 @@ app.post('/api/charge', async(req, res) => {
 });
 app.post('/api/recoverAccount', async(req, res) => {
   const email = req.body.recoveryEmail;
-  let recaptchaPassed = false
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, (err, response, body) => {
-    if (body === undefined) recaptchaPassed = body.success;
-    else {
-      body = JSON.parse(body);
-      if(body.success !== undefined && !body.success) recaptchaPassed = body.success;
-      else recaptchaPassed = body.success;
-    }
-  })
-  if (recaptchaPassed === true) {
+  // let recaptchaPassed = false
+  // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  // await request(verifyUrl, (err, response, body) => {
+  //   if (body === undefined) recaptchaPassed = body.success;
+  //   else {
+  //     body = JSON.parse(body);
+  //     if(body.success !== undefined && !body.success) recaptchaPassed = body.success;
+  //     else recaptchaPassed = body.success;
+  //   }
+  // })
+  // if (recaptchaPassed === true) {
     const mailOptions = {
       from: 'sender@email.com', // sender address
       to: email, // list of receivers
@@ -114,33 +114,33 @@ app.post('/api/recoverAccount', async(req, res) => {
       html: '<p>Welcome to UnlimitedCouponer</p>'// plain text body
     };
     res.json({success:true})
-  } else res.json({success:false})
+  // } else res.json({success:false})
 });
 
 app.post('/api/signupCustomer', async(req, res) => {
   let passedNumberCheck = false;
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
-  if (randomNumber === req.body.randomNumber) passedNumberCheck = true;
-  else passedNumberCheck = false;
-  if (passedNumberCheck === true) {
-    let recaptchaPassed = false
-    const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-    await request(verifyUrl, async(err, response, body) => {
-      if(!body) recaptchaPassed = body.success;
-      else {
-        body = JSON.parse(body);
-        recaptchaPassed = body.success;
-        if (recaptchaPassed === true) {
-          const yourPick = req.body.yourPick
-          const ip = req.headers['x-forwarded-for'] || 
-            req.connection.remoteAddress || 
-            req.socket.remoteAddress ||
-            (req.connection.socket ? req.connection.socket.remoteAddress : null);
-          const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-          const result = await AccountInfo.find({ 'email': req.body.email })
-            if (result.length === 0) {
-              if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
+    if (randomNumber === req.body.randomNumber) passedNumberCheck = true;
+    else passedNumberCheck = false;
+    if (passedNumberCheck === true) {
+      // let recaptchaPassed = false
+      // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+      // await request(verifyUrl, async(err, response, body) => {
+        // if(!body) recaptchaPassed = body.success;
+        // else {
+        //   body = JSON.parse(body);
+        //   recaptchaPassed = body.success;
+        //   if (recaptchaPassed === true) {
+            const yourPick = req.body.yourPick
+            const ip = req.headers['x-forwarded-for'] || 
+              req.connection.remoteAddress || 
+              req.socket.remoteAddress ||
+              (req.connection.socket ? req.connection.socket.remoteAddress : null);
+            const loggedInKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            const result = await AccountInfo.find({ 'email': req.body.email })
+              if (result.length === 0) {
+                if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
                   if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
                     const hashedPass = await bcrypt.hashSync(req.body.password, 10);
                     const email = req.body.email;
@@ -169,22 +169,22 @@ app.post('/api/signupCustomer', async(req, res) => {
                   } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
               } else res.json({resp:'You need to fill out all fields!'});
             } else res.json({resp:'Email address is taken!'});
-          } else res.json({resp:'Recaptcha failed! Try reloading the page.'});
-        }
-      })
+          // } else res.json({resp:'Recaptcha failed! Try reloading the page.'});
+        // }
+      // })
     } else res.json({resp:'Wrong number, please try again!'});
   }
 });
 
 app.post('/api/phoneTest', async (req, res) => {
-  let recaptchaPassed = false;
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, (err, response, body) => {
-    if(!body) recaptchaPassed = body.success;
-    else {
-      body = JSON.parse(body);
-      recaptchaPassed = body.success;
-      if (recaptchaPassed) {
+  // let recaptchaPassed = false;
+  // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  // await request(verifyUrl, (err, response, body) => {
+  //   if(!body) recaptchaPassed = body.success;
+  //   else {
+  //     body = JSON.parse(body);
+  //     recaptchaPassed = body.success;
+  //     if (recaptchaPassed) {
         const randomNumber = Math.floor(Math.random()*90000) + 10000;
         redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
         try {
@@ -195,27 +195,28 @@ app.post('/api/phoneTest', async (req, res) => {
         } catch (error) {
           res.json({success:false})
         }
-      } else res.json({success:false})
-    }
-  })
+  //     } else res.json({success:false})
+  //   }
+  // })
 })
 app.post('/api/phoneTestValidateNumber', async (req, res) => {
-  let recaptchaPassed = false
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, (err, response, body) => {
-    if (!body) res.json({recaptcha: 'invalid recaptcha'})
-    else {
-      body = JSON.parse(body);
-      recaptchaPassed = body.success;
-      if (recaptchaPassed) {
+  // let recaptchaPassed = false
+  // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  // await request(verifyUrl, (err, response, body) => {
+  //   if (!body) res.json({recaptcha: 'invalid recaptcha'})
+  //   else {
+  //     body = JSON.parse(body);
+  //     recaptchaPassed = body.success;
+  //     if (recaptchaPassed) {
         redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
         function compareRandomNumber(randomNumber){
+          console.log(randomNumber)
           if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
           else res.json({success:false})
         }
-      } else res.json({success:false})
-    }
-  })
+  //     } else res.json({success:false})
+  //   }
+  // })
 })
 
 app.post('/api/updateAccount', async (req, res) => {
@@ -289,15 +290,15 @@ app.post(`/api/signout`, async(req, res) => {
 
 app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   // const lengthInDays = req.body.length.replace(/\D/g,'');
-  let recaptchaPassed = false
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, async(err, response, body) => {
-    if (!body) res.json({coupons: 'invalid recaptcha'})
-    else {
-      body = JSON.parse(body);
-      recaptchaPassed = body.success;
-      if (recaptchaPassed === false) res.json({response: 'invalid recaptcha'})
-      else {
+  // let recaptchaPassed = false
+  // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  // await request(verifyUrl, async(err, response, body) => {
+  //   if (!body) res.json({coupons: 'invalid recaptcha'})
+  //   else {
+  //     body = JSON.parse(body);
+  //     recaptchaPassed = body.success;
+  //     if (recaptchaPassed === false) res.json({response: 'invalid recaptcha'})
+  //     else {
           const outcome = await AccountInfo.find({'email':req.body.email })
           if (outcome) {
             // !todo, check if membership is still valid below
@@ -331,9 +332,9 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
               res.json({response: 'Coupon Created'})
           } else res.json({response: "You are not logged in!"});
         }
-      }
-    }
-  })
+      // }
+    // }
+  // })
 })
 
 app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
@@ -358,15 +359,15 @@ app.post('/api/getYourCoupons', async (req, res) => {
 });
 
 app.post('/api/searchCoupons', async (req, res) => {
-  let recaptchaPassed = false
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, async(err, response, body) => {
-    if (!body) res.json({coupons: 'invalid recaptcha'})
-    else {
-      body = JSON.parse(body);
-      recaptchaPassed = body.success;
-      if (recaptchaPassed === false) res.json({coupons: 'invalid recaptcha'})
-      else {
+  // let recaptchaPassed = false
+  // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+  // await request(verifyUrl, async(err, response, body) => {
+  //   if (!body) res.json({coupons: 'invalid recaptcha'})
+  //   else {
+  //     body = JSON.parse(body);
+  //     recaptchaPassed = body.success;
+  //     if (recaptchaPassed === false) res.json({coupons: 'invalid recaptcha'})
+  //     else {
         let coupons;
         const city = req.body.city.toLowerCase()
         const zip = req.body.zip
@@ -379,9 +380,9 @@ app.post('/api/searchCoupons', async (req, res) => {
         else if(city) coupons = await Coupon.find({'city' : city})
         else if(zip) coupons = await Coupon.find({'zip' : zip})
         res.json({coupons: coupons});
-      }
-    }
-  })
+      // }
+  //   }
+  // })
 });
 
 
