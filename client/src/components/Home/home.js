@@ -16,118 +16,10 @@ class Home extends Component {
     };
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
+    this.CouponsMaker = this.CouponsMaker.bind(this)
   }
-
-  componentDidMount () {
-    const CouponsMaker = (props) => {
-      try {
-        const content = props.map((coupons) =>
-        <div className="coupon" id={coupons._id}>
-        <h1 className = "exampleTitle">{coupons.title}</h1>
-        <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
-        <div className="pricing">
-          <div className='oldPrice'>
-              Was: {(coupons.currentPrice - 0).toFixed(2)}$
-          </div>
-          <div className='percentOff'>
-              {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
-          </div>
-          <br/>
-          <div className='newPrice'>
-              Now: {(coupons.discountedPrice - 0).toFixed(2)}$
-          </div>
-          <div className='savings'>
-              Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
-          </div>
-          <br/>
-          <hr/>
-          <div className="amountLeft">
-              Only {coupons.amountCoupons} Coupons Left!
-          </div>
-        <hr/>
-        <div className="description">
-        <br/>
-          <p>{coupons.textarea}</p>
-          <br/>
-          <hr/>
-          <br/>
-          <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
-          <hr/>
-          <br/>
-          <p>{coupons.address}</p>
-          <hr/>
-          <br/>
-          <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
-        {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
-        </div>
-        <br/>
-      </div>
-    </div>
-        );
-        return (
-        <div className='flextape'>
-            {content}
-          </div>
-        );
-      } catch (error) {
-        return (
-        <div className='center'>
-        <br/>
-        <h3>Unable to automatically search for coupons. Try searching manually.</h3>
-        </div>
-        )
-      }
-    }
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
-    } 
-    const that = this;
-    const google = window.google
-    // eslint-disable-next-line
-    const geocoder = new google.maps.Geocoder;
-    async function cityNotFound () {
-      that.setState({coupons: <h3>We were unable to get your location. Try searching manually.</h3>})     
-    }
-    function showPosition(position) {
-      that.setState({
-        geolocation: position.coords.latitude + " " + position.coords.longitude,
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      })
-      const latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
-      try {
-        geocoder.geocode({location: latlng}, async (results, status) => {
-          if (status === 'OK') {
-            if (results[0]) {
-              let city = results[0].address_components.filter((addr) => {
-                return (addr.types[0] === 'locality')?1:(addr.types[0] === 'administrative_area_level_1')?1:0;
-              });
-              if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
-              if (city.length > 0 || city.length > 1) {
-                that.setState({city: city})
-                // const data = sessionStorage.getItem('couponsDataPage'+that.state.pageNumber, data.coupons);
-                const url = '/api/getSponseredCoupons/'+city+'/'+that.state.pageNumber
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data.coupons !== "No coupons were found near you. Try searching manually") {
-                  that.setState({coupons: CouponsMaker(data.coupons), incrementPageClass: "center"})
-                }
-                else that.setState({coupons:<div className="center"><br/><h3>No coupons found near you, try searching manually.</h3></div>})
-              } else cityNotFound();
-            } else cityNotFound();
-          } else cityNotFound();
-        });
-      } catch (error) {
-        that.setState({coupons: <h3>No Coupons found based on your location or we could not get your location. Please try searching manually.</h3>})
-      }
-    }
-  }
-  async getCoupons(id) {
-    this.props.parentMethod(id)
-  }
- async decreasePage(){
-    const that = this;
-    const CouponsMaker = (props) => {
+  CouponsMaker = (props) => {
+    try {
       const content = props.map((coupons) =>
       <div className="coupon" id={coupons._id}>
       <h1 className = "exampleTitle">{coupons.title}</h1>
@@ -176,72 +68,80 @@ class Home extends Component {
           {content}
         </div>
       );
+    } catch (error) {
+      return (
+      <div className='center'>
+      <br/>
+      <h3>Unable to automatically search for coupons. Try searching manually.</h3>
+      </div>
+      )
     }
+  }
+  componentDidMount () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } 
+    const that = this;
+    const google = window.google
+    // eslint-disable-next-line
+    const geocoder = new google.maps.Geocoder;
+    async function cityNotFound () {
+      that.setState({coupons: <h3>We were unable to get your location. Try searching manually.</h3>})     
+    }
+    function showPosition(position) {
+      that.setState({
+        geolocation: position.coords.latitude + " " + position.coords.longitude,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      })
+      const latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
+      try {
+        geocoder.geocode({location: latlng}, async (results, status) => {
+          if (status === 'OK') {
+            if (results[0]) {
+              let city = results[0].address_components.filter((addr) => {
+                return (addr.types[0] === 'locality')?1:(addr.types[0] === 'administrative_area_level_1')?1:0;
+              });
+              if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
+              if (city.length > 0 || city.length > 1) {
+                that.setState({city: city})
+                // const data = sessionStorage.getItem('couponsDataPage'+that.state.pageNumber, data.coupons);
+                const url = '/api/getSponseredCoupons/'+city+'/'+that.state.pageNumber
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
+                else that.setState({coupons:<div className="center"><br/><h3>No coupons found near you, try searching manually.</h3></div>})
+              } else cityNotFound();
+            } else cityNotFound();
+          } else cityNotFound();
+        });
+      } catch (error) {
+        that.setState({coupons: <h3>No Coupons found based on your location or we could not get your location. Please try searching manually.</h3>})
+      }
+    }
+  }
+  async getCoupons(id) {
+    this.props.parentMethod(id)
+  }
+ async decreasePage(){
+    const that = this;
     const pageNumber = this.state.pageNumber;
-    if (pageNumber > 1) this.setState({pageNumber : pageNumber - 1})
-    else alert("You cannot go lower than page one!")
-      const url = '/api/getSponseredCoupons/'+that.state.city+'/'+that.state.pageNumber
+    if (pageNumber > 1) {
+      that.setState({pageNumber : pageNumber - 1})
+      const url = '/api/getSponseredCoupons/'+that.state.city+'/'+(that.state.pageNumber-1)
       const response = await fetch(url);
       const data = await response.json();
-      that.setState({coupons: CouponsMaker(data.coupons), incrementPageClass: "center"})
+      that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
+    }
+    else alert("You cannot go lower than page one!")
   }
   async incrementPage(){
     const that = this;
-    const CouponsMaker = (props) => {
-        const content = props.map((coupons) =>
-        <div className="coupon" id={coupons._id}>
-        <h1 className = "exampleTitle">{coupons.title}</h1>
-        <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
-        <div className="pricing">
-          <div className='oldPrice'>
-              Was: {(coupons.currentPrice - 0).toFixed(2)}$
-          </div>
-          <div className='percentOff'>
-              {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
-          </div>
-          <br/>
-          <div className='newPrice'>
-              Now: {(coupons.discountedPrice - 0).toFixed(2)}$
-          </div>
-          <div className='savings'>
-              Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
-          </div>
-          <br/>
-          <hr/>
-          <div className="amountLeft">
-              Only {coupons.amountCoupons} Coupons Left!
-          </div>
-        <hr/>
-        <div className="description">
-        <br/>
-          <p>{coupons.textarea}</p>
-          <br/>
-          <hr/>
-          <br/>
-          <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
-          <hr/>
-          <br/>
-          <p>{coupons.address}</p>
-          <hr/>
-          <br/>
-          <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
-        {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
-        </div>
-        <br/>
-      </div>
-    </div>
-        );
-        return (
-        <div className='flextape'>
-            {content}
-          </div>
-        );
-    }
-    this.setState({pageNumber : this.state.pageNumber + 1})
-      const url = '/api/getSponseredCoupons/'+that.state.city+'/'+that.state.pageNumber
-      const response = await fetch(url);
-      const data = await response.json();
-      that.setState({coupons: CouponsMaker(data.coupons), incrementPageClass: "center"})
+    this.setState({pageNumber : (this.state.pageNumber + 1)})
+    const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber+1)
+    const response = await fetch(url);
+    const data = await response.json();
+    that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
   }
   render() {
     return (
