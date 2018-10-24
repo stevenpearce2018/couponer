@@ -4,7 +4,7 @@ import Coupon from '../SubComponents/Coupon/coupon';
 import Input from '../SubComponents/Input/input';
 import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
-import { ReCaptcha } from 'react-recaptcha-google';
+// import { ReCaptcha } from 'react-recaptcha-google';
 import Checkout from '../Checkout/checkout';
 
 const validateCouponForm = (state) => {

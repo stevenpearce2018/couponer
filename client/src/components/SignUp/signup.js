@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './signup.css';
-import { ReCaptcha } from 'react-recaptcha-google';
+// import { ReCaptcha } from 'react-recaptcha-google';
 import PhoneInput from 'react-phone-number-input'
  
 //import css module

@@ -60,47 +60,39 @@ const CURRENCY = 'USD';
     fromEuroToCent = amount => amount * 100;
 
     successPayment = data => {
-      alert('Account created, payment successful');
+      alert('Payment Successful');
       console.log(data);
     };
 
     errorPayment = data => {
-      alert('Account creation failed, payment error');
+      alert('Payment Error');
       console.log(data);
     };
 
     onToken = (amount, description) => (token) => {
-      console.log('onToken called')
-      // const result = this.props.parentMethod(data)
-      // if (result !== true) {
-      //   alert('Failed')
-      // } else {
+      const result = this.props.parentMethod()
+      if (result !== true) alert('Failed')
+      else {
         const data = {
           description,
           source: token.id,
           currency: CURRENCY,
           amount: this.fromEuroToCent(amount)
         }
-        console.log({data}, 'called child')
-        this.props.parentMethod(data) // call function based on success/failure
-        // .then(this.successPayment)
-        // .catch(this.errorPayment);
-
-
-        // const url = '/api/charge'
-        // fetch(url, {
-        // method: "POST", // *GET, POST, PUT, DELETE, etc.
-        // mode: "cors", // no-cors, cors, *same-origin
-        // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        // credentials: "same-origin", // include, same-origin, *omit
-        // headers: {
-        //   "Content-Type": "application/json; charset=utf-8",
-        //   // "Content-Type": "application/x-www-form-urlencoded",
-        // },
-        // body: JSON.stringify(data),
-        // }).then(this.successPayment)
-        // .catch(this.errorPayment);
-      // }
+        const url = '/api/charge'
+        fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: JSON.stringify(data),
+        }).then(this.successPayment)
+        .catch(this.errorPayment);
+      }
     }
     render() {
       return (

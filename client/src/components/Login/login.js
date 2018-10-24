@@ -1,8 +1,8 @@
  
 import React, { Component } from 'react';
 import './login.css';
-import { ReCaptcha } from 'react-recaptcha-google';
-import { loadReCaptcha } from 'react-recaptcha-google';
+// import { ReCaptcha } from 'react-recaptcha-google';
+// import { loadReCaptcha } from 'react-recaptcha-google';
 import InputField from '../SubComponents/InputField/inputField'
 import validateEmail from '../../validateEmail';
 
