@@ -149,7 +149,7 @@ showOrHideNav(){
     })
     const json = await response.json()
     if(json.response === "Logout Failed") alert(json.response)
-    this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden'})
+    this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
     sessionStorage.setItem('UnlimitedCouponerkey', '')
   }
 

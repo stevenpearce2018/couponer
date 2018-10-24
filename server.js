@@ -286,6 +286,8 @@ app.post(`/api/signout`, async(req, res) => {
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
   const outcome = await AccountInfo.find({'email' : email }).limit(1)
+  console.log(outcome[0].loggedInKey, "outcome[0].loggedInKey ")
+  console.log(loggedInKey, "loggedInKey")
   if (outcome.length !== 0) {
     if(outcome[0].loggedInKey === loggedInKey) {
       res.json({response:"Logout Successful"})
