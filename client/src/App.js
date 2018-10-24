@@ -41,7 +41,8 @@ class App extends Component {
       email: '',
       loggedInKey: '',
       showOrHideNav: 'hidden',
-      loggedInBuisness: 'hidden'
+      loggedInBuisness: 'hidden',
+      ignoreClick: true
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -56,6 +57,7 @@ class App extends Component {
   this.showOrHideNav = this.showOrHideNav.bind(this);
   this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
   this.uploadCoupons = this.uploadCoupons.bind(this);
+  this.hideNav = this.hideNav.bind(this);
 }
 async componentDidMount () {
   // loadReCaptcha();
@@ -102,10 +104,13 @@ async componentDidMount () {
   }
   if (sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerKey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
-showOrHideNav(){
-  if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden"})
-  else this.setState({showOrHideNav:"navPopup"})
-}
+  showOrHideNav(){
+    if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden", ignoreClick: true})
+    else this.setState({showOrHideNav:"navPopup", ignoreClick: false})
+  }
+  hideNav(){
+    if (this.showOrHideNav !== "hidden" && this.state.ignoreClick === false) this.setState({showOrHideNav: "hidden", ignoreClick: true})
+  }
   async getCoupons(_id){
     const loggedInKey = this.state.loggedInKey;
     const email = this.state.email;
@@ -215,6 +220,7 @@ showOrHideNav(){
     if(key.substring(key.length-1, key.length) === "c") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
     else if(key.substring(key.length-1, key.length) === "b") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
   }
+  
   render () {
     return (
         <div className="home">
