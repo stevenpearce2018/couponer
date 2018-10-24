@@ -64,12 +64,12 @@ class CouponForm extends Component {
     this.parentMethod = this.parentMethod.bind(this);
   }
   componentDidMount() {
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey');
     if (!loggedInKey) {
         window.location.pathname = '/Home';
         alert('You are not logged in!')
     }
-    else if(loggedInKey.substring(loggedInKey.length-1, loggedInKey.length) !== "b"){
+    else if(loggedInKey[23] !== "b"){
       window.location.pathname = '/Home';
       alert('Only buiness owners can access this page!')
     }
