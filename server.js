@@ -19,6 +19,10 @@ const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 const db = require('./config/db')
 const QRCode = require('qrcode');
 
+const fuzzySearchRegex = text => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
 const generateQR = async text => {
   try {
     return await QRCode.toDataURL(text)
@@ -374,17 +378,20 @@ app.post('/api/searchCoupons', async (req, res) => {
   //     recaptchaPassed = body.success;
   //     if (recaptchaPassed === false) res.json({coupons: 'invalid recaptcha'})
   //     else {
+    console.log("hello")
         let coupons;
-        const city = req.body.city.toLowerCase()
-        const zip = req.body.zip
-        const category = req.body.category
-        if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
-        else if(city && zip) coupons = await Coupon.find({'city' : city, 'zip' : zip})
-        else if(category && zip) coupons = await Coupon.find({'zip' : zip, 'category' : category})
-        else if(category && city) coupons = await Coupon.find({'city' : city, 'category' : category})
-        else if(category) coupons = await Coupon.find({'category' : category})
-        else if(city) coupons = await Coupon.find({'city' : city})
-        else if(zip) coupons = await Coupon.find({'zip' : zip})
+        // const city = req.body.city.toLowerCase()
+        // const zip = req.body.zip
+        // const category = req.body.category
+        // if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
+        // else if(city && zip) coupons = await Coupon.find({'city' : city, 'zip' : zip})
+        // else if(category && zip) coupons = await Coupon.find({'zip' : zip, 'category' : category})
+        // else if(category && city) coupons = await Coupon.find({'city' : city, 'category' : category})
+        // else if(category) coupons = await Coupon.find({'category' : category})
+        // else if(city) coupons = await Coupon.find({'city' : city})
+        // else if(zip) coupons = await Coupon.find({'zip' : zip})
+        coupons = await Coupon.find({ $text: { $search: "asdsdasdsdadasdasdasd" }})
+      console.log(coupons, 'coupons')
         res.json({coupons: coupons});
       // }
   //   }

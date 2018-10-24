@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const couponSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    title: String,
+    title: {type: String, text: true},
     address: String,
     city: String,
     amountCoupons: Number,
@@ -10,7 +10,7 @@ const couponSchema = mongoose.Schema({
     currentPrice: Number,
     discountedPrice: Number,
     category: String,
-    textarea: String,
+    textarea: {type: String, text: true},
     base64image: String,
     superCoupon: String,
     couponCodes: { type : Array , "default" : [] },

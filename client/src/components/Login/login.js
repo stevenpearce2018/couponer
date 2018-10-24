@@ -141,14 +141,14 @@ class Login extends Component {
               <h2>Please Enter Your Email</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
-              <InputField
-              htmlFor="Recover account"
-              type="text"
-              labelHTML="Your Email"
-              placeholder="helpme@ohno.com"
-              onChange={this.updateRecoveryEmail}
-              required
-              />
+                <InputField
+                htmlFor="Recover account"
+                type="text"
+                labelHTML="Your Email"
+                placeholder="helpme@ohno.com"
+                onChange={this.updateRecoveryEmail}
+                required
+                />
               <div className="popupbtn">
               <button className='signupbtn signupbtnn' value="send" onClick={this.sendRecoveryEmail}><strong>Recover</strong></button>
               </div>

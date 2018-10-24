@@ -152,7 +152,6 @@ class Search extends Component {
   }
   async handleSearch(e){
     e.preventDefault();
-    console.log(this.state.category)
     const data = {
       city: this.state.city,
       zip: this.state.zip,
