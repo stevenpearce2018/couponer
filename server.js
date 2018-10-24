@@ -381,19 +381,64 @@ app.post('/api/searchCoupons', async (req, res) => {
   //     if (recaptchaPassed === false) res.json({coupons: 'invalid recaptcha'})
   //     else {
         let coupons;
-        // const city = req.body.city.toLowerCase()
-        // const zip = req.body.zip
-        // const category = req.body.category
-        // if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
-        // else if(city && zip) coupons = await Coupon.find({'city' : city, 'zip' : zip})
-        // else if(category && zip) coupons = await Coupon.find({'zip' : zip, 'category' : category})
-        // else if(category && city) coupons = await Coupon.find({'city' : city, 'category' : category})
-        // else if(category) coupons = await Coupon.find({'category' : category})
-        // else if(city) coupons = await Coupon.find({'city' : city})
-        // else if(zip) coupons = await Coupon.find({'zip' : zip})
-        const regex = new RegExp(escapeRegex("testtest"), 'gi');
-        coupons = await Coupon.find({ "textarea": regex})
-      console.log(coupons, 'coupons')
+        const city = req.body.city.toLowerCase()
+        const zip = req.body.zip
+        const category = req.body.category
+        const keyword = req.body.keyword
+        const regex = new RegExp(escapeRegex(keyword), 'gi');
+        coupons = await Coupon.find({"textarea": regex})
+        if(city && zip && category && keyword) {
+          coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category, "textarea": regex})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city})
+        }
+        else if(city && zip) {
+          coupons = await Coupon.find({'city' : city, 'zip' : zip})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city})
+        }
+        else if(keyword && zip) {
+          coupons = await Coupon.find({'zip' : city, 'textarea' : keyword})
+          if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip})
+          if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword})
+        }
+        else if(city && category) {
+          coupons = await Coupon.find({'city' : city, 'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city})
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category})
+        }
+        else if(city && keyword) {
+          coupons = await Coupon.find({'city' : city, 'textarea' : keyword})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city})
+          if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword})
+        }
+        else if(category && zip) {
+          coupons = await Coupon.find({'zip' : zip, 'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip})
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category})
+        }
+        else if(category && keyword) {
+          coupons = await Coupon.find({'zip' : zip, 'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword})
+        }
+        else if(category && city) {
+          coupons = await Coupon.find({'city' : city, 'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city})
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category})
+        }
+        else if(category) {
+          coupons = await Coupon.find({'category' : category})
+        }
+        else if(city) {
+          coupons = await Coupon.find({'city' : city})
+        }
+        else if(zip) {
+          coupons = await Coupon.find({'zip' : zip})
+        }
+        else if(keyword) {
+          coupons = await Coupon.find({'textarea' : regex})
+        }
         res.json({coupons: coupons});
       // }
   //   }
