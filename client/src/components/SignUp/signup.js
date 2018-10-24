@@ -51,28 +51,28 @@ class SignUp extends Component {
     this.updateCity = this.updateCity.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this);
-    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.checkInfo = this.checkInfo.bind(this);
     this.handleCustomerSignup = this.handleCustomerSignup.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
   }
   componentDidMount() {
-      if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
+    //   if (this.captchaDemo) {
+    //     this.captchaDemo.reset();
+    //     this.captchaDemo.execute();
+    // }
   }
-  onLoadRecaptcha() {
-    if (this.captchaDemo) {
-      this.captchaDemo.reset();
-      this.captchaDemo.execute();
-    }
-  }
-  verifyCallback(recaptchaToken) {
-    this.setState({recaptchaToken: recaptchaToken})
-  }
+  // onLoadRecaptcha() {
+  //   if (this.captchaDemo) {
+  //     this.captchaDemo.reset();
+  //     this.captchaDemo.execute();
+  //   }
+  // }
+  // verifyCallback(recaptchaToken) {
+  //   this.setState({recaptchaToken: recaptchaToken})
+  // }
   updatePassword(event) {
     this.setState({password : event.target.value})
   }
@@ -86,7 +86,7 @@ class SignUp extends Component {
     const data = {
       phoneNumber: this.state.phoneNumber,
       randomNumber: this.state.fiveDigitCode,
-      recaptchaToken: this.state.recaptchaToken
+      // recaptchaToken: this.state.recaptchaToken
     }
     const url = `/api/phoneTestValidateNumber`
     const response = await fetch(url, {
@@ -129,7 +129,7 @@ class SignUp extends Component {
     else {
       const data = {
         phoneNumber: that.state.phoneNumber,
-        recaptchaToken: that.state.recaptchaToken
+        // recaptchaToken: that.state.recaptchaToken
       }
       const url = `/api/phoneTest`
       const response = await fetch(url, {
@@ -356,7 +356,7 @@ class SignUp extends Component {
       <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>
     </div>
     </div>
-      <ReCaptcha
+      {/* <ReCaptcha
         ref={(el) => {this.captchaDemo = el;}}
         size="invisible"
         render="explicit"
@@ -364,7 +364,7 @@ class SignUp extends Component {
         data-theme="dark"
         onloadCallback={this.onLoadRecaptcha}
         verifyCallback={this.verifyCallback}
-      />
+      /> */}
     </div>
     )
   }

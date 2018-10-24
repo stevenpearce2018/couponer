@@ -39,8 +39,8 @@ class AccountSettings extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     // this.updateInput = this.updateInput.bind(this);
     // this.handleSubmit = this.handleSubmit.bind(this);
-    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
   }
 
   // updateInputField(event, fieldBeingUpdated) {

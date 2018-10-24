@@ -35,26 +35,26 @@ class Search extends Component {
     this.updateZip = this.updateZip.bind(this);
     this.updateCategory = this.updateCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.updateKeywords = this.updateKeywords.bind(this);
     this.CouponsMaker = this.CouponsMaker.bind(this);
   }
   componentDidMount() {
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
+    // if (this.captchaDemo) {
+    //     this.captchaDemo.reset();
+    //     this.captchaDemo.execute();
+    // }
   }
-  onLoadRecaptcha() {
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
-  }
-  verifyCallback(recaptchaToken) {
-    this.setState({recaptchaToken: recaptchaToken})
-  }
+  // onLoadRecaptcha() {
+  //   if (this.captchaDemo) {
+  //       this.captchaDemo.reset();
+  //       this.captchaDemo.execute();
+  //   }
+  // }
+  // verifyCallback(recaptchaToken) {
+  //   this.setState({recaptchaToken: recaptchaToken})
+  // }
   updateCity(e) {
     this.setState({ city: e.target.value });
   }
@@ -69,7 +69,7 @@ class Search extends Component {
     this.setState({ keywords: e.target.value });
   }
   async getCoupons(id){
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey')
     if (!loggedInKey) alert('You are not logged in!')
     else {
       const data = {
@@ -157,7 +157,7 @@ class Search extends Component {
       zip: this.state.zip,
       category: this.state.category,
       // keywords: this.state.keywords,
-      recaptchaToken: this.state.recaptchaToken
+      // recaptchaToken: this.state.recaptchaToken
     }
     const that = this;
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '') {
@@ -216,7 +216,7 @@ class Search extends Component {
       onChange={this.updateKeywords}
       /> */}
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
-      <ReCaptcha
+      {/* <ReCaptcha
         ref={(el) => {this.captchaDemo = el;}}
         size="invisible"
         render="explicit"
@@ -224,7 +224,7 @@ class Search extends Component {
         data-theme="dark"
         onloadCallback={this.onLoadRecaptcha}
         verifyCallback={this.verifyCallback}
-      />
+      /> */}
   </form>
       {this.state.coupons}
         </div>

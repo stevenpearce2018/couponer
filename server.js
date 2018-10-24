@@ -23,6 +23,10 @@ const fuzzySearchRegex = text => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
 const generateQR = async text => {
   try {
     return await QRCode.toDataURL(text)
@@ -125,11 +129,9 @@ app.post('/api/signupCustomer', async(req, res) => {
   let passedNumberCheck = false;
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
-    console.log(randomNumber, req.body.randomNumber)
     if (randomNumber === req.body.randomNumber) passedNumberCheck = true;
     else passedNumberCheck = false;
     if (passedNumberCheck === true) {
-      console.log(2)
       // let recaptchaPassed = false
       // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
       // await request(verifyUrl, async(err, response, body) => {
@@ -146,15 +148,11 @@ app.post('/api/signupCustomer', async(req, res) => {
             const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "c";
             const result = await AccountInfo.find({ 'email': req.body.email })
               if (result.length === 0) {
-                console.log(3)
                 if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
-                  console.log(4)
                   if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
-                    console.log(5)
                     const hashedPass = await bcrypt.hashSync(req.body.password, 10);
                     const email = req.body.email;
                     if(validateEmail(email)){
-                      console.log(6)
                       const membershipExperationDate = req.body.buisnessName ? req.body.buisnessName : "N/A" ;
                       const accountInfo = new AccountInfo({
                         _id: new mongoose.Types.ObjectId(),
@@ -220,7 +218,6 @@ app.post('/api/phoneTestValidateNumber', async (req, res) => {
   //     if (recaptchaPassed) {
         redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
         function compareRandomNumber(randomNumber){
-          console.log(randomNumber)
           if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
           else res.json({success:false})
         }
@@ -286,8 +283,6 @@ app.post(`/api/signout`, async(req, res) => {
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
   const outcome = await AccountInfo.find({'email' : email }).limit(1)
-  console.log(outcome[0].loggedInKey, "outcome[0].loggedInKey ")
-  console.log(loggedInKey, "loggedInKey")
   if (outcome.length !== 0) {
     if(outcome[0].loggedInKey === loggedInKey) {
       res.json({response:"Logout Successful"})
@@ -311,10 +306,15 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   //     recaptchaPassed = body.success;
   //     if (recaptchaPassed === false) res.json({response: 'invalid recaptcha'})
   //     else {
-          const outcome = await AccountInfo.find({'email':req.body.email })
-          if (outcome) {
-            // !todo, check if membership is still valid below
-          } else {
+          const ip = req.headers['x-forwarded-for'] || 
+            req.connection.remoteAddress || 
+            req.socket.remoteAddress ||
+            (req.connection.socket ? req.connection.socket.remoteAddress : null);
+          const loggedInKey = req.body.loggedInKey;
+          const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
+          // if (outcome) {
+          //   // !todo, check if membership is still valid below
+          // } else {
             if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
             if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
               const amountCoupons = req.body.amountCoupons;
@@ -343,7 +343,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
               saveCoupon();
               res.json({response: 'Coupon Created'})
           } else res.json({response: "You are not logged in!"});
-        }
+        // }
       // }
     // }
   // })
@@ -380,7 +380,6 @@ app.post('/api/searchCoupons', async (req, res) => {
   //     recaptchaPassed = body.success;
   //     if (recaptchaPassed === false) res.json({coupons: 'invalid recaptcha'})
   //     else {
-    console.log("hello")
         let coupons;
         // const city = req.body.city.toLowerCase()
         // const zip = req.body.zip
@@ -392,7 +391,8 @@ app.post('/api/searchCoupons', async (req, res) => {
         // else if(category) coupons = await Coupon.find({'category' : category})
         // else if(city) coupons = await Coupon.find({'city' : city})
         // else if(zip) coupons = await Coupon.find({'zip' : zip})
-        coupons = await Coupon.find({ $text: { $search: "asdsdasdsdadasdasdasd" }})
+        const regex = new RegExp(escapeRegex("testtest"), 'gi');
+        coupons = await Coupon.find({ "textarea": regex})
       console.log(coupons, 'coupons')
         res.json({coupons: coupons});
       // }
