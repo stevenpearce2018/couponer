@@ -223,7 +223,7 @@ async componentDidMount () {
   
   render () {
     return (
-        <div className="home">
+        <div className="home" onClick={this.hideNav}>
           <h1 className='homeMainTitle'>
             <span>
               Save money, grow your business, try something new.
