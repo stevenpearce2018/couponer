@@ -126,6 +126,7 @@ app.post('/api/recoverAccount', async(req, res) => {
 });
 
 app.post('/api/signupCustomer', async(req, res) => {
+  console.log(JSON.stringify(req.body))
   let passedNumberCheck = false;
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
@@ -174,6 +175,19 @@ app.post('/api/signupCustomer', async(req, res) => {
                         loggedInKey:loggedInKey
                       });
                     } else res.json({resp:'Your email is not valid!'});
+                    if(yourPick === ' Customer') {
+                      console.log("in final stage")
+                      const successfulSignup = () => {
+                        console.log("Successful Signup!")
+                      }
+                      const chargeData = {
+                        description: req.body.description,
+                        source: req.body.source,
+                        currency: req.body.currency,
+                        amount: req.body.amount
+                      }
+                      stripe.charges.create(chargeData, successfulSignup());
+                    }
                   } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
               } else res.json({resp:'You need to fill out all fields!'});
             } else res.json({resp:'Email address is taken!'});

@@ -40,7 +40,8 @@ class SignUp extends Component {
       popupClass: 'hiddenOverlay',
       boolValidPhoneNumber: false,
       validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>,
-      showOrHidePhoneValidationButton:'signupbtn'
+      showOrHidePhoneValidationButton:'signupbtn',
+      checkout: "hidden"
     }
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
@@ -103,7 +104,7 @@ class SignUp extends Component {
     const json = await response.json()
     if (json.success) {
       alert("Phone number is valid, woohoo!")
-      this.setState({showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber:<img className='icon moveUp' src='https://storage.googleapis.com/csstest/valid.svg' alt="Phone number not validated"></img>})
+      this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber:<img className='icon moveUp' src='https://storage.googleapis.com/csstest/valid.svg' alt="Phone number not validated"></img>})
       this.togglePopup();
     }
     else alert("The number you have entered is incorrect")
@@ -117,7 +118,7 @@ class SignUp extends Component {
   updateMembershipExperationDate(event){
     let d = new Date();
     d.setMonth( d.getMonth() + Number(event.target.value));
-    this.setState({numberOfMonths: Number(event.target.value), nembershipExperationDate: d})
+    this.setState({numberOfMonths: Number(event.target.value), membershipExperationDate: d})
   }
   updateBuisnessName(event){
     this.setState({buisnessName : event.target.value})
@@ -159,7 +160,6 @@ class SignUp extends Component {
       yourPick: this.state.yourPick,
       password: this.state.password,
       phoneNumber: this.state.phoneNumber,
-      membershipExperationDate: this.state.membershipExperationDate,
       randomNumber: Number(this.state.fiveDigitCode)
     }
     if (validateEmail(this.state.email)){
@@ -183,9 +183,7 @@ class SignUp extends Component {
     } else alert("Your email is not valid!")
   }
   async handleCustomerSignup(dataFromStripe){
-    if(this.state.boolValidPhoneNumber === false) return alert("You must validate your phone number!")
     const data = {
-      buisnessName: this.state.buisnessName,
       city: this.state.city,
       email: this.state.email,
       yourPick: this.state.yourPick,
@@ -193,9 +191,10 @@ class SignUp extends Component {
       phoneNumber: this.state.phoneNumber,
       membershipExperationDate: this.state.membershipExperationDate,
       description: dataFromStripe.description,
+      randomNumber: Number(this.state.fiveDigitCode),
       source: dataFromStripe.source,
       currency: dataFromStripe.currency,
-      amount: dataFromStripe.amount
+      amount: dataFromStripe.amount,
     }
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
@@ -341,7 +340,8 @@ class SignUp extends Component {
               </div>
             </div>
           </div>
-    <div className={this.state.showOrHideAccountMem}>
+    <div className={this.state.checkout}>
+    <div className="center">
       <Checkout
       parentMethod = {this.handleCustomerSignup}
       name={'UnlimitedCouponer Membership'}
@@ -349,6 +349,7 @@ class SignUp extends Component {
       amount={this.state.numberOfMonths * 4.99}
       panelLabel="Get membership"
       />
+    </div>
       <br/>
       <br/>
     </div>
@@ -370,9 +371,9 @@ class SignUp extends Component {
   }
   handleRadio(e) {
     if (e.target.value === ' Customer') {
+      if(this.state.boolValidPhoneNumber === true) this.setState({checkout:"showBuissnessIfCustomer"})
       this.setState({
         yourPick: e.target.value,
-        membershipExperationDate: '',
         showOrHideBuisInput: 'hideBuissnessIfCustomer',
         showOrHideAccountMem: 'showBuissnessIfCustomer'
       })
@@ -380,9 +381,11 @@ class SignUp extends Component {
     else if(e.target.value === ' Buisness Owner') {
       this.setState({
         yourPick: e.target.value,
-        membershipExperationDate: 'notCustomer',
+        membershipExperationDate: '',
+        numberOfMonths: '',
         showOrHideBuisInput: 'showBuissnessIfCustomer',
-        showOrHideAccountMem: 'hideBuissnessIfCustomer'
+        showOrHideAccountMem: 'hideBuissnessIfCustomer',
+        checkout: "hidden"
       })
     }
   }
