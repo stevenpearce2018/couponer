@@ -242,23 +242,37 @@ app.post('/api/phoneTestValidateNumber', async (req, res) => {
 
 app.post('/api/updateAccount', async (req, res) => {
   //!todo, flush out updateAccount api
-  let recaptchaPassed = false
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, (err, response, body) => {
-    if (!body) res.json({recaptcha: 'invalid recaptcha'})
-    else {
-    body = JSON.parse(body);
-    if(body.success !== undefined && !body.success) recaptchaPassed = body.success;
-    else recaptchaPassed = body.success;
+  console.log(JSON.stringify(req.body))
+  const email = req.body.email;
+  const loggedInKey = req.body.loggedInKey;
+  const outcome = await AccountInfo.find({'email' : email, "ip": ip, "loggedInKey":loggedInKey}).limit(1)
+  const ip = req.headers['x-forwarded-for'] || 
+    req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  if (outcome.length === 1) {
+    if (req.body.phoneNumber) {
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { phoneNumber: req.body.phoneNumber } }, 
+        { "upsert" : false } 
+      );
     }
-  })
-  redisHelper.get(loggedInKey, searchForKey)
-  async function searchForKey(accountBoundToKey) {
-    const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
-  }
-  if (recaptchaPassed === false) res.json({recaptcha: 'invalid recaptcha'})
-  else {
-  }
+    if (req.body.buisnessName) {
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { buisnessName: req.body.buisnessName } }, 
+        { "upsert" : false } 
+      );
+    }
+    if (req.body.city) {
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { city: req.body.city } }, 
+        { "upsert" : false } 
+      );
+    }
+  } else res.json({response: "Failed to update"})
 });
 
 app.post('/api/signin', async (req, res) => {

@@ -58,6 +58,7 @@ class App extends Component {
   this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
   this.uploadCoupons = this.uploadCoupons.bind(this);
   this.hideNav = this.hideNav.bind(this);
+  this.updateAccountSettings = this.updateAccountSettings.bind(this)
 }
 async componentDidMount () {
   // loadReCaptcha();
@@ -190,8 +191,32 @@ async componentDidMount () {
     const json = await response.json()
     alert(JSON.stringify(json), "json")
   }
+  async updateAccountSettings(data){
+    console.log({data})
+    const dataObject = {
+      oldPassword: data.oldPassword,
+      newPassword:  data.newPassword,
+      city: data.city,
+      businessName: data.businessName,
+      loggedInKey: this.state.loggedInKey,
+      email: this.state.email
+    }
+    const url = `/api/updateAccount`
+    const response = await fetch(url, {
+      method: "POST", 
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(dataObject),
+    })
+    const json = await response.json()
+    alert(JSON.stringify(json), "json")
+  }
   setMainAccountSettings(e) {
-    this.setState({mainContent: <AccountSettings/>})
+    this.setState({mainContent: <AccountSettings updateAccountSettings={this.updateAccountSettings}/>})
   }
   setMainUploadCoupon(e) {
     this.setState({mainContent: <CouponForm uploadCoupons={this.uploadCoupons}/>})
