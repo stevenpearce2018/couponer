@@ -68,7 +68,7 @@ class MyCoupons extends Component {
         alert("Unable to automatically search for coupons. Try searching manually.")
       }
     }
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey')
     if (!loggedInKey) {
         window.location.pathname = '/Home';
         alert('You are not logged in!')

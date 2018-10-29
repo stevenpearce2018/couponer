@@ -7,40 +7,28 @@ class AccountSettings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
+      // email: '',
       oldPassword: '',
       newPassword:'',
-      address: '',
-      cardNumber: '',
-      cardholderName: '',
-      CCV: '',
+      // address: '',
+      // cardNumber: '',
+      // cardholderName: '',
+      // CCV: '',
       city: '',
-      state: '',
-      experationDate: '',
-      zipCode: '',
-      buisnessName: 'off',
+      // state: '',
+      // experationDate: '',
+      // zipCode: '',
+      buisnessName: '',
       phoneNumber:'',
-      recaptchaToken: '',
-
+      // recaptchaToken: '',
     };
     this.updateEmail = this.updateEmail.bind(this);
-    // this.updateOldPassword = this.updateOldPassword.bind(this);
-    // this.updateNewPassword = this.updateNewPassword.bind(this);
-    this.updateAddress= this.updateAddress.bind(this);
-    this.updateCardNumber = this.updateCardNumber.bind(this);
-    this.updateCardholderName= this.updateCardholderName.bind(this);
-    this.updateCCV = this.updateCCV.bind(this);
+    this.updateOldPassword = this.updateOldPassword.bind(this);
+    this.updateNewPassword = this.updateNewPassword.bind(this);
     this.updateCity = this.updateCity.bind(this);
-    this.updateState = this.updateState.bind(this);
-    this.updateExperationDate = this.updateExperationDate.bind(this);
-    this.updateZipcode = this.updateZipcode.bind(this);
     this.updateBuisnessName = this.updateBuisnessName.bind(this);
     this.updatePhoneNumber = this.updatePhoneNumber.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    // this.updateInput = this.updateInput.bind(this);
-    // this.handleSubmit = this.handleSubmit.bind(this);
-    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
   }
 
   // updateInputField(event, fieldBeingUpdated) {
@@ -49,90 +37,51 @@ class AccountSettings extends Component {
   //   })
   // }
   componentDidMount() {
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
-    if (!loggedInKey) {
-      window.location.pathname = '/Home';
-      alert('You are not logged in!')
-    }
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
-    this.onLoadRecaptcha();
+    // if (this.captchaDemo) {
+    //     this.captchaDemo.reset();
+    //     this.captchaDemo.execute();
+    // }
+    // this.onLoadRecaptcha();
   }
-  onLoadRecaptcha() {
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
-  }
-  verifyCallback(recaptchaToken) {
-    this.setState({recaptchaToken: recaptchaToken})
-  }
+  // onLoadRecaptcha() {
+  //   if (this.captchaDemo) {
+  //       this.captchaDemo.reset();
+  //       this.captchaDemo.execute();
+  //   }
+  // }
+  // verifyCallback(recaptchaToken) {
+  //   this.setState({recaptchaToken: recaptchaToken})
+  // }
   updatePhoneNumber(event) {
     this.setState({phoneNumber: event.target.value}) 
   }
-
-  // updateOldPassword(event) {
-  //   this.setState({oldPassword : event.target.value})
-  // }
-  // updateNewPassword(event) {
-  //   this.setState({newPassword : event.target.value})
-  // }
+  updateOldPassword(event) {
+    this.setState({oldPassword : event.target.value})
+  }
+  updateNewPassword(event) {
+    this.setState({newPassword : event.target.value})
+  }
   updateEmail(event) {
     this.setState({email : event.target.value})
-  }
-  updateAddress(event) {
-    this.setState({address : event.target.value})
-  }
-  updateCardNumber(event) {
-    this.setState({cardNumber : event.target.value})
-  }
-  updateCardholderName(event) {
-    this.setState({cardholderName : event.target.value})
-  }
-  updateCCV(event) {
-    this.setState({CCV : event.target.value})
   }
   updateCity(event) {
     this.setState({city : event.target.value})
   }
-  updateState(event) {
-    this.setState({state : event.target.value})
-  }
-  updateExperationDate(event) {
-    this.setState({experationDate : event.target.value})
-  }
-  updateZipcode(event) {
-    this.setState({zipCode : event.target.value})
-  }
   updateBuisnessName(event) {
     this.setState({buisnessName : event.target.value})
   }
-  updateIsCustomer(event) {
-    this.setState({
-      isCustomer : event.target.value,
-      isBuisnessOwner: 'off'
-    })
-  }
-  updateIsBuisnessOwner(event) {
-    this.setState({
-      isBuisnessOwner : event.target.value,
-      isCustomer: 'off'
-    })
-  }
+
   async handleSubmit(e){
     e.preventDefault();
-    const url = `api/updateAccount`
-    const response = await fetch(url, {
-      body: this.state,
-      method: 'post',
-      headers: {
-        Accept: 'application/json',
-      },
-    })
-    const json = await response.json()
-    sessionStorage.setItem('credsCoupon', JSON.stringify(json))
+    const data = {
+      buisnessName: this.state.buisnessName,
+      phoneNumber: this.state.phoneNumber,
+      city: this.state.city,
+      oldPassword: this.state.oldPassword,
+      newPassword: this.state.newPassword,
+      email: this.state.email,
+    }
+    this.props.updateAccountSettings(data)
   }
 
   render() {
@@ -150,27 +99,27 @@ class AccountSettings extends Component {
           </div> */}
           </div>
         
-          <InputField
+          {/* <InputField
           htmlFor="Email"
           type="email"
           labelHTML="Email"
           placeholder="ProSaver@UnlimitedCouponer.com"
           onChange={this.updateEmail}
-          />
+          /> */}
 
           {/* <InputField
           htmlFor="Password"
           type="password"
-          labelHTML="Old Password"
-          placeholder="Old Password"
-          onChange={this.updateOldPassword}
+          labelHTML="Change Password"
+          placeholder="New Password"
+          onChange={this.updateNewPassword}
           />
 
           <InputField
           htmlFor="Password"
           type="password"
-          labelHTML="Password"
-          placeholder="Password"
+          labelHTML="Old Password"
+          placeholder="Old Password"
           onChange={this.updateOldPassword}
           /> */}
 
@@ -182,7 +131,7 @@ class AccountSettings extends Component {
           onChange={this.updatePhoneNumber}
           />
           
-          <InputField
+          {/* <InputField
           htmlFor="Address"
           type="text"
           labelHTML="Address"
@@ -212,7 +161,7 @@ class AccountSettings extends Component {
           labelHTML="CCV"
           placeholder="555"
           onChange={this.updateCCV}
-          />        
+          />         */}
           
           <InputField
           htmlFor="City"
@@ -221,7 +170,7 @@ class AccountSettings extends Component {
           placeholder="Coupon Town"
           onChange={this.updateCity}
           />   
-          
+{/*           
           <InputField
           htmlFor="State"
           type="text"
@@ -252,7 +201,7 @@ class AccountSettings extends Component {
           labelHTML="Zip Code"
           placeholder="55555"
           onChange={this.updateZipcode}
-          />  
+          />   */}
 
           <InputField
           htmlFor="Buisness Name"
@@ -262,8 +211,8 @@ class AccountSettings extends Component {
           onChange={this.updateBuisnessName}
           /> 
 
-          <button value="send" className="updatebtn" onClick={this.handleSubmit}> Update Info</button>
-          <ReCaptcha
+          <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
+          {/* <ReCaptcha
             ref={(el) => {this.captchaDemo = el;}}
             size="invisible"
             render="explicit"
@@ -271,7 +220,7 @@ class AccountSettings extends Component {
             data-theme="dark"
             onloadCallback={this.onLoadRecaptcha}
             verifyCallback={this.verifyCallback}
-          />
+          /> */}
         </form>
         </div>
     )

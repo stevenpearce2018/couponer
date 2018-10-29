@@ -4,22 +4,19 @@ import Coupon from '../SubComponents/Coupon/coupon';
 import Input from '../SubComponents/Input/input';
 import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
-import { ReCaptcha } from 'react-recaptcha-google';
+// import { ReCaptcha } from 'react-recaptcha-google';
 import Checkout from '../Checkout/checkout';
 
 const validateCouponForm = (state) => {
-  // do you like hacky code?
-  // here is some hacky code.
-  // else if  else if  else if  else if  else if  else if  else if  else if  else if  else if  else if  else if 
   if (state.latitude === '' || state.longitude === '') return alert('Invalid Address, please check address!');
   else if (state.title === 'Rent your very own kitten today!') return alert('You must have a unique title!');
   else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') return alert('You must have an address!');
-  else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your old price');
   else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') return alert('You must upload an image!');
   else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') return alert('You must upload a custom description!');
   else if (state.city === '') return alert('You must have a city!')
   else if (state.category === '') return alert('You must have a category!')
-  else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your current price!')
+  // !todo, fix this check
+  // else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your current price!')
   else if (state.city === '') return alert('You must have a city!')
   else if (state.zip === '' || state.zip.length < 3) return alert('You must have a zipcode!')
 }
@@ -44,7 +41,7 @@ class CouponForm extends Component {
       zip: '',
       popupClass: 'hiddenOverlay',
       recaptchaToken: '',
-      validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg' alt="Address is invalid"></img>
+      validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg' alt="Address is invalid"></img>,
     };
     this.togglePopup = this.togglePopup.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
@@ -59,34 +56,38 @@ class CouponForm extends Component {
     this.handleCurrentPriceChange = this.handleCurrentPriceChange.bind(this);
     this.handleAmountCouponsChange = this.handleAmountCouponsChange.bind(this);
     this.handleTextareaChange = this.handleTextareaChange.bind(this);
-    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.parentMethod = this.parentMethod.bind(this);
   }
   componentDidMount() {
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
+    this.setState({loggedInKey:loggedInKey})
+    console.log(loggedInKey)
+    console.log(loggedInKey[23])
+    console.log(loggedInKey[24])
     if (!loggedInKey) {
         window.location.pathname = '/Home';
         alert('You are not logged in!')
     }
-    else if(loggedInKey.substring(loggedInKey.length-1, loggedInKey.length) !== "b"){
-      window.location.pathname = '/Home';
-      alert('Only buiness owners can access this page!')
-    }
+    // else if(loggedInKey[23] !== "b" || loggedInKey[24] !== "b"){
+    //   window.location.pathname = '/Home';
+    //   alert('Only buiness owners can access this page!')
+    // }
     if (this.captchaDemo) {
         this.captchaDemo.reset();
         this.captchaDemo.execute();
     }
   }
-  onLoadRecaptcha() {
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
-  }
-  verifyCallback(recaptchaToken) {
-    this.setState({recaptchaToken: recaptchaToken})
-  }
+  // onLoadRecaptcha() {
+  //   if (this.captchaDemo) {
+  //       this.captchaDemo.reset();
+  //       this.captchaDemo.execute();
+  //   }
+  // }
+  // verifyCallback(recaptchaToken) {
+  //   this.setState({recaptchaToken: recaptchaToken})
+  // }
   togglePopup(){
     let newClass = "hiddenOverlay";
     if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
@@ -123,6 +124,7 @@ class CouponForm extends Component {
     if (this.state.category !== nextState.category) return true;
     if (this.state.popupClass !== nextState.popupClass) return true;
     if (this.state.textarea !== nextState.textarea) return true;
+    if (this.state.imagePreviewUrl !== nextState.imagePreviewUrl) return true;
     return false;
   }
 
@@ -130,6 +132,7 @@ class CouponForm extends Component {
     // after a response is gotten from the server
     // JSON.stringify the response then JSON.parse the response 
     e.preventDefault();
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail')
     let that = this;
     const google = window.google
     const geocoder = new google.maps.Geocoder();
@@ -141,35 +144,37 @@ class CouponForm extends Component {
             longitude: results[0].geometry.location.lng()
           })
           validateCouponForm(this.state)
-          const url = `/api/uploadCoupons`
-          alert(JSON.stringify(this.state))
-          const data = {
-            title: this.state.title,
-            longitude: this.state.longitude,
-            latitude: this.state.latitude,
-            address: this.state.address,
-            amountCoupons: this.state.amountCoupons,
-            currentPrice: this.state.currentPrice,
-            discountedPrice: this.state.discountedPrice,
-            superCoupon: this.state.superCoupon,
-            textarea: this.state.textarea,
-            imagePreviewUrl: this.state.imagePreviewUrl,
-            category: this.state.category,
-            city: this.state.city,
-            zip: this.state.zip
-          }
-          const response = await fetch(url, {
-            method: "POST", 
-            mode: "cors",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json; charset=utf-8",
-            },
-            body: JSON.stringify(data),
-          })
-          const json = await response.json()
-          alert(JSON.stringify(json))
+          // const url = `/api/uploadCoupons`
+          alert(JSON.stringify(this.state), "state")
+          alert(email)
+          // const data = {
+          //   title: this.state.title,
+          //   longitude: this.state.longitude,
+          //   latitude: this.state.latitude,
+          //   address: this.state.address,
+          //   amountCoupons: this.state.amountCoupons,
+          //   currentPrice: this.state.currentPrice,
+          //   discountedPrice: this.state.discountedPrice,
+          //   superCoupon: this.state.superCoupon,
+          //   textarea: this.state.textarea,
+          //   imagePreviewUrl: this.state.imagePreviewUrl,
+          //   category: this.state.category,
+          //   city: this.state.city,
+          //   zip: this.state.zip,
+          // }
+          this.props.uploadCoupons(this.state)
+          // const response = await fetch(url, {
+          //   method: "POST", 
+          //   mode: "cors",
+          //   cache: "no-cache",
+          //   credentials: "same-origin",
+          //   headers: {
+          //     "Content-Type": "application/json; charset=utf-8",
+          //   },
+          //   body: JSON.stringify(data),
+          // })
+          // const json = await response.json()
+          // alert(JSON.stringify(json), "json")
           // !todo, reroute user to homepage
         }
       } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
@@ -418,7 +423,7 @@ class CouponForm extends Component {
             description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
             amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
           />
-          <ReCaptcha
+          {/* <ReCaptcha
             ref={(el) => {this.captchaDemo = el;}}
             size="invisible"
             render="explicit"
@@ -426,7 +431,7 @@ class CouponForm extends Component {
             data-theme="dark"
             onloadCallback={this.onLoadRecaptcha}
             verifyCallback={this.verifyCallback}
-          />
+          /> */}
       </form>
       </div>
       </div>

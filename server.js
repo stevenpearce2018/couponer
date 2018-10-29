@@ -19,6 +19,14 @@ const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 const db = require('./config/db')
 const QRCode = require('qrcode');
 
+const fuzzySearchRegex = text => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
 const generateQR = async text => {
   try {
     return await QRCode.toDataURL(text)
@@ -118,14 +126,13 @@ app.post('/api/recoverAccount', async(req, res) => {
 });
 
 app.post('/api/signupCustomer', async(req, res) => {
+  console.log(JSON.stringify(req.body))
   let passedNumberCheck = false;
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
-    console.log(randomNumber, req.body.randomNumber)
     if (randomNumber === req.body.randomNumber) passedNumberCheck = true;
     else passedNumberCheck = false;
     if (passedNumberCheck === true) {
-      console.log(2)
       // let recaptchaPassed = false
       // const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
       // await request(verifyUrl, async(err, response, body) => {
@@ -142,15 +149,11 @@ app.post('/api/signupCustomer', async(req, res) => {
             const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "c";
             const result = await AccountInfo.find({ 'email': req.body.email })
               if (result.length === 0) {
-                console.log(3)
                 if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
-                  console.log(4)
                   if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
-                    console.log(5)
                     const hashedPass = await bcrypt.hashSync(req.body.password, 10);
                     const email = req.body.email;
                     if(validateEmail(email)){
-                      console.log(6)
                       const membershipExperationDate = req.body.buisnessName ? req.body.buisnessName : "N/A" ;
                       const accountInfo = new AccountInfo({
                         _id: new mongoose.Types.ObjectId(),
@@ -172,6 +175,19 @@ app.post('/api/signupCustomer', async(req, res) => {
                         loggedInKey:loggedInKey
                       });
                     } else res.json({resp:'Your email is not valid!'});
+                    if(yourPick === ' Customer') {
+                      console.log("in final stage")
+                      const successfulSignup = () => {
+                        console.log("Successful Signup!")
+                      }
+                      const chargeData = {
+                        description: req.body.description,
+                        source: req.body.source,
+                        currency: req.body.currency,
+                        amount: req.body.amount
+                      }
+                      stripe.charges.create(chargeData, successfulSignup());
+                    }
                   } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
               } else res.json({resp:'You need to fill out all fields!'});
             } else res.json({resp:'Email address is taken!'});
@@ -216,7 +232,6 @@ app.post('/api/phoneTestValidateNumber', async (req, res) => {
   //     if (recaptchaPassed) {
         redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
         function compareRandomNumber(randomNumber){
-          console.log(randomNumber)
           if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
           else res.json({success:false})
         }
@@ -227,23 +242,37 @@ app.post('/api/phoneTestValidateNumber', async (req, res) => {
 
 app.post('/api/updateAccount', async (req, res) => {
   //!todo, flush out updateAccount api
-  let recaptchaPassed = false
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, (err, response, body) => {
-    if (!body) res.json({recaptcha: 'invalid recaptcha'})
-    else {
-    body = JSON.parse(body);
-    if(body.success !== undefined && !body.success) recaptchaPassed = body.success;
-    else recaptchaPassed = body.success;
+  console.log(JSON.stringify(req.body))
+  const email = req.body.email;
+  const loggedInKey = req.body.loggedInKey;
+  const outcome = await AccountInfo.find({'email' : email, "ip": ip, "loggedInKey":loggedInKey}).limit(1)
+  const ip = req.headers['x-forwarded-for'] || 
+    req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  if (outcome.length === 1) {
+    if (req.body.phoneNumber) {
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { phoneNumber: req.body.phoneNumber } }, 
+        { "upsert" : false } 
+      );
     }
-  })
-  redisHelper.get(loggedInKey, searchForKey)
-  async function searchForKey(accountBoundToKey) {
-    const outcome = await AccountInfo.find({'email':accountBoundToKey.email })
-  }
-  if (recaptchaPassed === false) res.json({recaptcha: 'invalid recaptcha'})
-  else {
-  }
+    if (req.body.buisnessName) {
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { buisnessName: req.body.buisnessName } }, 
+        { "upsert" : false } 
+      );
+    }
+    if (req.body.city) {
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { city: req.body.city } }, 
+        { "upsert" : false } 
+      );
+    }
+  } else res.json({response: "Failed to update"})
 });
 
 app.post('/api/signin', async (req, res) => {
@@ -305,10 +334,15 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
   //     recaptchaPassed = body.success;
   //     if (recaptchaPassed === false) res.json({response: 'invalid recaptcha'})
   //     else {
-          const outcome = await AccountInfo.find({'email':req.body.email })
-          if (outcome) {
-            // !todo, check if membership is still valid below
-          } else {
+          const ip = req.headers['x-forwarded-for'] || 
+            req.connection.remoteAddress || 
+            req.socket.remoteAddress ||
+            (req.connection.socket ? req.connection.socket.remoteAddress : null);
+          const loggedInKey = req.body.loggedInKey;
+          const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
+          // if (outcome) {
+          //   // !todo, check if membership is still valid below
+          // } else {
             if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
             if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
               const amountCoupons = req.body.amountCoupons;
@@ -337,7 +371,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => { // req = request
               saveCoupon();
               res.json({response: 'Coupon Created'})
           } else res.json({response: "You are not logged in!"});
-        }
+        // }
       // }
     // }
   // })
@@ -378,13 +412,54 @@ app.post('/api/searchCoupons', async (req, res) => {
         const city = req.body.city.toLowerCase()
         const zip = req.body.zip
         const category = req.body.category
-        if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
-        else if(city && zip) coupons = await Coupon.find({'city' : city, 'zip' : zip})
-        else if(category && zip) coupons = await Coupon.find({'zip' : zip, 'category' : category})
-        else if(category && city) coupons = await Coupon.find({'city' : city, 'category' : category})
-        else if(category) coupons = await Coupon.find({'category' : category})
-        else if(city) coupons = await Coupon.find({'city' : city})
-        else if(zip) coupons = await Coupon.find({'zip' : zip})
+        const keyword = req.body.keyword
+        const regex = new RegExp(escapeRegex(keyword), 'gi');
+        coupons = await Coupon.find({"textarea": regex})
+        if(city && zip && category && keyword) {
+          coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category, "textarea": regex})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(city && zip) {
+          coupons = await Coupon.find({'city' : city, 'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(keyword && zip) {
+          coupons = await Coupon.find({'zip' : city, 'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(city && category) {
+          coupons = await Coupon.find({'city' : city, 'category' : category})
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(city && keyword) {
+          coupons = await Coupon.find({'city' : city, 'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(category && zip) {
+          coupons = await Coupon.find({'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(category && keyword) {
+          coupons = await Coupon.find({'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(category && city) {
+          coupons = await Coupon.find({'city' : city, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+          if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        }
+        else if(category) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        else if(city) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        else if(zip) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+        else if(keyword) coupons = await Coupon.find({'textarea' : regex}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
       // }
   //   }

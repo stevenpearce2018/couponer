@@ -185,7 +185,15 @@ text-align: center;
 margin-left:-55px;
 }
 
-
+.StripeCheckout{
+  margin-top:32px;
+  margin-left:-48%;
+}
+@media only screen and (max-width: 959px) {
+  .StripeCheckout{
+    margin-left:0%;
+  }
+}
 @media only screen and (max-width: 990px) {
 .radioPad__wrapper{
   width: 90%;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './search.css';
-import { ReCaptcha } from 'react-recaptcha-google';
+// import { ReCaptcha } from 'react-recaptcha-google';
 import Select from '../SubComponents/Select/select';
 
 // Private component, keep scoped to search component
@@ -29,31 +29,51 @@ class Search extends Component {
       coupons: '',
       keywords: '',
       recaptchaToken: '',
-      length: 0
+      pageNumber: 1,
+      incrementPageClass: "hidden"
     }
     this.updateCity = this.updateCity.bind(this);
     this.updateZip = this.updateZip.bind(this);
     this.updateCategory = this.updateCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.updateKeywords = this.updateKeywords.bind(this);
     this.CouponsMaker = this.CouponsMaker.bind(this);
+    this.decreasePage = this.decreasePage.bind(this);
+    this.incrementPage = this.incrementPage.bind(this);
   }
   componentDidMount() {
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
+    // if (this.captchaDemo) {
+    //     this.captchaDemo.reset();
+    //     this.captchaDemo.execute();
+    // }
   }
-  onLoadRecaptcha() {
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
+  // onLoadRecaptcha() {
+  //   if (this.captchaDemo) {
+  //       this.captchaDemo.reset();
+  //       this.captchaDemo.execute();
+  //   }
+  // }
+  // verifyCallback(recaptchaToken) {
+  //   this.setState({recaptchaToken: recaptchaToken})
+  // }
+  async decreasePage(){
+    const pageNumber = this.state.pageNumber;
+    if (pageNumber > 1) {
+      const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber-1)
+      const response = await fetch(url);
+      const data = await response.json();
+      this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
     }
+    else alert("You cannot go lower than page one!")
   }
-  verifyCallback(recaptchaToken) {
-    this.setState({recaptchaToken: recaptchaToken})
+  async incrementPage(){
+    this.setState({pageNumber : (this.state.pageNumber + 1)})
+    const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber+1)
+    const response = await fetch(url);
+    const data = await response.json();
+    this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
   }
   updateCity(e) {
     this.setState({ city: e.target.value });
@@ -69,12 +89,12 @@ class Search extends Component {
     this.setState({ keywords: e.target.value });
   }
   async getCoupons(id){
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerkey')
+    const loggedInKey = sessionStorage.getItem("UnlimitedCouponerKey")
     if (!loggedInKey) alert('You are not logged in!')
     else {
       const data = {
         id: id,
-        loggedinkeykey: loggedInKey
+        // loggedinkeykey: loggedInKey,
       }
       const url = `api/getCoupon`
       const response = await fetch(url, {
@@ -152,17 +172,17 @@ class Search extends Component {
   }
   async handleSearch(e){
     e.preventDefault();
-    console.log(this.state.category)
     const data = {
       city: this.state.city,
       zip: this.state.zip,
       category: this.state.category,
-      // keywords: this.state.keywords,
-      recaptchaToken: this.state.recaptchaToken
+      keyword: this.state.keywords,
+      pageNumber: this.state.pageNumber
+      // recaptchaToken: this.state.recaptchaToken
     }
-    const that = this;
-    if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '') {
-      that.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
+    console.log(data)
+    if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== ''|| this.state.keywords) {
+      this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       const url = `/api/searchCoupons`
       const response =  await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -176,7 +196,7 @@ class Search extends Component {
         body: JSON.stringify(data),
       })
       const json = await response.json()
-      that.setState({coupons: that.CouponsMaker(json.coupons)})
+      this.setState({coupons: this.CouponsMaker(json.coupons), incrementPageClass: "center"})
     }
 }                
   render() {
@@ -202,6 +222,7 @@ class Search extends Component {
       className='searchCategory'
       onChange={this.updateCategory}
       /> */}
+      <b>
       <Select
           hasLabel='true'
           htmlFor='select'
@@ -210,14 +231,15 @@ class Search extends Component {
           required={true}
           value={this.state.length}
           onChange={this.updateCategory} />
-      {/* <br/>
+      </b>
+      <br/>
       <SearchField
-      htmlFor="Keywords: Seperate keywords by commas"
+      htmlFor="Use a keyword to specify your search"
       className='searchCategory'
       onChange={this.updateKeywords}
-      /> */}
+      />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
-      <ReCaptcha
+      {/* <ReCaptcha
         ref={(el) => {this.captchaDemo = el;}}
         size="invisible"
         render="explicit"
@@ -225,9 +247,17 @@ class Search extends Component {
         data-theme="dark"
         onloadCallback={this.onLoadRecaptcha}
         verifyCallback={this.verifyCallback}
-      />
+      /> */}
   </form>
       {this.state.coupons}
+      <div className={this.state.incrementPageClass}>
+          <a className="icon-button incrementIcons backgroundCircle" onClick={this.decreasePage}>
+            <i className="fa-arrow-left"></i>
+          </a>
+          <a className="icon-button backgroundCircle" onClick={this.incrementPage}>
+            <i className="fa-arrow-right"></i>
+          </a>
+        </div>
         </div>
     )
   }

@@ -1,8 +1,8 @@
  
 import React, { Component } from 'react';
 import './login.css';
-import { ReCaptcha } from 'react-recaptcha-google';
-import { loadReCaptcha } from 'react-recaptcha-google';
+// import { ReCaptcha } from 'react-recaptcha-google';
+// import { loadReCaptcha } from 'react-recaptcha-google';
 import InputField from '../SubComponents/InputField/inputField'
 import validateEmail from '../../validateEmail';
 
@@ -19,8 +19,8 @@ class Login extends Component {
     this.updateEmail = this.updateEmail.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.updateRecoveryEmail = this.updateRecoveryEmail.bind(this);
     this.sendRecoveryEmail = this.sendRecoveryEmail.bind(this);
@@ -40,26 +40,26 @@ class Login extends Component {
     this.setState({popupClass: newClass})
   }
   componentDidMount() {
-    loadReCaptcha()
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
-    }
-  }
-  onLoadRecaptcha() {
-      if (this.captchaDemo) {
-          this.captchaDemo.reset();
-          this.captchaDemo.execute();
-      }
-  }
-  verifyCallback(recaptchaToken) {
-    this.setState({recaptchaToken: recaptchaToken})
+  //   loadReCaptcha()
+  //   if (this.captchaDemo) {
+  //       this.captchaDemo.reset();
+  //       this.captchaDemo.execute();
+  //   }
+  // }
+  // onLoadRecaptcha() {
+  //     if (this.captchaDemo) {
+  //         this.captchaDemo.reset();
+  //         this.captchaDemo.execute();
+  //     }
+  // }
+  // verifyCallback(recaptchaToken) {
+  //   this.setState({recaptchaToken: recaptchaToken})
   }
   async sendRecoveryEmail(){
     if (validateEmail(this.state.recoveryEmail) === false) return alert("You need to enter a valid email")
     const data = {
       recoveryEmail: this.state.recoveryEmail,
-      recaptchaToken: this.state.recaptchaToken
+      // recaptchaToken: this.state.recaptchaToken
     }
     const url = `/api/recoverAccount`
     const response = await fetch(url, {
@@ -87,7 +87,7 @@ class Login extends Component {
     const data = {
       email: this.state.email,
       password: this.state.password,
-      recaptchaToken: this.state.recaptchaToken
+      // recaptchaToken: this.state.recaptchaToken
     }
     const url = `/api/signin`
     const response = await fetch(url, {
@@ -103,7 +103,7 @@ class Login extends Component {
     const json = await response.json()
     if (json.loggedInKey){
       this.props.parentMethod(json.loggedInKey, this.state.email);
-      sessionStorage.setItem('UnlimitedCouponerkey', JSON.stringify(json.loggedInKey))
+      sessionStorage.setItem('UnlimitedCouponerKey', JSON.stringify(json.loggedInKey))
     } else alert("Invalid Login")
   }
     
@@ -126,7 +126,7 @@ class Login extends Component {
                 </div>
               </div>
             </div>
-            <ReCaptcha
+            {/* <ReCaptcha
             ref={(el) => {this.captchaDemo = el;}}
             size="invisible"
             render="explicit"
@@ -134,21 +134,21 @@ class Login extends Component {
             data-theme="dark"
             onloadCallback={this.onLoadRecaptcha}
             verifyCallback={this.verifyCallback}
-            />
+            /> */}
           </form>
           <div className={this.state.popupClass}>
             <div className="popup">
               <h2>Please Enter Your Email</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
-              <InputField
-              htmlFor="Recover account"
-              type="text"
-              labelHTML="Your Email"
-              placeholder="helpme@ohno.com"
-              onChange={this.updateRecoveryEmail}
-              required
-              />
+                <InputField
+                htmlFor="Recover account"
+                type="text"
+                labelHTML="Your Email"
+                placeholder="helpme@ohno.com"
+                onChange={this.updateRecoveryEmail}
+                required
+                />
               <div className="popupbtn">
               <button className='signupbtn signupbtnn' value="send" onClick={this.sendRecoveryEmail}><strong>Recover</strong></button>
               </div>

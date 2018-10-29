@@ -1,7 +1,9 @@
 # Copyright 2018 Steven Pearce
 <strong> You will need a twilio key to create accounts because the current twilio key is bound to my phone number.</strong>
 
-1) cd UnlimitedCouponer
+You will need a redis server running locally for the server to compile. All other keys are included for you.
+
+1) cd Couponer
 2) npm install
 3) cd client
 4) npm install
@@ -20,7 +22,6 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] === Done
 
 [X] Search Functionality <br />
-[ ] Restructure of server code to help simplify the serverside logic <br />
 [ ] Docker Containers <br />
 [X] Stateless Server <br />
 [ ] Load Balancer <br />
@@ -32,14 +33,12 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] Account details Encryption <br />
 [X] Autoload Sponsered Coupons <br />
 [/] Stripe payment support <br />
-[ ] Paid membership support <br />
-[/] Page system for coupons<br />
+[/] Paid membership support <br />
 [X] Display Coupons <br />
 [X] Create Coupons <br />
 [/] Login Security/Validation <br />
 [/] React Native App (Waiting till webapp is Fully Complete to Resume) <br />
 [ ] Refactoring of CSS <br />
-[X] Website logo and AWS s3 hosting <br />
 [ ] Global CSS Classes to Reduce Css Bloat <br />
 [/] Refactoring of JS Components <br />
 [X] Router Support <br />
@@ -48,15 +47,15 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] Recaptcha Support <br />
 [ ] Image Optimizations for Performance <br />
 [/] General Serverside Validation of data <br />
-[/] Stripe payment handling (May move to amazon or other payment processor) <br />
+[/] Stripe payment handling<br />
 [/] CDN Setup of Assets <br />
 [X] Address Validation <br />
 [X] GeoLocation AutoSearch  <br />
 [/] Strip Unused dependacies <br />
 [/] Mongoose Models <br />
 [ ] Production MongoDB Setup <br />
-[X] Preact config <br />
 [ ] Production Redis Setup <br />
-[ ] Enviromnet of MongoDB String Setup <br />
+[ ] Enviromnet Variables setup <br />
 [ ] Production Payment Setup <br />
-[ ] Deployed on (Probably) Heroku <br />
+[/] AWS S3 hosting of assets <br />
+[ ] Deployed on AWS <br />

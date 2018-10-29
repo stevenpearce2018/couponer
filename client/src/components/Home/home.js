@@ -120,28 +120,25 @@ class Home extends Component {
       }
     }
   }
-  async getCoupons(id) {
+  getCoupons(id) {
     this.props.parentMethod(id)
   }
  async decreasePage(){
-    const that = this;
     const pageNumber = this.state.pageNumber;
     if (pageNumber > 1) {
-      that.setState({pageNumber : pageNumber - 1})
-      const url = '/api/getSponseredCoupons/'+that.state.city+'/'+(that.state.pageNumber-1)
+      const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber-1)
       const response = await fetch(url);
       const data = await response.json();
-      that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
+      this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
     }
     else alert("You cannot go lower than page one!")
   }
   async incrementPage(){
-    const that = this;
     this.setState({pageNumber : (this.state.pageNumber + 1)})
     const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber+1)
     const response = await fetch(url);
     const data = await response.json();
-    that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
+    this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
   }
   render() {
     return (

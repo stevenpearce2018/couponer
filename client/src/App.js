@@ -9,7 +9,7 @@ import Login from './components/Login/login';
 import Search from './components/Search/search';
 import About from './components/About/about';
 import history from './history';
-import { loadReCaptcha } from 'react-recaptcha-google';
+// import { loadReCaptcha } from 'react-recaptcha-google';
 import MyCoupons from './components/MyCoupons/myCoupons';
 
 // For routing
@@ -41,7 +41,8 @@ class App extends Component {
       email: '',
       loggedInKey: '',
       showOrHideNav: 'hidden',
-      loggedInBuisness: 'hidden'
+      loggedInBuisness: 'hidden',
+      ignoreClick: true
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -55,9 +56,12 @@ class App extends Component {
   this.getCoupons = this.getCoupons.bind(this);
   this.showOrHideNav = this.showOrHideNav.bind(this);
   this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
+  this.uploadCoupons = this.uploadCoupons.bind(this);
+  this.hideNav = this.hideNav.bind(this);
+  this.updateAccountSettings = this.updateAccountSettings.bind(this)
 }
 async componentDidMount () {
-  loadReCaptcha();
+  // loadReCaptcha();
   const urlHandler = (currentURL) => {
     switch (currentURL.toLowerCase()) {
       case 'home':
@@ -99,12 +103,15 @@ async componentDidMount () {
       urlHandler(urlPath)
     }
   }
-  if (sessionStorage.getItem('UnlimitedCouponerkey') && sessionStorage.getItem('UnlimitedCouponerkey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
+  if (sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerKey') !== '') this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
 }
-showOrHideNav(){
-  if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden"})
-  else this.setState({showOrHideNav:"navPopup"})
-}
+  showOrHideNav(){
+    if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden", ignoreClick: true})
+    else this.setState({showOrHideNav:"navPopup", ignoreClick: false})
+  }
+  hideNav(){
+    if (this.showOrHideNav !== "hidden" && this.state.ignoreClick === false) this.setState({showOrHideNav: "hidden", ignoreClick: true})
+  }
   async getCoupons(_id){
     const loggedInKey = this.state.loggedInKey;
     const email = this.state.email;
@@ -149,15 +156,70 @@ showOrHideNav(){
     })
     const json = await response.json()
     if(json.response === "Logout Failed") alert(json.response)
-    this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden'})
-    sessionStorage.setItem('UnlimitedCouponerkey', '')
+    this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
+    sessionStorage.setItem('UnlimitedCouponerKey', '')
   }
-
+  async uploadCoupons(state){
+    const url = `/api/uploadCoupons`
+    const data = {
+      title: state.title,
+      longitude: state.longitude,
+      latitude: state.latitude,
+      address: state.address,
+      amountCoupons: state.amountCoupons,
+      currentPrice: state.currentPrice,
+      discountedPrice: state.discountedPrice,
+      superCoupon: state.superCoupon,
+      textarea: state.textarea,
+      imagePreviewUrl: state.imagePreviewUrl,
+      category: state.category,
+      city: state.city,
+      zip: state.zip,
+      loggedInKey: this.state.loggedInKey,
+      email: this.state.email,
+    }
+    const response = await fetch(url, {
+      method: "POST", 
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(data),
+    })
+    const json = await response.json()
+    alert(JSON.stringify(json), "json")
+  }
+  async updateAccountSettings(data){
+    console.log({data})
+    const dataObject = {
+      oldPassword: data.oldPassword,
+      newPassword:  data.newPassword,
+      city: data.city,
+      businessName: data.businessName,
+      loggedInKey: this.state.loggedInKey,
+      email: this.state.email
+    }
+    const url = `/api/updateAccount`
+    const response = await fetch(url, {
+      method: "POST", 
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(dataObject),
+    })
+    const json = await response.json()
+    alert(JSON.stringify(json), "json")
+  }
   setMainAccountSettings(e) {
-    this.setState({mainContent: <AccountSettings/>})
+    this.setState({mainContent: <AccountSettings updateAccountSettings={this.updateAccountSettings}/>})
   }
   setMainUploadCoupon(e) {
-    this.setState({mainContent: <CouponForm/>})
+    this.setState({mainContent: <CouponForm uploadCoupons={this.uploadCoupons}/>})
   }
   setMainSignUp(e){
     this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
@@ -178,13 +240,15 @@ showOrHideNav(){
     this.setState({mainContent: <MyCoupons parentMethod={this.getCoupons}/>})
   }
   setStateLoggedIn(key, email) {
-    sessionStorage.setItem('UnlimitedCouponerkey', key)
+    sessionStorage.setItem('UnlimitedCouponerKey', key)
+    sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substring(key.length-1, key.length) === "c") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
     else if(key.substring(key.length-1, key.length) === "b") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
   }
+  
   render () {
     return (
-        <div className="home">
+        <div className="home" onClick={this.hideNav}>
           <h1 className='homeMainTitle'>
             <span>
               Save money, grow your business, try something new.
