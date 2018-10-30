@@ -14,6 +14,7 @@ class Input extends Component {
   
           <input
             className={this.props.htmlFor}
+            name={this.props.name}
             max={this.props.max || ''}
             min={this.props.min || ''}
             name={this.props.name || ''}

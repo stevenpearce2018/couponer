@@ -45,13 +45,7 @@ class SignUp extends Component {
     }
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
-    this.updateBuisnessName = this.updateBuisnessName.bind(this);
     this.handleRadio = this.handleRadio.bind(this);
-    this.updateEmail = this.updateEmail.bind(this);
-    this.updateFiveDigitCode = this.updateFiveDigitCode.bind(this);
-    this.updateCity = this.updateCity.bind(this);
-    this.updatePassword = this.updatePassword.bind(this);
-    this.updatePasswordConfirmation = this.updatePasswordConfirmation.bind(this);
     // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.checkInfo = this.checkInfo.bind(this);
@@ -74,20 +68,9 @@ class SignUp extends Component {
   // verifyCallback(recaptchaToken) {
   //   this.setState({recaptchaToken: recaptchaToken})
   // }
-  handleChange = event => {
+  handleChange = (event) => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
-    console.log(this.state.email)
-    console.log(this.state.password)
-  }
-  updatePassword(event) {
-    this.setState({password : event.target.value})
-  }
-  updatePasswordConfirmation(event) {
-    this.setState({passwordConfirm : event.target.value})
-  }
-  updateEmail(event) {
-    this.setState({email : event.target.value})
   }
   async validatePhoneNumber(){
     const data = {
@@ -115,19 +98,10 @@ class SignUp extends Component {
     }
     else alert("The number you have entered is incorrect")
   }
-  updateFiveDigitCode(event) {
-    this.setState({fiveDigitCode : event.target.value})
-  }
-  updateCity(event) {
-    this.setState({city : event.target.value})
-  }
   updateMembershipExperationDate(event){
     let d = new Date();
     d.setMonth( d.getMonth() + Number(event.target.value));
     this.setState({numberOfMonths: Number(event.target.value), membershipExperationDate: d})
-  }
-  updateBuisnessName(event){
-    this.setState({buisnessName : event.target.value})
   }
   async checkInfo(data){
     const that = this;
@@ -268,6 +242,7 @@ class SignUp extends Component {
           <InputField
           htmlFor="Email"
           type="email"
+          name="email"
           labelHTML="Email"
           placeholder="ProSaver@UnlimitedCouponer.com"
           onChange={this.handleChange}
@@ -276,6 +251,7 @@ class SignUp extends Component {
           <InputField
           htmlFor="Password"
           type="password"
+          name="password"
           labelHTML="Password"
           placeholder="Your Password Here"
           onChange={this.handleChange}
@@ -284,27 +260,29 @@ class SignUp extends Component {
           <InputField
           htmlFor="Password"
           type="password"
+          name="passwordConfirm"
           labelHTML="Confirm Password"
           placeholder="Confirm Password"
-          onChange={this.updatePasswordConfirmation}
+          onChange={this.handleChange}
           required
           />
-
           <InputField
           htmlFor="City"
           type="text"
           labelHTML="City"
+          name="city"
           placeholder="Coupon Town"
-          onChange={this.updateCity}
+          onChange={this.handleChange}
           required
           />
       <div className={this.state.showOrHideBuisInput}>
       <InputField
         htmlFor="Buisness Name"
         type="text"
+        name="buisnessName"
         labelHTML="Buisness Name"
         placeholder="Bob's Kitten Rentals"
-        onChange={this.updateBuisnessName}
+        onChange={this.handleChange}
       /> 
       </div>
       <div className={this.state.showOrHideAccountMem}>
@@ -312,6 +290,7 @@ class SignUp extends Component {
         htmlFor="Subscription Length"
         type="text"
         labelHTML="Subscription Length"
+        name="numberOfMonths"
         placeholder="Subscription Length 4.99$ per month for unlimited coupons"
         onChange={this.updateMembershipExperationDate}
       />
@@ -337,7 +316,8 @@ class SignUp extends Component {
               type="number"
               labelHTML="5 digit code"
               placeholder="12345"
-              onChange={this.updateFiveDigitCode}
+              name="fiveDigitCode"
+              onChange={this.handleChange}
               required
               />
               <div className="popupbtn">

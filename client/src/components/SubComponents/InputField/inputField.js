@@ -10,7 +10,7 @@ class InputField extends Component {
         <div className="icon">{this.props.icon}</div>
       </label>
       </div>
-      <input className='signupInput' type={this.props.type} placeholder={this.props.placeholder} onChange={this.props.onChange}/>
+      <input className='signupInput' name={this.props.name} type={this.props.type} placeholder={this.props.placeholder} onChange={this.props.onChange}/>
       </div>
       )
     }

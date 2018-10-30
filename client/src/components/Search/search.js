@@ -71,7 +71,7 @@ class SearchField extends Component {
         <strong>{this.props.htmlFor}</strong>
       </label>
       </div>
-      <input className={this.props.className} type="text" placeholder={this.props.placeholder} onChange={this.props.onChange}/>
+      <input className={this.props.className} type="text" name={this.props.name} placeholder={this.props.placeholder} onChange={this.props.onChange}/>
     </div>
     )
   }
@@ -90,13 +90,10 @@ class Search extends Component {
       pageNumber: 1,
       incrementPageClass: "hidden"
     }
-    this.updateCity = this.updateCity.bind(this);
-    this.updateZip = this.updateZip.bind(this);
     this.updateCategory = this.updateCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.updateKeywords = this.updateKeywords.bind(this);
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
   }
@@ -132,18 +129,13 @@ class Search extends Component {
     const data = await response.json();
     this.setState({coupons: CouponsMaker(data.coupons).bind(this), incrementPageClass: "center"})
   }
-  updateCity(e) {
-    this.setState({ city: e.target.value });
-  }
-  updateZip (e) {
-    this.setState({ zip: e.target.value });
+  handleChange = (event) => {
+    const { target: { name, value } } = event
+    this.setState({ [name]: value })
   }
   updateCategory (e) {
     const choices = ["Food", "Entertainment", "Health and Fitness", "Retail", "Home Improvement", "Activities", "Other", "Any" ]
     this.setState({ category: choices[e.target.value] });
-  }
-  updateKeywords(e){
-    this.setState({ keywords: e.target.value });
   }
   async getCoupons(id){
     const loggedInKey = sessionStorage.getItem("UnlimitedCouponerKey")
@@ -205,14 +197,16 @@ class Search extends Component {
       <br/>
       <SearchField
       htmlFor="City"
+      name="city"
       className='searchCity'
-      onChange={this.updateCity}
+      onChange={this.handleChange}
       />
       <br/>
       <SearchField
       htmlFor="Zip"
+      name="zip"
       className='searchZip'
-      onChange={this.updateZip}
+      onChange={this.handleChange}
       />
       <br/>
       {/* <SearchField
@@ -224,6 +218,7 @@ class Search extends Component {
       <Select
           hasLabel='true'
           htmlFor='select'
+          name="category"
           label='Coupon Category'
           options='Food, Entertainment, Health and Fitness, Retail, Home Improvement, Activities, Other'
           required={true}
@@ -234,7 +229,8 @@ class Search extends Component {
       <SearchField
       htmlFor="Use a keyword to specify your search"
       className='searchCategory'
-      onChange={this.updateKeywords}
+      name="keywords"
+      onChange={this.handleChange}
       />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
       {/* <ReCaptcha
