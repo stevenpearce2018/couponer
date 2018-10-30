@@ -16,23 +16,15 @@ class Login extends Component {
         popupClass: 'hiddenOverlay',
         recoveryEmail: ''
     };
-    this.updateEmail = this.updateEmail.bind(this);
-    this.updatePassword = this.updatePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
-    this.updateRecoveryEmail = this.updateRecoveryEmail.bind(this);
     this.sendRecoveryEmail = this.sendRecoveryEmail.bind(this);
   }
-  updatePassword(event) {
-    this.setState({password : event.target.value})
-  }
-  updateEmail(event) {
-    this.setState({email : event.target.value})
-  }
-  updateRecoveryEmail(event){
-    this.setState({recoveryEmail : event.target.value})
+  handleChange = (event) => {
+    const { target: { name, value } } = event
+    this.setState({ [name]: value })
   }
   togglePopup(){
     let newClass = "hiddenOverlay";
@@ -115,10 +107,10 @@ class Login extends Component {
             <div className="inputGroup">
               <div className="emailPass">
                   <label>Email</label>
-                  <input type="email" id="emailSignin" onChange={this.updateEmail}/>
+                  <input type="email" name="email" id="emailSignin" onChange={this.handleChange}/>
                   <br/>
                   <label>Password</label>
-                  <input type="password" id="passwordSignin" onChange={this.updatePassword}/>
+                  <input type="password" name="password" id="passwordSignin" onChange={this.handleChange}/>
                   <br/>
                 <button className='signupbtn signupbtnn' value="send" onClick={this.handleSubmit}><strong>Sign In</strong></button>
                 <div className='forgotPass'>
@@ -144,9 +136,10 @@ class Login extends Component {
                 <InputField
                 htmlFor="Recover account"
                 type="text"
+                name="recoveryEmail"
                 labelHTML="Your Email"
                 placeholder="helpme@ohno.com"
-                onChange={this.updateRecoveryEmail}
+                onChange={this.handleChange}
                 required
                 />
               <div className="popupbtn">
