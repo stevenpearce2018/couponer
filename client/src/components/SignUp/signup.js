@@ -74,6 +74,12 @@ class SignUp extends Component {
   // verifyCallback(recaptchaToken) {
   //   this.setState({recaptchaToken: recaptchaToken})
   // }
+  handleChange = event => {
+    const { target: { name, value } } = event
+    this.setState({ [name]: value })
+    console.log(this.state.email)
+    console.log(this.state.password)
+  }
   updatePassword(event) {
     this.setState({password : event.target.value})
   }
@@ -264,7 +270,7 @@ class SignUp extends Component {
           type="email"
           labelHTML="Email"
           placeholder="ProSaver@UnlimitedCouponer.com"
-          onChange={this.updateEmail}
+          onChange={this.handleChange}
           required
           />
           <InputField
@@ -272,7 +278,7 @@ class SignUp extends Component {
           type="password"
           labelHTML="Password"
           placeholder="Your Password Here"
-          onChange={this.updatePassword}
+          onChange={this.handleChange}
           required
           />
           <InputField

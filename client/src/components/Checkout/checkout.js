@@ -28,9 +28,6 @@ const onToken = (amount, description) => (token) => {
   class Checkout extends Component {
     constructor(props) {
       super(props);
-      const successPayment = successPayment.bind(this);
-      const errorPayment = errorPayment.bind(this);
-      const onToken = onToken.bind(this);
     }
     render() {
       return (
@@ -39,7 +36,7 @@ const onToken = (amount, description) => (token) => {
         parentMethod = {this.props.parentMethod}
         description={this.props.description}
         amount={fromEuroToCent(this.props.amount)}
-        token={onToken(this.props.amount, this.props.description)}
+        token={onToken(this.props.amount, this.props.description).bind(this)}
         currency={CURRENCY}
         stripeKey={"pk_test_1grvOEC6DvjC9afFJN2OxhWI"}
         panelLabel={this.props.panelLabel}
