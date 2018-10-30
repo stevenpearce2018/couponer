@@ -43,6 +43,7 @@ You will need a redis server running locally for the server to compile. I plan o
 [/] Refactoring of JS Components <br />
 [X] Router Support <br />
 [X] SPA design <br />
+[/] Webpack Preact Setup <br />
 [ ] Webpack Lazy Loading <br />
 [X] Recaptcha Support <br />
 [ ] Image Optimizations for Performance <br />

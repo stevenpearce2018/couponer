@@ -1,0 +1,8 @@
+{
+  "short_name": "Coupons",
+  "name": "Save money with coupons to all your favorite places",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
