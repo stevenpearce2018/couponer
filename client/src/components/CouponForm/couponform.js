@@ -4,7 +4,6 @@ import Coupon from '../SubComponents/Coupon/coupon';
 import Input from '../SubComponents/Input/input';
 import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
-// import { ReCaptcha } from 'react-recaptcha-google';
 import Checkout from '../Checkout/checkout';
 
 const validateCouponForm = (state) => {
@@ -50,22 +49,15 @@ class CouponForm extends Component {
     this.handleDiscountedPriceChange = this.handleDiscountedPriceChange.bind(this);
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
     this.handleSuperChange = this.handleSuperChange.bind(this);
-    this.handleZipChange = this.handleZipChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
-    this.handleCityChange = this.handleCityChange.bind(this);
     this.handleCurrentPriceChange = this.handleCurrentPriceChange.bind(this);
     this.handleAmountCouponsChange = this.handleAmountCouponsChange.bind(this);
     this.handleTextareaChange = this.handleTextareaChange.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    this.parentMethod = this.parentMethod.bind(this);
   }
   componentDidMount() {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
     this.setState({loggedInKey:loggedInKey})
     console.log(loggedInKey)
-    console.log(loggedInKey[23])
-    console.log(loggedInKey[24])
     if (!loggedInKey) {
         window.location.pathname = '/Home';
         alert('You are not logged in!')
@@ -79,15 +71,10 @@ class CouponForm extends Component {
         this.captchaDemo.execute();
     }
   }
-  // onLoadRecaptcha() {
-  //   if (this.captchaDemo) {
-  //       this.captchaDemo.reset();
-  //       this.captchaDemo.execute();
-  //   }
-  // }
-  // verifyCallback(recaptchaToken) {
-  //   this.setState({recaptchaToken: recaptchaToken})
-  // }
+  handleChange = (event) => {
+    const { target: { name, value } } = event
+    this.setState({ [name]: value })
+  }
   togglePopup(){
     let newClass = "hiddenOverlay";
     if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
@@ -110,10 +97,6 @@ class CouponForm extends Component {
     }
   }
 
-  parentMethod(data){
-    console.log('called parent')
-    console.log({data}, 'data from checkout')
-  }
   shouldComponentUpdate(nextProps, nextState) {
     if (this.state.title !== nextState.title) return true;
     if (this.state.address !== nextState.address) return true;
@@ -129,8 +112,6 @@ class CouponForm extends Component {
   }
 
   uploadFile(e) {
-    // after a response is gotten from the server
-    // JSON.stringify the response then JSON.parse the response 
     e.preventDefault();
     const email = sessionStorage.getItem('UnlimitedCouponerEmail')
     let that = this;
@@ -144,38 +125,7 @@ class CouponForm extends Component {
             longitude: results[0].geometry.location.lng()
           })
           validateCouponForm(this.state)
-          // const url = `/api/uploadCoupons`
-          alert(JSON.stringify(this.state), "state")
-          alert(email)
-          // const data = {
-          //   title: this.state.title,
-          //   longitude: this.state.longitude,
-          //   latitude: this.state.latitude,
-          //   address: this.state.address,
-          //   amountCoupons: this.state.amountCoupons,
-          //   currentPrice: this.state.currentPrice,
-          //   discountedPrice: this.state.discountedPrice,
-          //   superCoupon: this.state.superCoupon,
-          //   textarea: this.state.textarea,
-          //   imagePreviewUrl: this.state.imagePreviewUrl,
-          //   category: this.state.category,
-          //   city: this.state.city,
-          //   zip: this.state.zip,
-          // }
           this.props.uploadCoupons(this.state)
-          // const response = await fetch(url, {
-          //   method: "POST", 
-          //   mode: "cors",
-          //   cache: "no-cache",
-          //   credentials: "same-origin",
-          //   headers: {
-          //     "Content-Type": "application/json; charset=utf-8",
-          //   },
-          //   body: JSON.stringify(data),
-          // })
-          // const json = await response.json()
-          // alert(JSON.stringify(json), "json")
-          // !todo, reroute user to homepage
         }
       } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });
@@ -248,15 +198,6 @@ class CouponForm extends Component {
     ]
     this.setState({superCoupon: superChoices[e.target.value]})
   }
-
-  handleCityChange(e){
-    this.setState({city: e.target.value})
-  }
-
-  handleZipChange(e){
-    this.setState({zip: e.target.value})
-  }
-
   render() {
     return (
       <div className="flextape">
@@ -283,14 +224,14 @@ class CouponForm extends Component {
           <h1>Coupon details</h1>
         </div>
         <div className='uploadCouponForm'>
-        <form // onSubmit={this.handleSubmit}
+        <form
         method="post"
         encType="multipart/form-data"
         className='uploadForm'
         action="/api/uploadCoupons">
         <br/>
         <br/>
-          <Input
+        <Input
           hasLabel='true'
           htmlFor='textInput'
           label='Title'
@@ -299,10 +240,9 @@ class CouponForm extends Component {
           className='couponUploadTitle'
           value={this.state.title}
           onChange={this.handleTitleChange}
-          />
-          <br/>
-          
-          <Input
+        />
+        <br/> 
+        <Input
           hasLabel='true'
           htmlFor='textInput'
           label='Full Address'
@@ -310,18 +250,20 @@ class CouponForm extends Component {
           required={true}
           type='text'
           value={this.state.address}
-          onChange={this.handleAddressChange} />
-          <br/>
-
+          onChange={this.handleAddressChange}
+        />
+        <br/>
         <Input
           hasLabel='true'
           htmlFor='textInput'
           label='City'
           required={true}
+          name="city"
           type='text'
           value={this.state.city}
-          onChange={this.handleCityChange} />
-          <br/>
+          onChange={this.handleChange}
+        />
+        <br/>
         
         <Input
           hasLabel='true'
@@ -329,8 +271,10 @@ class CouponForm extends Component {
           label='Zip code'
           required={true}
           type='number'
+          name="zip"
           value={this.state.handleZipChange}
-          onChange={this.handleZipChange} />
+          onChange={this.handleChange}
+        />
         <br/>
         
         <Input
@@ -340,7 +284,8 @@ class CouponForm extends Component {
           required={true}
           type='number'
           value={this.state.amountCoupons}
-          onChange={this.handleAmountCouponsChange} />
+          onChange={this.handleAmountCouponsChange}
+        />
         <br/>
         <Input
           hasLabel='true'
@@ -349,7 +294,8 @@ class CouponForm extends Component {
           required={true}
           type='number'
           value={this.state.currentPrice}
-          onChange={this.handleCurrentPriceChange} />
+          onChange={this.handleCurrentPriceChange}
+        />
         <br/>
         <Input
           hasLabel='true'
@@ -358,7 +304,8 @@ class CouponForm extends Component {
           required={true}
           type='number'
           value={this.state.discountedPrice}
-          onChange={this.handleDiscountedPriceChange} />
+          onChange={this.handleDiscountedPriceChange}
+        />
         <br/>
         <Select
           hasLabel='true'
@@ -367,7 +314,8 @@ class CouponForm extends Component {
           options='Food, Entertainment, Health and Fitness, Retail, Home Improvement, Activities, Other'
           required={true}
           value={this.state.length}
-          onChange={this.handleCategoryChange} />
+          onChange={this.handleCategoryChange}
+        />
         <br/>
         <Textarea
           hasLabel='true'
@@ -375,14 +323,13 @@ class CouponForm extends Component {
           label='Description of Coupon'
           required={true}
           value={this.state.textarea}
-          onChange={this.handleTextareaChange} />
-         <br/>
-          <div className='box'>
-              <a className="icon-button" onClick={this.togglePopup}>
-                <i 
-                className="icon-question">
-                </i>
-                </a>
+          onChange={this.handleTextareaChange}
+        />
+        <br/>
+        <div className='box'>
+          <a className="icon-button" onClick={this.togglePopup}>
+            <i className="icon-question"></i>
+          </a>
           <div className={this.state.popupClass}>
             <div className="popup">
               <h2>What are Super Coupons?</h2>
@@ -391,8 +338,7 @@ class CouponForm extends Component {
                 Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons are also the only coupons that can appear on the home page. Super Coupons cost 1.00$ per coupon instead of the standard 0.50$.
               </div>
             </div>
-          </div>
-            
+          </div> 
           <Select
             hasLabel='true'
             htmlFor='select'
@@ -400,7 +346,8 @@ class CouponForm extends Component {
             options="Let's Go Super!, No thanks."
             required={true}
             value={this.state.superCoupon}
-            onChange={this.handleSuperChange} />
+            onChange={this.handleSuperChange}
+          />
           </div>
           <br/>
           <br/>
@@ -423,15 +370,6 @@ class CouponForm extends Component {
             description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
             amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
           />
-          {/* <ReCaptcha
-            ref={(el) => {this.captchaDemo = el;}}
-            size="invisible"
-            render="explicit"
-            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
-            data-theme="dark"
-            onloadCallback={this.onLoadRecaptcha}
-            verifyCallback={this.verifyCallback}
-          /> */}
       </form>
       </div>
       </div>

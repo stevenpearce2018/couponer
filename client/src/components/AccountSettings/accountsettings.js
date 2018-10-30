@@ -1,76 +1,24 @@
 import React, { Component } from 'react';
 import './accountsettings.css';
 import InputField from '../SubComponents/InputField/inputField';
-import { ReCaptcha } from 'react-recaptcha-google';
 
 class AccountSettings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // email: '',
       oldPassword: '',
       newPassword:'',
-      // address: '',
-      // cardNumber: '',
-      // cardholderName: '',
-      // CCV: '',
       city: '',
-      // state: '',
-      // experationDate: '',
-      // zipCode: '',
       buisnessName: '',
       phoneNumber:'',
-      // recaptchaToken: '',
     };
-    this.updateEmail = this.updateEmail.bind(this);
-    this.updateOldPassword = this.updateOldPassword.bind(this);
-    this.updateNewPassword = this.updateNewPassword.bind(this);
-    this.updateCity = this.updateCity.bind(this);
-    this.updateBuisnessName = this.updateBuisnessName.bind(this);
-    this.updatePhoneNumber = this.updatePhoneNumber.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-
-  // updateInputField(event, fieldBeingUpdated) {
-  //   this.setState({
-  //     [fieldBeingUpdated] : event.target.value
-  //   })
-  // }
-  componentDidMount() {
-    // if (this.captchaDemo) {
-    //     this.captchaDemo.reset();
-    //     this.captchaDemo.execute();
-    // }
-    // this.onLoadRecaptcha();
+  componentDidMount() { }
+  handleChange = (event) => {
+    const { target: { name, value } } = event
+    this.setState({ [name]: value })
   }
-  // onLoadRecaptcha() {
-  //   if (this.captchaDemo) {
-  //       this.captchaDemo.reset();
-  //       this.captchaDemo.execute();
-  //   }
-  // }
-  // verifyCallback(recaptchaToken) {
-  //   this.setState({recaptchaToken: recaptchaToken})
-  // }
-  updatePhoneNumber(event) {
-    this.setState({phoneNumber: event.target.value}) 
-  }
-  updateOldPassword(event) {
-    this.setState({oldPassword : event.target.value})
-  }
-  updateNewPassword(event) {
-    this.setState({newPassword : event.target.value})
-  }
-  updateEmail(event) {
-    this.setState({email : event.target.value})
-  }
-  updateCity(event) {
-    this.setState({city : event.target.value})
-  }
-  updateBuisnessName(event) {
-    this.setState({buisnessName : event.target.value})
-  }
-
   async handleSubmit(e){
     e.preventDefault();
     const data = {
@@ -86,143 +34,54 @@ class AccountSettings extends Component {
 
   render() {
     return (
-<div className="container text-center">
+    <div className="container text-center">
       <form className="accountForm" method="post">
       <div className="adjustAccountSettings">
-        
         <h2>Change Account Settings</h2>
-          {/* <div className="inputGroup">
-            <input id="radio1" name="radio" type="radio" value="checked" checked onChange={this.updateIsCustomer.bind(this)}/>
-            <label>Customer</label>
-            <input id="radio2" name="radio" type="radio" onChange={this.updateIsBuisnessOwner.bind(this)}/>
-            <label> Buisness Owner</label> 
-          </div> */}
-          </div>
-        
-          {/* <InputField
-          htmlFor="Email"
-          type="email"
-          labelHTML="Email"
-          placeholder="ProSaver@UnlimitedCouponer.com"
-          onChange={this.updateEmail}
-          /> */}
-
-          {/* <InputField
-          htmlFor="Password"
-          type="password"
-          labelHTML="Change Password"
-          placeholder="New Password"
-          onChange={this.updateNewPassword}
-          />
-
-          <InputField
-          htmlFor="Password"
-          type="password"
-          labelHTML="Old Password"
-          placeholder="Old Password"
-          onChange={this.updateOldPassword}
-          /> */}
-
-          <InputField
-          htmlFor="Phone Number"
-          type="number"
-          labelHTML="Phone Number"
-          placeholder="+1 123-456-7890"
-          onChange={this.updatePhoneNumber}
-          />
-          
-          {/* <InputField
-          htmlFor="Address"
-          type="text"
-          labelHTML="Address"
-          placeholder="13389 Savings Street"
-          onChange={this.updateAddress}
-          />
-          
-          <InputField
-          htmlFor="Card Number"
-          type="text"
-          labelHTML="Card Number"
-          placeholder="0000-0000-0000-0000"
-          onChange={this.updateCardNumber}
-          />
-          
-          <InputField
-          htmlFor="Cardholder Name"
-          type="text"
-          labelHTML="Cardholder Name"
-          placeholder="Billy Bob"
-          onChange={this.updateCardholderName}
-          />
-        
-          <InputField
-          htmlFor="CCV"
-          type="number"
-          labelHTML="CCV"
-          placeholder="555"
-          onChange={this.updateCCV}
-          />         */}
-          
-          <InputField
-          htmlFor="City"
-          type="text"
-          labelHTML="City"
-          placeholder="Coupon Town"
-          onChange={this.updateCity}
-          />   
-{/*           
-          <InputField
-          htmlFor="State"
-          type="text"
-          labelHTML="State"
-          placeholder="York"
-          onChange={this.updateState}
-          />      
-          
-          <InputField
-          htmlFor="Experation Date"
-          type="text"
-          labelHTML="Experation Date"
-          placeholder="MM/YY"
-          onChange={this.updateExperationDate}
-          />
-
-          <InputField
-          htmlFor="Experation Date"
-          type="text"
-          labelHTML="Experation Date(MM/YY)"
-          placeholder="MM/YY"
-          onChange={this.updateExperationDate}
-          />   
-          
-          <InputField
-          htmlFor="Zip Code"
-          type="number"
-          labelHTML="Zip Code"
-          placeholder="55555"
-          onChange={this.updateZipcode}
-          />   */}
-
-          <InputField
-          htmlFor="Buisness Name"
-          type="text"
-          labelHTML="Buisness Name"
-          placeholder="Buisness Name"
-          onChange={this.updateBuisnessName}
-          /> 
-
-          <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
-          {/* <ReCaptcha
-            ref={(el) => {this.captchaDemo = el;}}
-            size="invisible"
-            render="explicit"
-            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
-            data-theme="dark"
-            onloadCallback={this.onLoadRecaptcha}
-            verifyCallback={this.verifyCallback}
-          /> */}
-        </form>
-        </div>
+      </div>
+      <InputField
+        htmlFor="Password"
+        type="password"
+        labelHTML="Change Password"
+        name="newPassword"
+        placeholder="New Password"
+        onChange={this.handleChange}
+      />
+      <InputField
+        htmlFor="Password"
+        type="password"
+        name="oldPassword"
+        labelHTML="Old Password"
+        placeholder="Old Password"
+        onChange={this.handleChange}
+      />
+      <InputField
+        htmlFor="Phone Number"
+        type="number"
+        name="phoneNumber"
+        labelHTML="Phone Number"
+        placeholder="+1 123-456-7890"
+        onChange={this.handleChange}
+      />        
+      <InputField
+        htmlFor="City"
+        type="text"
+        labelHTML="City"
+        name="city"
+        placeholder="Coupon Town"
+        onChange={this.handleChange}
+      />
+      <InputField
+        htmlFor="Buisness Name"
+        type="text"
+        labelHTML="Buisness Name"
+        name="buisnessName"
+        placeholder="Buisness Name"
+        onChange={this.handleChange}
+      /> 
+      <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
+      </form>
+    </div>
     )
   }
 }
