@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './search.css';
-// import { ReCaptcha } from 'react-recaptcha-google';
 import Select from '../SubComponents/Select/select';
 const CouponsMaker = (props) => {
   try {
@@ -41,7 +40,6 @@ const CouponsMaker = (props) => {
       <hr/>
       <br/>
       <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
-    {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
     </div>
     <br/>
   </div>
@@ -92,26 +90,10 @@ class Search extends Component {
     }
     this.updateCategory = this.updateCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
   }
-  componentDidMount() {
-    // if (this.captchaDemo) {
-    //     this.captchaDemo.reset();
-    //     this.captchaDemo.execute();
-    // }
-  }
-  // onLoadRecaptcha() {
-  //   if (this.captchaDemo) {
-  //       this.captchaDemo.reset();
-  //       this.captchaDemo.execute();
-  //   }
-  // }
-  // verifyCallback(recaptchaToken) {
-  //   this.setState({recaptchaToken: recaptchaToken})
-  // }
+  componentDidMount() { }
   async decreasePage(){
     const pageNumber = this.state.pageNumber;
     if (pageNumber > 1) {
@@ -168,7 +150,6 @@ class Search extends Component {
       category: this.state.category,
       keyword: this.state.keywords,
       pageNumber: this.state.pageNumber
-      // recaptchaToken: this.state.recaptchaToken
     }
     console.log(data)
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== ''|| this.state.keywords) {
@@ -181,7 +162,6 @@ class Search extends Component {
         credentials: "same-origin", // include, same-origin, *omit
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
         },
         body: JSON.stringify(data),
       })
@@ -209,12 +189,7 @@ class Search extends Component {
       onChange={this.handleChange}
       />
       <br/>
-      {/* <SearchField
-      htmlFor="Category"
-      className='searchCategory'
-      onChange={this.updateCategory}
-      /> */}
-      <b>
+      <strong>
       <Select
           hasLabel='true'
           htmlFor='select'
@@ -224,7 +199,7 @@ class Search extends Component {
           required={true}
           value={this.state.length}
           onChange={this.updateCategory} />
-      </b>
+      </strong>
       <br/>
       <SearchField
       htmlFor="Use a keyword to specify your search"
@@ -233,26 +208,17 @@ class Search extends Component {
       onChange={this.handleChange}
       />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
-      {/* <ReCaptcha
-        ref={(el) => {this.captchaDemo = el;}}
-        size="invisible"
-        render="explicit"
-        sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
-        data-theme="dark"
-        onloadCallback={this.onLoadRecaptcha}
-        verifyCallback={this.verifyCallback}
-      /> */}
-  </form>
+    </form>
       {this.state.coupons}
       <div className={this.state.incrementPageClass}>
-          <a className="icon-button incrementIcons backgroundCircle" onClick={this.decreasePage}>
-            <i className="fa-arrow-left"></i>
-          </a>
-          <a className="icon-button backgroundCircle" onClick={this.incrementPage}>
-            <i className="fa-arrow-right"></i>
-          </a>
-        </div>
-        </div>
+        <a className="icon-button incrementIcons backgroundCircle" onClick={this.decreasePage}>
+          <i className="fa-arrow-left"></i>
+        </a>
+        <a className="icon-button backgroundCircle" onClick={this.incrementPage}>
+          <i className="fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
     )
   }
 }

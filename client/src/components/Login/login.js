@@ -118,15 +118,6 @@ class Login extends Component {
                 </div>
               </div>
             </div>
-            {/* <ReCaptcha
-            ref={(el) => {this.captchaDemo = el;}}
-            size="invisible"
-            render="explicit"
-            sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
-            data-theme="dark"
-            onloadCallback={this.onLoadRecaptcha}
-            verifyCallback={this.verifyCallback}
-            /> */}
           </form>
           <div className={this.state.popupClass}>
             <div className="popup">

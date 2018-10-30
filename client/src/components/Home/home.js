@@ -142,17 +142,6 @@ class Home extends Component {
   render() {
     return (
       <div>
-          {/* <form action="/charge" method="POST">
-          <script
-            src="https://checkout.stripe.com/checkout.js" className="stripe-button"
-            data-key="pk_test_3eBW9BZ4UzRNsmtPCk9gc8F2"
-            data-amount="2500"
-            data-name="Testing"
-            data-description="Example charge"
-            data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-            data-locale="auto">
-          </script>
-        </form> */}
         <div className="center">
           <h2>Coupons near you</h2>
         </div>

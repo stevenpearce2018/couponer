@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import './signup.css';
-// import { ReCaptcha } from 'react-recaptcha-google';
 import PhoneInput from 'react-phone-number-input'
- 
-//import css module
 import 'react-flags-select/css/react-flags-select.css';
 import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
@@ -46,28 +43,12 @@ class SignUp extends Component {
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
     this.handleRadio = this.handleRadio.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.checkInfo = this.checkInfo.bind(this);
     this.handleCustomerSignup = this.handleCustomerSignup.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
   }
-  componentDidMount() {
-    //   if (this.captchaDemo) {
-    //     this.captchaDemo.reset();
-    //     this.captchaDemo.execute();
-    // }
-  }
-  // onLoadRecaptcha() {
-  //   if (this.captchaDemo) {
-  //     this.captchaDemo.reset();
-  //     this.captchaDemo.execute();
-  //   }
-  // }
-  // verifyCallback(recaptchaToken) {
-  //   this.setState({recaptchaToken: recaptchaToken})
-  // }
+  componentDidMount() { }
   handleChange = (event) => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
@@ -76,7 +57,6 @@ class SignUp extends Component {
     const data = {
       phoneNumber: this.state.phoneNumber,
       randomNumber: this.state.fiveDigitCode,
-      // recaptchaToken: this.state.recaptchaToken
     }
     const url = `/api/phoneTestValidateNumber`
     const response = await fetch(url, {
@@ -120,7 +100,6 @@ class SignUp extends Component {
         credentials: "same-origin", // include, same-origin, *omit
         headers: {
             "Content-Type": "application/json; charset=utf-8",
-            // "Content-Type": "application/x-www-form-urlencoded",
         },
         body: JSON.stringify(data),
       })
@@ -151,7 +130,6 @@ class SignUp extends Component {
         credentials: "same-origin", // include, same-origin, *omit
         headers: {
             "Content-Type": "application/json; charset=utf-8",
-            // "Content-Type": "application/x-www-form-urlencoded",
         },
         body: JSON.stringify(data),
       })
@@ -185,7 +163,6 @@ class SignUp extends Component {
         credentials: "same-origin", // include, same-origin, *omit
         headers: {
             "Content-Type": "application/json; charset=utf-8",
-            // "Content-Type": "application/x-www-form-urlencoded",
         },
         body: JSON.stringify(data),
       })
@@ -202,7 +179,6 @@ class SignUp extends Component {
     this.setState({popupClass: newClass})
   }
   render() {
-    const yourPick = this.state.yourPick
     const options = this.state.customerOrBuisness.map((loan, key) => {
       const isCurrent = this.state.yourPick === loan
       return (
@@ -240,40 +216,40 @@ class SignUp extends Component {
         </div>
           <form className='signinForm'>
           <InputField
-          htmlFor="Email"
-          type="email"
-          name="email"
-          labelHTML="Email"
-          placeholder="ProSaver@UnlimitedCouponer.com"
-          onChange={this.handleChange}
-          required
+            htmlFor="Email"
+            type="email"
+            name="email"
+            labelHTML="Email"
+            placeholder="ProSaver@UnlimitedCouponer.com"
+            onChange={this.handleChange}
+            required
           />
           <InputField
-          htmlFor="Password"
-          type="password"
-          name="password"
-          labelHTML="Password"
-          placeholder="Your Password Here"
-          onChange={this.handleChange}
-          required
+            htmlFor="Password"
+            type="password"
+            name="password"
+            labelHTML="Password"
+            placeholder="Your Password Here"
+            onChange={this.handleChange}
+            required
           />
           <InputField
-          htmlFor="Password"
-          type="password"
-          name="passwordConfirm"
-          labelHTML="Confirm Password"
-          placeholder="Confirm Password"
-          onChange={this.handleChange}
-          required
+            htmlFor="Password"
+            type="password"
+            name="passwordConfirm"
+            labelHTML="Confirm Password"
+            placeholder="Confirm Password"
+            onChange={this.handleChange}
+            required
           />
           <InputField
-          htmlFor="City"
-          type="text"
-          labelHTML="City"
-          name="city"
-          placeholder="Coupon Town"
-          onChange={this.handleChange}
-          required
+            htmlFor="City"
+            type="text"
+            labelHTML="City"
+            name="city"
+            placeholder="Coupon Town"
+            onChange={this.handleChange}
+            required
           />
       <div className={this.state.showOrHideBuisInput}>
       <InputField
@@ -286,14 +262,14 @@ class SignUp extends Component {
       /> 
       </div>
       <div className={this.state.showOrHideAccountMem}>
-      <InputField
-        htmlFor="Subscription Length"
-        type="text"
-        labelHTML="Subscription Length"
-        name="numberOfMonths"
-        placeholder="Subscription Length 4.99$ per month for unlimited coupons"
-        onChange={this.updateMembershipExperationDate}
-      />
+        <InputField
+          htmlFor="Subscription Length"
+          type="text"
+          labelHTML="Subscription Length"
+          name="numberOfMonths"
+          placeholder="Subscription Length 4.99$ per month for unlimited coupons"
+          onChange={this.updateMembershipExperationDate}
+        />
       </div>
   </form>
   <div className="phoneHolder">
@@ -312,13 +288,13 @@ class SignUp extends Component {
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
               <InputField
-              htmlFor="5 digit code"
-              type="number"
-              labelHTML="5 digit code"
-              placeholder="12345"
-              name="fiveDigitCode"
-              onChange={this.handleChange}
-              required
+                htmlFor="5 digit code"
+                type="number"
+                labelHTML="5 digit code"
+                placeholder="12345"
+                name="fiveDigitCode"
+                onChange={this.handleChange}
+                required
               />
               <div className="popupbtn">
               <button className='signupbtn signupbtnn' value="send" onClick={this.validatePhoneNumber}><strong>Submit</strong></button>
@@ -329,11 +305,11 @@ class SignUp extends Component {
     <div className={this.state.checkout}>
     <div className="center">
       <Checkout
-      parentMethod = {this.handleCustomerSignup}
-      name={'UnlimitedCouponer Membership'}
-      description={this.state.numberOfMonths + ' Month(s) of Unlimted Coupons'}
-      amount={this.state.numberOfMonths * 4.99}
-      panelLabel="Get membership"
+        parentMethod = {this.handleCustomerSignup}
+        name={'UnlimitedCouponer Membership'}
+        description={this.state.numberOfMonths + ' Month(s) of Unlimted Coupons'}
+        amount={this.state.numberOfMonths * 4.99}
+        panelLabel="Get membership"
       />
     </div>
       <br/>
@@ -343,15 +319,6 @@ class SignUp extends Component {
       <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>
     </div>
     </div>
-      {/* <ReCaptcha
-        ref={(el) => {this.captchaDemo = el;}}
-        size="invisible"
-        render="explicit"
-        sitekey="6Lf9D3QUAAAAAFdm98112C_RrKJ47-j68Oimnslb"
-        data-theme="dark"
-        onloadCallback={this.onLoadRecaptcha}
-        verifyCallback={this.verifyCallback}
-      /> */}
     </div>
     )
   }
