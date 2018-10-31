@@ -268,7 +268,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
       (req.connection.socket ? req.connection.socket.remoteAddress : null);
     const loggedInKey = req.body.loggedInKey;
     const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
-    if (outcome.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+    if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
       if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
         const amountCoupons = req.body.amountCoupons;
         let couponCodes = [];
