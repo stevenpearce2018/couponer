@@ -1,64 +1,6 @@
 import React, { Component } from 'react';
 import './search.css';
 import Select from '../SubComponents/Select/select';
-const CouponsMaker = (props) => {
-  try {
-    const content = props.map((coupons) =>
-    <div className="coupon" id={coupons._id}>
-    <h1 className = "exampleTitle">{coupons.title}</h1>
-    <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
-    <div className="pricing">
-      <div className='oldPrice'>
-          Was: {(coupons.currentPrice - 0).toFixed(2)}$
-      </div>
-      <div className='percentOff'>
-          {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
-      </div>
-      <br/>
-      <div className='newPrice'>
-          Now: {(coupons.discountedPrice - 0).toFixed(2)}$
-      </div>
-      <div className='savings'>
-          Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
-      </div>
-      <br/>
-      <hr/>
-      <div className="amountLeft">
-          Only {coupons.amountCoupons} Coupons Left!
-      </div>
-    <hr/>
-    <div className="description">
-    <br/>
-      <p>{coupons.textarea}</p>
-      <br/>
-      <hr/>
-      <br/>
-      <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
-      <hr/>
-      <br/>
-      <p>{coupons.address}</p>
-      <hr/>
-      <br/>
-      <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
-    </div>
-    <br/>
-  </div>
-</div>
-    );
-    return (
-    <div className='flextape'>
-        {content}
-      </div>
-    );
-  } catch (error) {
-    return (
-    <div className='center'>
-    <br/>
-    <h3>Unable to automatically search for coupons. Try searching manually.</h3>
-    </div>
-    )
-  }
-}
 // Private component, keep scoped to search component
 class SearchField extends Component {
   render() {
@@ -92,6 +34,7 @@ class Search extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
+    this.CouponsMaker = this.CouponsMaker.bind(this)
   }
   componentDidMount() { }
   async decreasePage(){
@@ -100,7 +43,7 @@ class Search extends Component {
       const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber-1)
       const response = await fetch(url);
       const data = await response.json();
-      this.setState({coupons: CouponsMaker(data.coupons).bind(this), incrementPageClass: "center"})
+      this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
     }
     else alert("You cannot go lower than page one!")
   }
@@ -109,7 +52,65 @@ class Search extends Component {
     const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber+1)
     const response = await fetch(url);
     const data = await response.json();
-    this.setState({coupons: CouponsMaker(data.coupons).bind(this), incrementPageClass: "center"})
+    this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
+  }
+  CouponsMaker = (props) => {
+    try {
+      const content = props.map((coupons) =>
+      <div className="coupon" id={coupons._id}>
+      <h1 className = "exampleTitle">{coupons.title}</h1>
+      <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
+      <div className="pricing">
+        <div className='oldPrice'>
+            Was: {(coupons.currentPrice - 0).toFixed(2)}$
+        </div>
+        <div className='percentOff'>
+            {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
+        </div>
+        <br/>
+        <div className='newPrice'>
+            Now: {(coupons.discountedPrice - 0).toFixed(2)}$
+        </div>
+        <div className='savings'>
+            Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
+        </div>
+        <br/>
+        <hr/>
+        <div className="amountLeft">
+            Only {coupons.amountCoupons} Coupons Left!
+        </div>
+      <hr/>
+      <div className="description">
+      <br/>
+        <p>{coupons.textarea}</p>
+        <br/>
+        <hr/>
+        <br/>
+        <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
+        <hr/>
+        <br/>
+        <p>{coupons.address}</p>
+        <hr/>
+        <br/>
+        <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
+      </div>
+      <br/>
+    </div>
+  </div>
+      );
+      return (
+      <div className='flextape'>
+          {content}
+        </div>
+      );
+    } catch (error) {
+      return (
+      <div className='center'>
+      <br/>
+      <h3>Unable to automatically search for coupons. Try searching manually.</h3>
+      </div>
+      )
+    }
   }
   handleChange = (event) => {
     const { target: { name, value } } = event
@@ -166,7 +167,7 @@ class Search extends Component {
         body: JSON.stringify(data),
       })
       const json = await response.json()
-      this.setState({coupons: CouponsMaker(json.coupons).bind(this), incrementPageClass: "center"})
+      this.setState({coupons: this.CouponsMaker(json.coupons), incrementPageClass: "center"})
     }
 }                
   render() {
