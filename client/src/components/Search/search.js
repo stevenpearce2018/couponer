@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './search.css';
 import Select from '../SubComponents/Select/select';
+import CouponsMaker from '../../couponsMaker';
 // Private component, keep scoped to search component
 class SearchField extends Component {
   render() {
@@ -152,8 +153,7 @@ class Search extends Component {
       keyword: this.state.keywords,
       pageNumber: this.state.pageNumber
     }
-    console.log(data)
-    if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== ''|| this.state.keywords) {
+    if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       const url = `/api/searchCoupons`
       const response =  await fetch(url, {
