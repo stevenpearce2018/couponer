@@ -50,7 +50,7 @@ class Home extends Component {
                 const url = '/api/getSponseredCoupons/'+city+'/'+that.state.pageNumber
                 const response = await fetch(url);
                 const data = await response.json();
-                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
+                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
                 else that.setState({coupons:<div className="center"><br/><h3>No coupons found near you, try searching manually.</h3></div>})
               } else cityNotFound();
             } else cityNotFound();

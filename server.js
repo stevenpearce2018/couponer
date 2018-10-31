@@ -300,15 +300,23 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
 app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
   let coupons;
   const cityUserIsIn = req.params.city.toLowerCase().replace(/\"/g,"");
-  if(cityUserIsIn) {
-    coupons = await Coupon.find({city : cityUserIsIn}).skip((req.param.pageNumber-1)*20).limit(20)
-    if (coupons.length > 0 ) res.json({ coupons: coupons });
-    else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
-  }
-  else {
-    coupons = await Coupon.find().skip((req.param.pageNumber-1)*20).limit(20)
-    if (coupons.length > 0 ) res.json({ coupons });
-    else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+  const pageNumber = req.body.pageNumber;
+  redisHelper.get(`${cityUserIsIn}/${pageNumber}`, getCachedCoupons)
+  async function getCachedCoupons (data) {
+    if(!data) {
+      if(cityUserIsIn) {
+        coupons = await Coupon.find({city : cityUserIsIn}).skip((req.param.pageNumber-1)*20).limit(20)
+        if (coupons.length > 0 ) res.json({ coupons: coupons });
+        else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*60)
+      }
+      else {
+        coupons = await Coupon.find().skip((req.param.pageNumber-1)*20).limit(20)
+        if (coupons.length > 0 ) res.json({ coupons: coupons });
+        else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*60)
+      }
+    } else res.json({ coupons: data });
   }
 });
 
@@ -328,51 +336,164 @@ app.post('/api/searchCoupons', async (req, res) => {
   const regex = new RegExp(escapeRegex(keyword), 'gi');
   coupons = await Coupon.find({"textarea": regex})
   if(city && zip && category && keyword) {
-    coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category, "textarea": regex})
-    if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${city}/${zip}/${keyword}`, getCachedCouponsAll)
+    async function getCachedCouponsAll (data) {
+      if(!data) {
+        coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category, "textarea": regex})
+        if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        res.json({coupons: coupons});
+        redisHelper.set(`${city}/${zip}/${keyword}`, coupons, 60*60)
+      }
+      else return res.json({coupons: data});
+    }
   }
   else if(city && zip) {
-    coupons = await Coupon.find({'city' : city, 'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${city}/${zip}`, getCachedCouponsCityZip)
+    async function getCachedCouponsCityZip (data) {
+      if(!data) {
+        coupons = await Coupon.find({'city' : city, 'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`${city}/${zip}`, coupons, 60*60)
+      }
+      else return res.json({coupons: data});
+    }
   }
   else if(keyword && zip) {
-    coupons = await Coupon.find({'zip' : city, 'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${keyword}/${zip}`, getCachedCouponsKeywordZip)
+    async function getCachedCouponsKeywordZip (data) {
+      if(!data) {
+        coupons = await Coupon.find({'zip' : city, 'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`${keyword}/${zip}`, coupons, 60*60)
+      }
+      else return res.json({coupons: data});
+    }
   }
   else if(city && category) {
-    coupons = await Coupon.find({'city' : city, 'category' : category})
-    if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${city}/${category}`, getCachedCouponsCityCategory)
+    async function getCachedCouponsCityCategory(data) {
+      if(!data) {
+        coupons = await Coupon.find({'city' : city, 'category' : category})
+        if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`${city}/${category}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
   }
   else if(city && keyword) {
-    coupons = await Coupon.find({'city' : city, 'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${city}/${keyword}`, getCachedCouponsCityKeyword)
+    async function getCachedCouponsCityKeyword (data) {
+      if(!data) {
+        coupons = await Coupon.find({'city' : city, 'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`${city}/${keyword}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
   }
   else if(category && zip) {
-    coupons = await Coupon.find({'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${category}/${zip}`, getCachedCouponsCategoryZip)
+    async function getCachedCouponsCategoryZip (data) {
+      if(!data) {
+        coupons = await Coupon.find({'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`${category}/${zip}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
   }
   else if(category && keyword) {
-    coupons = await Coupon.find({'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${category}/${keyword}`, getCachedCouponsCategoryKeyword)
+    async function getCachedCouponsCategoryKeyword (data) {
+      if(!data) {
+        coupons = await Coupon.find({'zip' : zip, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`${category}/${keyword}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
   }
   else if(category && city) {
-    coupons = await Coupon.find({'city' : city, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
-    if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+    redisHelper.get(`${category}/${city}`, getCachedCouponsCategoryCity)
+    async function getCachedCouponsCategoryCity (data) {
+      if(!data) {
+        coupons = await Coupon.find({'city' : city, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`${category}/${city}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
   }
-  else if(category) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
-  else if(city) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
-  else if(zip) coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
-  else if(keyword) coupons = await Coupon.find({'textarea' : regex}).skip((req.body.pageNumber-1)*20).limit(20)
-  if (coupons.length === 0) coupons = "No coupons found."
-  res.json({coupons: coupons});
+  else if(category) {
+    redisHelper.get(`category:${category}`, getCachedCouponsCategory)
+    async function getCachedCouponsCategory (data) {
+      if(!data) {
+        coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`category:${category}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
+  }
+  else if(city) {
+    redisHelper.get(`city:${city}`, getCachedCouponsCity)
+    async function getCachedCouponsCity (data) {
+      if(!data) {
+        coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`city:${city}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
+  }
+  else if(zip) {
+    redisHelper.get(`zip:${zip}`, getCachedCouponsZip)
+    async function getCachedCouponsZip (data) {
+      if(!data) {
+        coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`zip:${zip}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
+  }
+  else if(keyword) {
+    redisHelper.get(`keyword:${keyword}`, getCachedCouponsKeyword)
+    async function getCachedCouponsKeyword (data) {
+      if(!data) {
+        coupons = await Coupon.find({'textarea' : regex}).skip((req.body.pageNumber-1)*20).limit(20)
+        if (coupons.length === 0) coupons = "No coupons found."
+        res.json({coupons: coupons});
+        redisHelper.set(`keyword:${keyword}`, coupons, 60*60);
+      }
+      else return res.json({coupons: data});
+    }
+  }
 });
 
 
