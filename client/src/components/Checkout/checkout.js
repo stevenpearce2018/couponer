@@ -26,9 +26,6 @@ const onToken = (amount, description) => (token) => {
 }
 
   class Checkout extends Component {
-    constructor(props) {
-      super(props);
-    }
     render() {
       return (
         <StripeCheckout
