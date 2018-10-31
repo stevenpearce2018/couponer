@@ -6,11 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-const PreloadWebpackPlugin = require('preload-webpack-plugin');
-const ResourceHintWebpackPlugin = require('resource-hints-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
-const autoprefixer = require('autoprefixer');
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const production = process.env.NODE_ENV === 'production';
 const extractSass = new ExtractTextPlugin({
