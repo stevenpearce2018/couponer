@@ -27,7 +27,7 @@ class Home extends Component {
     // eslint-disable-next-line
     const geocoder = new google.maps.Geocoder;
     async function cityNotFound () {
-      that.setState({coupons: <h3>We were unable to get your location. Try searching manually.</h3>})     
+      that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
     }
     function showPosition(position) {
       that.setState({
@@ -51,13 +51,13 @@ class Home extends Component {
                 const response = await fetch(url);
                 const data = await response.json();
                 if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
-                else that.setState({coupons:<div className="center"><br/><h3>No coupons found near you, try searching manually.</h3></div>})
+                else that.setState({coupons:<div className="center"><br/><h2>No coupons found near you, try searching manually.</h2></div>})
               } else cityNotFound();
             } else cityNotFound();
           } else cityNotFound();
         });
       } catch (error) {
-        that.setState({coupons: <h3>No Coupons found based on your location or we could not get your location. Please try searching manually.</h3>})
+        that.setState({coupons: <h2>No Coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
       }
     }
   }
@@ -118,7 +118,7 @@ class Home extends Component {
       return (
       <div className='center'>
       <br/>
-      <h3>Unable to automatically search for coupons. Try searching manually.</h3>
+      <h2>Unable to automatically search for coupons. Try searching manually.</h2>
       </div>
       )
     }
