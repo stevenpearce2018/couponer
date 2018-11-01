@@ -10,6 +10,7 @@ const accountInfo = mongoose.Schema({
     yourPick: String,
     loggedInKey: String,
     membershipExperationDate: [Date | String],
+    couponIds: [String],
     ip: String
 })
 
