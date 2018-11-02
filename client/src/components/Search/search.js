@@ -87,9 +87,6 @@ class Search extends Component {
         <br/>
         <hr/>
         <br/>
-        <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
-        <hr/>
-        <br/>
         <p>{coupons.address}</p>
         <hr/>
         <br/>

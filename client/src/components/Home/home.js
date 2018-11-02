@@ -1,6 +1,16 @@
 import React, { Component } from 'react';
 import './home.css';
 // import this.CouponsMaker from '../../this.CouponsMaker';
+const capitalizeCase = (str) => {
+  const lower = String(str).toLowerCase();
+  return lower.replace(/(^| )(\w)/g, (x) => {
+    return x.toUpperCase();
+  });
+}
+const uppcaseFirstWord = (string) =>
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 class Home extends Component {
   constructor(props) {
@@ -92,14 +102,14 @@ class Home extends Component {
       <hr/>
       <div className="description">
       <br/>
-        <p>{coupons.textarea}</p>
+        <p>{uppcaseFirstWord(coupons.textarea)}</p>
         <br/>
         <hr/>
         <br/>
-        <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
-        <hr/>
+        <p>{capitalizeCase(coupons.address)}</p>
         <br/>
-        <p>{coupons.address}</p>
+        <p>{capitalizeCase(coupons.city)}</p>
+        <br/>
         <hr/>
         <br/>
         <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>

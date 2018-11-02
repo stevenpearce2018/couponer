@@ -19,11 +19,7 @@ const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 const db = require('./config/db')
 const QRCode = require('qrcode');
 
-const fuzzySearchRegex = text => {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-};
-
-function escapeRegex(text) {
+const escapeRegex = (text) => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
@@ -89,7 +85,6 @@ const postStripeCharge = res => (stripeErr, stripeRes) => {
   else res.status(200).send({ success: stripeRes });
 }
 
-// !todo, modularize this and get it to work
 const didRecaptchaPass = async(req) => {
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
   await request(verifyUrl, (err, response, body) => {
