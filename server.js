@@ -218,6 +218,17 @@ app.post('/api/updateAccount', async (req, res) => {
         { "upsert" : false } 
       );
     }
+    if (req.body.oldPassword !== req.body.newPassword) {
+      if(bcrypt.compareSync(req.body.oldPassword, outcome[0].password)) {
+        res.json({response: "Updated Account!"})
+        const hashedPass = await bcrypt.hashSync(req.body.newPassword, 10);
+        await AccountInfo.updateOne(
+          { "_id" : outcome[0]._id }, 
+          { "$set" : { password: hashedPass } }, 
+          { "upsert" : false } 
+        );
+      } else res.json({response: "Failed To Update Password"}) 
+    }
   } else res.json({response: "Failed to update"})
 });
 
@@ -303,13 +314,13 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
         coupons = await Coupon.find({city : cityUserIsIn}).skip((req.param.pageNumber-1)*20).limit(20)
         if (coupons.length > 0 ) res.json({ coupons: coupons });
         else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
-        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*60)
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*30)
       }
       else {
         coupons = await Coupon.find().skip((req.param.pageNumber-1)*20).limit(20)
         if (coupons.length > 0 ) res.json({ coupons: coupons });
         else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
-        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*60)
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*30)
       }
     } else res.json({ coupons: data });
   }
@@ -339,7 +350,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
         res.json({coupons: coupons});
-        redisHelper.set(`${city}/${zip}/${keyword}`, coupons, 60*60)
+        redisHelper.set(`${city}/${zip}/${keyword}`, coupons, 60*30)
       }
       else return res.json({coupons: data});
     }
@@ -352,7 +363,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`${city}/${zip}`, coupons, 60*60)
+        redisHelper.set(`${city}/${zip}`, coupons, 60*30)
       }
       else return res.json({coupons: data});
     }
@@ -366,7 +377,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`${keyword}/${zip}`, coupons, 60*60)
+        redisHelper.set(`${keyword}/${zip}`, coupons, 60*30)
       }
       else return res.json({coupons: data});
     }
@@ -380,7 +391,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`${city}/${category}`, coupons, 60*60);
+        redisHelper.set(`${city}/${category}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -394,7 +405,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`${city}/${keyword}`, coupons, 60*60);
+        redisHelper.set(`${city}/${keyword}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -408,7 +419,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`${category}/${zip}`, coupons, 60*60);
+        redisHelper.set(`${category}/${zip}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -422,7 +433,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`${category}/${keyword}`, coupons, 60*60);
+        redisHelper.set(`${category}/${keyword}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -436,7 +447,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`${category}/${city}`, coupons, 60*60);
+        redisHelper.set(`${category}/${city}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -448,7 +459,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         coupons = await Coupon.find({'category' : category}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`category:${category}`, coupons, 60*60);
+        redisHelper.set(`category:${category}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -460,7 +471,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         coupons = await Coupon.find({'city' : city}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`city:${city}`, coupons, 60*60);
+        redisHelper.set(`city:${city}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -472,7 +483,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         coupons = await Coupon.find({'zip' : zip}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`zip:${zip}`, coupons, 60*60);
+        redisHelper.set(`zip:${zip}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -484,7 +495,7 @@ app.post('/api/searchCoupons', async (req, res) => {
         coupons = await Coupon.find({'textarea' : regex}).skip((req.body.pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({coupons: coupons});
-        redisHelper.set(`keyword:${keyword}`, coupons, 60*60);
+        redisHelper.set(`keyword:${keyword}`, coupons, 60*30);
       }
       else return res.json({coupons: data});
     }
@@ -496,24 +507,24 @@ app.post(`/api/getCoupon`, async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
   if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   const ip = req.headers['x-forwarded-for'] || 
-  req.connection.remoteAddress || 
-  req.socket.remoteAddress ||
-  (req.connection.socket ? req.connection.socket.remoteAddress : null);
-    const outcome = await AccountInfo.find({'email':req.body.email })
-    if (outcome) {
-      if (outcome.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
-      else {
-        if (outcome.couponsCurrentlyClaimed < 5) {
-          res.json({response: "Coupon Claimed!"});-
-          await AccountInfo.updateOne(
-            { "_id" : outcome[0]._id }, 
-            { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
-            { "upsert" : false } 
-          );
-        } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
-      }
+    req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  const outcome = await AccountInfo.find({'email':req.body.email })
+  if (outcome) {
+    if (outcome.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
+    else {
+      if (outcome.couponsCurrentlyClaimed < 5) {
+        res.json({response: "Coupon Claimed!"});
+        await AccountInfo.updateOne(
+          { "_id" : outcome[0]._id }, 
+          { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
+          { "upsert" : false } 
+        );
+      } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
     }
-    else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+  }
+  else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
 })
 
 const port = 4000;
