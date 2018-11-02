@@ -3,6 +3,10 @@
 
 You will need a redis server running locally for the server to compile. All other keys are included for you.
 
+btest@gmail.com to test buisness owner functionality
+ctest@gmail.com to test customer functionality
+Both passwords are password.
+
 1) cd Couponer
 2) npm install
 3) cd client
@@ -54,6 +58,7 @@ You will need a redis server running locally for the server to compile. I plan o
 [X] GeoLocation AutoSearch  <br />
 [/] Strip Unused dependacies <br />
 [/] Mongoose Models <br />
+[ ] Serverside rendering react to increase performance <br />
 [ ] Production MongoDB Setup <br />
 [ ] Production Redis Setup <br />
 [ ] Enviromnet Variables setup <br />
