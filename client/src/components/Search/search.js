@@ -41,19 +41,50 @@ class Search extends Component {
   async decreasePage(){
     const pageNumber = this.state.pageNumber;
     if (pageNumber > 1) {
-      const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber-1)
-      const response = await fetch(url);
-      const data = await response.json();
-      this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
+      const url = '/api/searchCoupons/'+(this.state.pageNumber-1)
+      const data = {
+        city: this.state.city,
+        zip: this.state.zip,
+        category: this.state.category,
+        keyword: this.state.keywords,
+        pageNumber: this.state.pageNumber
+      }
+      const response = await fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify(data),
+      })
+      const couponsData = await response.json();
+      this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : (this.state.pageNumber + -1)})
     }
     else alert("You cannot go lower than page one!")
   }
   async incrementPage(){
-    this.setState({pageNumber : (this.state.pageNumber + 1)})
-    const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber+1)
-    const response = await fetch(url);
-    const data = await response.json();
-    this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
+    const url = `/api/searchCoupons/${this.state.pageNumber+1}`;
+    const data = {
+      city: this.state.city,
+      zip: this.state.zip,
+      category: this.state.category,
+      keyword: this.state.keywords,
+      pageNumber: this.state.pageNumber
+    }
+    const response = await fetch(url, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, cors, *same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, same-origin, *omit
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(data),
+    })
+    const couponsData = await response.json();
+    this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : (this.state.pageNumber + 1)})
   }
   CouponsMaker = (props) => {
     try {
@@ -152,7 +183,7 @@ class Search extends Component {
     }
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-      const url = `/api/searchCoupons`
+      const url = `/api/searchCoupons/${this.state.pageNumber}`
       const response =  await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin

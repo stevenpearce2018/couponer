@@ -148,6 +148,7 @@ class Home extends Component {
     const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber+1)
     const response = await fetch(url);
     const data = await response.json();
+    console.log(JSON.stringify(data.coupons))
     this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
   }
   render() {
