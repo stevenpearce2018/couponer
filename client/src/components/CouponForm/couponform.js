@@ -53,6 +53,7 @@ class CouponForm extends Component {
     this.handleCurrentPriceChange = this.handleCurrentPriceChange.bind(this);
     this.handleAmountCouponsChange = this.handleAmountCouponsChange.bind(this);
     this.handleTextareaChange = this.handleTextareaChange.bind(this);
+    this.payForCoupons = this.payForCoupons.bind(this)
   }
   componentDidMount() {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
@@ -197,6 +198,42 @@ class CouponForm extends Component {
       'No thanks',
     ]
     this.setState({superCoupon: superChoices[e.target.value]})
+  }
+
+  payForCoupons(dataFromStripe){
+    console.log(dataFromStripe)
+    const data = {
+      description: dataFromStripe.description,
+      source: dataFromStripe.source,
+      currency: dataFromStripe.currency,
+      amount: dataFromStripe.amount,
+      title: this.state.title,
+      address: this.state.address,
+      amountCoupons: Number(this.state.amountCoupons),
+      currentPrice: Number(this.state.currentPrice),
+      discountedPrice: Number(this.state.discountedPrice),
+      superCoupon: this.state.superCoupon,
+      textarea: this.state.textarea,
+      imagePreviewUrl: this.state.imagePreviewUrl,
+      category: this.state.category,
+      city: this.state.city,
+      zip: this.state.zip,
+    }
+    const google = window.google
+    const geocoder = new google.maps.Geocoder();
+    const that = this;
+    geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
+      if (google.maps.GeocoderStatus.OK === 'OK') {
+        if (results[0] && that.state.address.length > 5) {
+          that.setState({
+            latitude:results[0].geometry.location.lat(),
+            longitude: results[0].geometry.location.lng()
+          })
+          validateCouponForm(this.state)
+          that.props.uploadCoupons(data)
+        }
+      } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
+    });
   }
   render() {
     return (
@@ -364,13 +401,14 @@ class CouponForm extends Component {
             >
           Upload Coupons
           </button>
-          <Checkout
-            parentMethod={this.parentMethod}
+      </form>
+      <Checkout
+            parentMethod={this.payForCoupons}
             name={'UnlimitedCouponer Coupons'}
             description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
             amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
+            panelLabel="Get membership"
           />
-      </form>
       </div>
       </div>
       </div>
