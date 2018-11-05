@@ -14,7 +14,14 @@ class AccountSettings extends Component {
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-  componentDidMount() { }
+  componentDidMount() {
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
+    this.setState({loggedInKey:loggedInKey})
+    if (!loggedInKey || loggedInKey[23].substr(-1) !== "b" || loggedInKey[23].substr(-1) !== "c") {
+      window.location.pathname = '/Home';
+      alert('You are not logged in!')
+    }
+  }
   handleChange = (event) => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
@@ -81,6 +88,12 @@ class AccountSettings extends Component {
       /> 
       <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
       </form>
+
+      <div className="center">
+        <br/>
+        <h2>Your Coupons</h2>
+        {this.props.couponData}
+      </div>
     </div>
     )
   }

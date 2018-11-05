@@ -42,7 +42,8 @@ class App extends Component {
       loggedInKey: '',
       showOrHideNav: 'hidden',
       loggedInBuisness: 'hidden',
-      ignoreClick: true
+      ignoreClick: true,
+      couponData: <div className="loaderContainer"><div className="loader"></div></div>
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -58,7 +59,8 @@ class App extends Component {
   this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
   this.uploadCoupons = this.uploadCoupons.bind(this);
   this.hideNav = this.hideNav.bind(this);
-  this.updateAccountSettings = this.updateAccountSettings.bind(this)
+  this.updateAccountSettings = this.updateAccountSettings.bind(this);
+  this.fetchCoupons = this.fetchCoupons.bind(this);
 }
 async componentDidMount () {
   // loadReCaptcha();
@@ -159,6 +161,24 @@ async componentDidMount () {
     this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
     sessionStorage.setItem('UnlimitedCouponerKey', '')
   }
+  async fetchCoupons(accountID) {
+    const data = {
+      accountID: accountID
+    }
+    const url = "/api/getAccountCoupons"
+    const response = await fetch(url, {
+      method: "POST", 
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(data),
+    })
+    const json = await response.json()
+    console.log(json)
+  }
   async uploadCoupons(state){
     const url = `/api/uploadCoupons`
     const data = {
@@ -216,7 +236,11 @@ async componentDidMount () {
     alert(JSON.stringify(json), "json")
   }
   setMainAccountSettings(e) {
-    this.setState({mainContent: <AccountSettings updateAccountSettings={this.updateAccountSettings}/>})
+    this.setState({mainContent: <AccountSettings fetchCoupons={this.fetchCoupons}
+        couponData={this.state.couponData}
+        updateAccountSettings={this.updateAccountSettings}
+      />
+    })
   }
   setMainUploadCoupon(e) {
     this.setState({mainContent: <CouponForm uploadCoupons={this.uploadCoupons}/>})

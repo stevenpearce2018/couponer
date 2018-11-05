@@ -505,6 +505,10 @@ app.post('/api/searchCoupons/:pageNumber', async (req, res) => {
   }
 });
 
+app.post(`/api/getAccountCoupons`, async(req, res) => {
+  console.log(JSON.stringify(req.body))
+  res.json({response:"hello"})
+})
 
 app.post(`/api/getCoupon`, async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
