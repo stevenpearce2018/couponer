@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './search.css';
 import Select from '../SubComponents/Select/select';
 import CouponsMaker from '../../couponsMaker';
+import uppcaseFirstWord from '../../uppcaseFirstWord';
+import capitalizeCase from '../../capitalizeCase';
+
 // Private component, keep scoped to search component
 class SearchField extends Component {
   render() {
@@ -114,11 +117,14 @@ class Search extends Component {
       <hr/>
       <div className="description">
       <br/>
-        <p>{coupons.textarea}</p>
+      <p>{uppcaseFirstWord(coupons.textarea)}</p>
         <br/>
         <hr/>
         <br/>
-        <p>{coupons.address}</p>
+        <p>{capitalizeCase(coupons.address)}</p>
+        <br/>
+        <p>{capitalizeCase(coupons.city)}</p>
+        <br/>
         <hr/>
         <br/>
         <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>

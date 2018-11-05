@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
 import './home.css';
+import capitalizeCase from '../../capitalizeCase';
+import uppcaseFirstWord from '../../uppcaseFirstWord';
+
 // import this.CouponsMaker from '../../this.CouponsMaker';
-const capitalizeCase = (str) => {
-  const lower = String(str).toLowerCase();
-  return lower.replace(/(^| )(\w)/g, (x) => {
-    return x.toUpperCase();
-  });
-}
-const uppcaseFirstWord = (string) =>
-{
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 class Home extends Component {
   constructor(props) {

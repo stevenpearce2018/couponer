@@ -127,7 +127,7 @@ app.post('/api/signupCustomer', async(req, res) => {
               if(validateEmail(email)){
                 const membershipExperationDate = req.body.buisnessName ? req.body.buisnessName : "N/A" ;
                 const accountInfo = new AccountInfo({
-                   _id: new mongoose.Types.ObjectId(),
+                  _id: new mongoose.Types.ObjectId(),
                   email: email,
                   buisnessName: req.body.buisnessName,
                   password: hashedPass,
@@ -136,6 +136,8 @@ app.post('/api/signupCustomer', async(req, res) => {
                   loggedInKey: loggedInKey,
                   couponIds: [],
                   couponsCurrentlyClaimed: 0,
+                  usedCoupons:[],
+                  couponCodes:[],
                   membershipExperationDate: membershipExperationDate,
                   ip: ip
                 })
@@ -517,9 +519,21 @@ app.post(`/api/getCoupon`, async(req, res) => {
     else {
       if (outcome.couponsCurrentlyClaimed < 5) {
         res.json({response: "Coupon Claimed!"});
+        const coupon = await Coupon.find({'id':outcome[0]._id });
+        let couponCode;
+        for (let i = 0; i < coupon.length; i++) {
+          if(coupon[i].substr(-1) === "a") {
+            couponCode = coupon[i];
+            break;
+          }
+        }
         await AccountInfo.updateOne(
           { "_id" : outcome[0]._id }, 
-          { "$set" : {couponIds:outcome[0].couponIds.push(req.body._id)}, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1}, 
+          { "$set" : { 
+            couponIds: outcome[0].couponIds.push(req.body._id)},
+            couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1,
+            couponCodes: outcome[0].push(couponCode)
+          }, 
           { "upsert" : false } 
         );
       } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});

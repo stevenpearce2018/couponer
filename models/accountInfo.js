@@ -10,7 +10,10 @@ const accountInfo = mongoose.Schema({
     yourPick: String,
     loggedInKey: String,
     membershipExperationDate: [Date | String],
-    couponIds: [String],
+    couponsCurrentlyClaimed: Number,
+    couponIds: [String], // mongodb ID
+    usedCoupons: [String],
+    couponCodes: [String], // random string code
     ip: String
 })
 

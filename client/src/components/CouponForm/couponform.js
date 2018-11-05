@@ -60,16 +60,12 @@ class CouponForm extends Component {
     this.setState({loggedInKey:loggedInKey})
     console.log(loggedInKey)
     if (!loggedInKey) {
-        window.location.pathname = '/Home';
-        alert('You are not logged in!')
+      window.location.pathname = '/Home';
+      alert('You are not logged in!')
     }
-    // else if(loggedInKey[23] !== "b" || loggedInKey[24] !== "b"){
-    //   window.location.pathname = '/Home';
-    //   alert('Only buiness owners can access this page!')
-    // }
-    if (this.captchaDemo) {
-        this.captchaDemo.reset();
-        this.captchaDemo.execute();
+    else if(loggedInKey[23].substr(-1) !== "b") {
+      window.location.pathname = '/Home';
+      alert('Only buiness owners can access this page!')
     }
   }
   handleChange = (event) => {
