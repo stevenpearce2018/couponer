@@ -36,7 +36,7 @@ class SignUp extends Component {
       phoneNumber: '',
       popupClass: 'hiddenOverlay',
       boolValidPhoneNumber: false,
-      validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>,
+      validPhoneNumber: <span className="icon red">&#x2718;</span>,
       showOrHidePhoneValidationButton:'signupbtn',
       checkout: "hidden"
     }
@@ -73,7 +73,7 @@ class SignUp extends Component {
     const json = await response.json()
     if (json.success) {
       alert("Phone number is valid, woohoo!")
-      this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber:<img className='icon moveUp' src='https://storage.googleapis.com/csstest/valid.svg' alt="Phone number not validated"></img>})
+      this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
       this.togglePopup();
     }
     else alert("The number you have entered is incorrect")
@@ -276,7 +276,7 @@ class SignUp extends Component {
     <PhoneInput
       placeholder="Enter phone number"
       value={ this.state.phoneNumber }
-      onChange={ phoneNumber => this.setState({ phoneNumber: phoneNumber, validPhoneNumber: <img className='icon moveUp' src='https://storage.googleapis.com/csstest/invalid.svg' alt="Phone number not validated"></img>, showOrHidePhoneValidationButton: "signupbtn"}) } 
+      onChange={ phoneNumber => this.setState({ phoneNumber: phoneNumber, validPhoneNumber: <span className="icon red">&#x2718;</span>, showOrHidePhoneValidationButton: "signupbtn"}) } 
     />
     <div className="phoneImage">{this.state.validPhoneNumber}</div>
   </div>

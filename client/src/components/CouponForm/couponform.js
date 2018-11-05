@@ -40,7 +40,7 @@ class CouponForm extends Component {
       zip: '',
       popupClass: 'hiddenOverlay',
       recaptchaToken: '',
-      validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg' alt="Address is invalid"></img>,
+      validAddress: <span className="icon red">&#x2718;</span>,
     };
     this.togglePopup = this.togglePopup.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
@@ -144,11 +144,11 @@ class CouponForm extends Component {
             that.setState({
               latitude:results[0].geometry.location.lat(),
               longitude: results[0].geometry.location.lng(),
-              validAddress: <img src='https://storage.googleapis.com/csstest/valid.svg' alt="Address is valid"></img>
+              validAddress: <span className="icon green">&#10003;</span>
             })
           }
       }
-      catch (error) { that.setState({validAddress: <img src='https://storage.googleapis.com/csstest/invalid.svg' alt="Address is invalid"></img>}) }
+      catch (error) { that.setState({validAddress: <span className="icon red">&#x2718;</span>}) }
     });
   }
   
