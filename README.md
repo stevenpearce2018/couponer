@@ -19,7 +19,7 @@ Make sure you install the node packages for the server AND the client.
 
 The mongodb connection string is public and should allow you to connect to it. Do with it what you want it is not using useful data or and is just the mongodb trial cluster.
 
-You will need a redis server running locally for the server to compile. I plan on removing this for now and readding redis for caching later as redis was adding a lot of unneded complexity and cacheing will be much easier to accomplish with a more complete product.
+You will need a redis server running locally for the server to compile.
 
 [ ] === Not complete
 [/] === Partial
