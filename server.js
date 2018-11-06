@@ -505,7 +505,7 @@ app.post('/api/searchCoupons/:pageNumber', async (req, res) => {
   }
 });
 
-app.get('/api/search', async (req, res) => {
+app.get('/search', async (req, res) => {
   // Goodluck!
   let coupons;
   const city = (req.query.city) ? req.query.city.toLowerCase() : null;
