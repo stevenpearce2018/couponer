@@ -45,22 +45,20 @@ class Search extends Component {
   async changePage(number) {
     const pageNumber = Number(this.state.pageNumber) + number;
     if (pageNumber >= 1) {
-      const url = '/api/searchCoupons/'+(this.state.pageNumber+number)
-      const data = {
-        city: this.state.city,
-        zip: this.state.zip,
-        category: this.state.category,
-        keyword: this.state.keywords,
-      }
+      let searchSubUrl;
+      if (this.state.city !== '') searchSubUrl = `&city=${this.state.city}`
+      if (this.state.category !== '') searchSubUrl = `${searchSubUrl}&category=${this.state.category}`
+      if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
+      if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
+      const url = `/api/search?pageNumber=${pageNumber}${searchSubUrl}`
       const response = await fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
         credentials: "same-origin", // include, same-origin, *omit
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
-        body: JSON.stringify(data),
       })
       const couponsData = await response.json();
       this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : pageNumber})
@@ -177,18 +175,17 @@ class Search extends Component {
     if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
     if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
-      // window.location.href  = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
+      // window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-      const url = `/api/searchCoupons/${this.state.pageNumber}`
+      const url = `/api/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`
       const response =  await fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
         credentials: "same-origin", // include, same-origin, *omit
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
+        }
       })
       const json = await response.json()
       this.setState({coupons: this.CouponsMaker(json.coupons), incrementPageClass: "center"})
@@ -234,7 +231,7 @@ class Search extends Component {
       />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
     </form>
-    <br/>
+      <br/>
       <br/>
       {this.state.coupons}
       <br/>

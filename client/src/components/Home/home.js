@@ -52,7 +52,15 @@ class Home extends Component {
                 that.setState({city: city})
                 // const data = sessionStorage.getItem('couponsDataPage'+that.state.pageNumber, data.coupons);
                 const url = '/api/getSponseredCoupons/'+city+'/'+that.state.pageNumber
-                const response = await fetch(url);
+                const response = await fetch(url, {
+                  method: "GET", // *GET, POST, PUT, DELETE, etc.
+                  mode: "cors", // no-cors, cors, *same-origin
+                  cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+                  credentials: "same-origin", // include, same-origin, *omit
+                  headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                  }
+                })
                 const data = await response.json();
                 if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
                 else that.setState({coupons:<div className="center"><br/><h2>No coupons found near you, try searching manually.</h2></div>})
