@@ -70,13 +70,13 @@ const CURRENCY = 'USD';
     };
 
     onToken = (amount, description) => (token) => {
-      this.props.parentMethod()
         const data = {
           description,
           source: token.id,
           currency: CURRENCY,
           amount: this.fromEuroToCent(amount)
         }
+        this.props.parentMethod(data)
         const url = '/api/charge'
         fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.

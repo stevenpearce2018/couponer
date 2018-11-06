@@ -117,7 +117,7 @@ app.post('/api/signupCustomer', async(req, res) => {
         req.connection.remoteAddress || 
         req.socket.remoteAddress ||
         (req.connection.socket ? req.connection.socket.remoteAddress : null);
-      const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + "c";
+      const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
       const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
           if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
@@ -131,6 +131,7 @@ app.post('/api/signupCustomer', async(req, res) => {
                   email: email,
                   buisnessName: req.body.buisnessName,
                   password: hashedPass,
+                  city: req.body.city,
                   phoneNumber: req.body.phoneNumber,
                   yourPick: req.body.yourPick,
                   loggedInKey: loggedInKey,
@@ -149,7 +150,6 @@ app.post('/api/signupCustomer', async(req, res) => {
                 });
               } else res.json({resp:'Your email is not valid!'});
               if(yourPick === ' Customer') {
-                console.log("in final stage")
                 const successfulSignup = () => {
                   console.log("Successful Signup!")
                 }
@@ -258,8 +258,8 @@ app.post(`/api/signout`, async(req, res) => {
     req.connection.remoteAddress || 
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  const outcome = await AccountInfo.find({'email' : email }).limit(1)
-  if (outcome.length !== 0) {
+  const outcome = await AccountInfo.find({'email' : email, "ip":ip, "loggedInKey": loggedInKey }).limit(1)
+  if (outcome.length === 0) {
     if(outcome[0].loggedInKey === loggedInKey) {
       res.json({response:"Logout Successful"})
       await AccountInfo.updateOne(
@@ -331,9 +331,10 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
 });
 
 app.post('/api/getYourCoupons', async (req, res) => {
-  let coupons;
-  if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
-  res.json({coupons: coupons});
+  console.log('/api/getYourCoupons')
+  // let coupons;
+  // if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
+  // res.json({coupons: coupons});
 });
 
 app.post('/api/searchCoupons/:pageNumber', async (req, res) => {
