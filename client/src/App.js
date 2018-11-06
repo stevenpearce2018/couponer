@@ -119,7 +119,10 @@ async componentDidMount () {
   async getCoupons(_id){
     const loggedInKey = this.state.loggedInKey;
     const email = this.state.email;
-    if (loggedInKey === '' || email === '') alert('You are not logged in!')
+    if (loggedInKey === '' || email === '') {
+      alert('You are not logged in!')
+      window.location.href = '/Login'
+    }
     else {
       const data = {
         _id: _id,
@@ -139,6 +142,7 @@ async componentDidMount () {
       })
       const json = await response.json()
       alert(JSON.stringify(json))
+      window.location.href = '/Home'
     }
   }
   async logout(){

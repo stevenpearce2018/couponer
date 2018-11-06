@@ -237,16 +237,18 @@ app.post('/api/updateAccount', async (req, res) => {
 app.post('/api/signin', async (req, res) => {
   const email = req.body.email;
   const outcome = await AccountInfo.find({'email' : email}).limit(1)
-  if(bcrypt.compareSync(req.body.password, outcome[0].password)) {
+  console.log(JSON.stringify(outcome))
+  if(outcome[0] && bcrypt.compareSync(req.body.password, outcome[0].password)) {
     const loginStringBase = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const loggedInKey = outcome[0].yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b"
+    console.log(loggedInKey, "1")
     res.json({loggedInKey: loggedInKey});
     await AccountInfo.updateOne(
       { "_id" : outcome[0]._id }, 
       { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
       { "upsert" : false } 
     );
-  }
+  } else res.json({response: "Invalid login"});
 });
 
 app.post(`/api/signout`, async(req, res) => {
@@ -505,6 +507,7 @@ app.post('/api/searchCoupons/:pageNumber', async (req, res) => {
   }
 });
 
+
 app.get('/search', async (req, res) => {
   // Goodluck!
   let coupons;
@@ -683,37 +686,42 @@ app.post(`/api/getAccountCoupons`, async(req, res) => {
 app.post(`/api/getCoupon`, async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
   if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
-  const ip = req.headers['x-forwarded-for'] || 
-    req.connection.remoteAddress || 
-    req.socket.remoteAddress ||
-    (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  const outcome = await AccountInfo.find({'email':req.body.email })
-  if (outcome) {
-    if (outcome.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
-    else {
-      if (outcome.couponsCurrentlyClaimed < 5) {
-        res.json({response: "Coupon Claimed!"});
-        const coupon = await Coupon.find({'id':outcome[0]._id });
-        let couponCode;
-        for (let i = 0; i < coupon.length; i++) {
-          if(coupon[i].substr(-1) === "a") {
-            couponCode = coupon[i];
-            break;
+  else {
+    const ip = req.headers['x-forwarded-for'] || 
+      req.connection.remoteAddress || 
+      req.socket.remoteAddress ||
+      (req.connection.socket ? req.connection.socket.remoteAddress : null);
+    const outcome = await AccountInfo.find({'email':req.body.email, 'ip': ip, loggedInKey: loggedInKey })
+    if (outcome) {
+      if (outcome.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
+      else {
+        console.log(outcome[0].couponIds)
+        console.log(outcome[0].couponCodes)
+        console.log(outcome[0].couponsCurrentlyClaimed)
+        if (outcome.couponsCurrentlyClaimed < 5) {
+          res.json({response: "Coupon Claimed!"});
+          const coupon = await Coupon.find({'id':outcome[0]._id });
+          let couponCode;
+          for (let i = 0; i < coupon.length; i++) {
+            if(coupon[i].substr(-1) === "a") {
+              couponCode = coupon[i];
+              break;
+            }
           }
-        }
-        await AccountInfo.updateOne(
-          { "_id" : outcome[0]._id }, 
-          { "$set" : { 
-            couponIds: outcome[0].couponIds.push(req.body._id)},
-            couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1,
-            couponCodes: outcome[0].push(couponCode)
-          }, 
-          { "upsert" : false } 
-        );
-      } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
+          await AccountInfo.updateOne(
+            { "_id" : outcome[0]._id }, 
+            { "$set" : { 
+              couponIds: outcome[0].couponIds.push(req.body._id)},
+              couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed+1,
+              couponCodes: outcome[0].push(couponCode)
+            }, 
+            { "upsert" : false } 
+          );
+        } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
+      }
     }
-  }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+  }
 })
 
 const port = 4000;

@@ -70,11 +70,7 @@ const CURRENCY = 'USD';
     };
 
     onToken = (amount, description) => (token) => {
-      console.log('onToken called')
-      const result = this.props.parentMethod()
-      if (result !== true) {
-        alert('Failed')
-      } else {
+      this.props.parentMethod()
         const data = {
           description,
           source: token.id,
@@ -94,7 +90,6 @@ const CURRENCY = 'USD';
         body: JSON.stringify(data),
         }).then(this.successPayment)
         .catch(this.errorPayment);
-      }
     }
     render() {
       return (

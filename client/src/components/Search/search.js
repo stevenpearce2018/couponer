@@ -163,23 +163,7 @@ class Search extends Component {
     const loggedInKey = sessionStorage.getItem("UnlimitedCouponerKey")
     if (!loggedInKey) alert('You are not logged in!')
     else {
-      const data = {
-        id: id,
-        // loggedinkeykey: loggedInKey,
-      }
-      const url = `/api/getCoupon`
-      const response = await fetch(url, {
-        method: "POST", 
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
-      console.log(json, '!todo, alert the user that the coupon has been claimed.')
+      this.props.getCoupons(id)
     }
   }
   async handleSearch(e){
