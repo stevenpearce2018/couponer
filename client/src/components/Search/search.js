@@ -39,18 +39,18 @@ class Search extends Component {
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
     this.CouponsMaker = this.CouponsMaker.bind(this)
+    this.changePage = this.changePage.bind(this)
   }
   componentDidMount() { }
-  async decreasePage(){
-    const pageNumber = this.state.pageNumber;
-    if (pageNumber > 1) {
-      const url = '/api/searchCoupons/'+(this.state.pageNumber-1)
+  async changePage(number) {
+    const pageNumber = Number(this.state.pageNumber) + number;
+    if (pageNumber >= 1) {
+      const url = '/api/searchCoupons/'+(this.state.pageNumber+number)
       const data = {
         city: this.state.city,
         zip: this.state.zip,
         category: this.state.category,
         keyword: this.state.keywords,
-        pageNumber: this.state.pageNumber
       }
       const response = await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -63,31 +63,15 @@ class Search extends Component {
         body: JSON.stringify(data),
       })
       const couponsData = await response.json();
-      this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : (this.state.pageNumber + -1)})
+      this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : pageNumber})
     }
     else alert("You cannot go lower than page one!")
   }
-  async incrementPage(){
-    const url = `/api/searchCoupons/${this.state.pageNumber+1}`;
-    const data = {
-      city: this.state.city,
-      zip: this.state.zip,
-      category: this.state.category,
-      keyword: this.state.keywords,
-      pageNumber: this.state.pageNumber
-    }
-    const response = await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify(data),
-    })
-    const couponsData = await response.json();
-    this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : (this.state.pageNumber + 1)})
+  decreasePage(){
+    this.changePage(-1)
+  }
+  incrementPage(){
+    this.changePage(1)
   }
   CouponsMaker = (props) => {
     try {
@@ -163,7 +147,7 @@ class Search extends Component {
         id: id,
         // loggedinkeykey: loggedInKey,
       }
-      const url = `api/getCoupon`
+      const url = `/api/getCoupon`
       const response = await fetch(url, {
         method: "POST", 
         mode: "cors",
@@ -187,7 +171,13 @@ class Search extends Component {
       keyword: this.state.keywords,
       pageNumber: this.state.pageNumber
     }
+    let searchSubUrl;
+    if (this.state.city !== '') searchSubUrl = `&city=${this.state.city}`
+    if (this.state.category !== '') searchSubUrl = `${searchSubUrl}&category=${this.state.category}`
+    if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
+    if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
+      // window.location.href  = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       const url = `/api/searchCoupons/${this.state.pageNumber}`
       const response =  await fetch(url, {
@@ -244,7 +234,11 @@ class Search extends Component {
       />
       <button type="submit" value="Submit" className="searchButton" onClick={this.handleSearch}><strong>Search</strong></button>
     </form>
+    <br/>
+      <br/>
       {this.state.coupons}
+      <br/>
+      <br/>
       <div className={this.state.incrementPageClass}>
         <a className="icon-button incrementIcons backgroundCircle" onClick={this.decreasePage}>
           <i className="fa-arrow-left"></i>

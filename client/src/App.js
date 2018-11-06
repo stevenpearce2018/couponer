@@ -65,35 +65,37 @@ class App extends Component {
 async componentDidMount () {
   // loadReCaptcha();
   const urlHandler = (currentURL) => {
-    switch (currentURL.toLowerCase()) {
-      case 'home':
-          this.setMainHome();
-          break;
-      case 'uploadcoupon':
-          this.setMainUploadCoupon();
-          break;
-      case 'accountsettings':
-          this.setMainAccountSettings();
-          break;
-      case 'signup':
-          this.setMainSignUp();
-          break;
-      case 'search':
-          this.setMainSearch();
-          break;
-      case 'login':
-          this.setMainLogin();
-          break;
-      case 'about':
-          this.setMainToAbout();
-          break;
-      case 'mycoupons':
-          this.setMainToMyCoupons();
-          break;
-      default:
-          window.location.pathname = '/Home';
-          this.setMainHome();
-          break;
+    if(currentURL.toLowerCase().substring(0, 6) === "search") {
+      this.setMainSearch();
+    }
+    else {
+      switch (currentURL.toLowerCase()) {
+        case 'home':
+            this.setMainHome();
+            break;
+        case 'uploadcoupon':
+            this.setMainUploadCoupon();
+            break;
+        case 'accountsettings':
+            this.setMainAccountSettings();
+            break;
+        case 'signup':
+            this.setMainSignUp();
+            break;
+        case 'login':
+            this.setMainLogin();
+            break;
+        case 'about':
+            this.setMainToAbout();
+            break;
+        case 'mycoupons':
+            this.setMainToMyCoupons();
+            break;
+        default:
+            window.location.pathname = '/Home';
+            this.setMainHome();
+            break;
+      }
     }
   }
   const url = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
@@ -266,8 +268,8 @@ async componentDidMount () {
   setStateLoggedIn(key, email) {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
-    if(key.substring(key.length-1, key.length) === "c") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
-    else if(key.substring(key.length-1, key.length) === "b") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
+    if(key.substring(-1) === "c") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+    else if(key.substring(-1) === "b") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
   }
   
   render () {

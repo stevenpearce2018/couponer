@@ -20,6 +20,7 @@ class Home extends Component {
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
     this.CouponsMaker = this.CouponsMaker.bind(this);
+    this.changePage = this.changePage.bind(this);
   }
   componentDidMount () {
     if (navigator.geolocation) {
@@ -126,23 +127,21 @@ class Home extends Component {
       )
     }
   }
- async decreasePage(){
-    const pageNumber = this.state.pageNumber;
-    if (pageNumber > 1) {
-      const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber-1)
+  async changePage(number){
+    const pageNumber = Number(this.state.pageNumber) + number;
+    if (pageNumber >= 1) {
+      const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(pageNumber)
       const response = await fetch(url);
       const data = await response.json();
-      this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
+      this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center", pageNumber: pageNumber})
     }
-    else alert("You cannot go lower than page one!")
+    else alert("You cannot go lower than page one!") 
   }
-  async incrementPage(){
-    this.setState({pageNumber : (this.state.pageNumber + 1)})
-    const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(this.state.pageNumber+1)
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log(JSON.stringify(data.coupons))
-    this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center"})
+  decreasePage(){
+    this.changePage(-1)
+  }
+  incrementPage(){
+    this.changePage(1)
   }
   render() {
     return (
