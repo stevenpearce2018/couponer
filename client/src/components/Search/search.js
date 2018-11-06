@@ -56,10 +56,13 @@ class Search extends Component {
     if (city) this.setState({city: city})
     const pageNumber = getParameterByName('pageNumber', url)
     if (pageNumber) this.setState({pageNumber: pageNumber})
+    const zip = getParameterByName('zip', url)
+    if (zip) this.setState({zip: zip})
     const category = getParameterByName('category', url)
     if (category) this.setState({category: category})
     const keywords = getParameterByName('keywords', url)
     if (keywords) this.setState({keywords: keywords})
+    if (keywords || category || city || zip) this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
     const response = await fetch(url, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, cors, *same-origin
@@ -80,19 +83,7 @@ class Search extends Component {
       if (this.state.category !== '') searchSubUrl = `${searchSubUrl}&category=${this.state.category}`
       if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
       if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
-      const url = `/search?pageNumber=${pageNumber}${searchSubUrl}`;
       window.location.href = decodeURIComponent(`/search?pageNumber=${pageNumber}${searchSubUrl}`);
-      const response = await fetch(url, {
-        method: "GET", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-      })
-      const couponsData = await response.json();
-      this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : Number(pageNumber)})
     }
     else alert("You cannot go lower than page one!")
   }
@@ -208,18 +199,6 @@ class Search extends Component {
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
       window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-      const url = `/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`
-      const response =  await fetch(url, {
-        method: "GET", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        }
-      })
-      const json = await response.json()
-      this.setState({coupons: this.CouponsMaker(json.coupons), incrementPageClass: "center"})
     }
 }                
   render() {
