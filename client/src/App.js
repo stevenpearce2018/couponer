@@ -107,7 +107,7 @@ async componentDidMount () {
       urlHandler(urlPath)
     }
   }
-  if (sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerKey').length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden'})
+  if (sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerKey').length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail') })
 }
   showOrHideNav(){
     if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden", ignoreClick: true})
@@ -120,10 +120,11 @@ async componentDidMount () {
     const loggedInKey = this.state.loggedInKey;
     const email = this.state.email;
     if (loggedInKey === '' || email === '') {
-      alert('You are not logged in!')
+      alert('You are not logged in!!')
       window.location.href = '/Login'
     }
     else {
+      alert(_id)
       const data = {
         _id: _id,
         loggedInKey: this.state.loggedInKey,
@@ -142,7 +143,6 @@ async componentDidMount () {
       })
       const json = await response.json()
       alert(JSON.stringify(json))
-      window.location.href = '/Home'
     }
   }
   async logout(){
@@ -283,6 +283,9 @@ async componentDidMount () {
               Save money, grow your business, try something new.
             </span>
           </h1>
+          <p>Debug info:</p>
+          <p>loggedInKey: {this.state.loggedInKey}</p>
+          <p>email: {this.state.email}</p>
         <header className='homeHeader'>
           <section>
             <a href="/Home" onClick={this.setMainHome} id="logo">

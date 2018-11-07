@@ -136,7 +136,7 @@ class SignUp extends Component {
       const json = await response.json()
       if (json.loggedInKey) {
         this.props.parentMethod(json.loggedInKey, this.state.email);
-        sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+        sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
     } else alert("Your email is not valid!")
   }
@@ -169,7 +169,7 @@ class SignUp extends Component {
       const json = await response.json()
       if (json.loggedInKey) {
         this.props.parentMethod(json.loggedInKey, this.state.email)
-        sessionStorage.setItem('credsCoupon', JSON.stringify(json.loggedInKey))
+        sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
     } else alert("Your email is not valid!")
   }
