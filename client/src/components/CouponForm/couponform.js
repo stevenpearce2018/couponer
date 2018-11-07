@@ -110,7 +110,6 @@ class CouponForm extends Component {
 
   uploadFile(e) {
     e.preventDefault();
-    const email = sessionStorage.getItem('UnlimitedCouponerEmail')
     let that = this;
     const google = window.google
     const geocoder = new google.maps.Geocoder();

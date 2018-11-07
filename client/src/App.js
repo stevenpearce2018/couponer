@@ -11,6 +11,7 @@ import About from './components/About/about';
 import history from './history';
 // import { loadReCaptcha } from 'react-recaptcha-google';
 import MyCoupons from './components/MyCoupons/myCoupons';
+import postRequest from './postReqest';
 
 // For routing
 const Link = (props) => {
@@ -131,17 +132,7 @@ async componentDidMount () {
         email: this.state.email
       }
       const url = `/api/getCoupon`
-      const response = await fetch(url, {
-        method: "POST", 
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
+      const json = postRequest(url, data)
       alert(JSON.stringify(json))
     }
   }
@@ -151,18 +142,7 @@ async componentDidMount () {
       email: this.state.email
     }
     const url = `/api/signout`;
-    const response =  await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
+    const json = await postRequest(url, data)
     if(json.response === "Logout Failed") alert(json.response)
     this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
     sessionStorage.setItem('UnlimitedCouponerKey', '')
@@ -172,17 +152,7 @@ async componentDidMount () {
       accountID: accountID
     }
     const url = "/api/getAccountCoupons"
-    const response = await fetch(url, {
-      method: "POST", 
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
+    const json = await postRequest(url, data)
     console.log(json)
   }
   async uploadCoupons(state){
@@ -204,17 +174,7 @@ async componentDidMount () {
       loggedInKey: this.state.loggedInKey,
       email: this.state.email,
     }
-    const response = await fetch(url, {
-      method: "POST", 
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
+    const json = await postRequest(url, data)
     alert(JSON.stringify(json), "json")
   }
   async updateAccountSettings(data){
@@ -228,17 +188,7 @@ async componentDidMount () {
       email: this.state.email
     }
     const url = `/api/updateAccount`
-    const response = await fetch(url, {
-      method: "POST", 
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify(dataObject),
-    })
-    const json = await response.json()
+    const json = await postRequest(url, dataObject)
     alert(JSON.stringify(json), "json")
   }
   setMainAccountSettings(e) {

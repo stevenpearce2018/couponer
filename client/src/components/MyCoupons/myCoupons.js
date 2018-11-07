@@ -1,6 +1,7 @@
  
 import React, { Component } from 'react';
 import './myCoupons.css';
+import postRequest from '../../postReqest';
 
 class MyCoupons extends Component {
   constructor(props, context) {
@@ -68,27 +69,23 @@ class MyCoupons extends Component {
         alert("Unable to automatically search for coupons. Try searching manually.")
       }
     }
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey')
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '')
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail')
     if (!loggedInKey) {
         window.location.pathname = '/Home';
         alert('You are not logged in!')
     }
+    else if(loggedInKey.slice(-1) !== "b" || loggedInKey.slice(-1) !== "c") {
+        window.location.pathname = '/Home';
+        alert('Only buiness owners can access this page!')
+    }
     else {
       const data = {
-        loggedinkeykey: loggedInKey
+        loggedinkeykey: loggedInKey,
+        email: email
       }
       const url = `/api/getYourCoupons`
-      const response = await fetch(url, {
-        method: "POST", 
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
+      const json = await postRequest(url, data)
       this.setState({coupons: CouponsMaker(json.coupons)})
     }
   }

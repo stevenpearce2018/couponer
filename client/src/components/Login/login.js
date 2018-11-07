@@ -5,6 +5,7 @@ import './login.css';
 // import { loadReCaptcha } from 'react-recaptcha-google';
 import InputField from '../SubComponents/InputField/inputField'
 import validateEmail from '../../validateEmail';
+import postRequest from '../../postReqest';
 
 class Login extends Component {
   constructor(props, context) {
@@ -82,17 +83,7 @@ class Login extends Component {
       // recaptchaToken: this.state.recaptchaToken
     }
     const url = `/api/signin`
-    const response = await fetch(url, {
-      method: "POST", 
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
+    const json = await postRequest(url, data)
     if (json.loggedInKey){
       this.props.parentMethod(json.loggedInKey, this.state.email);
       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)

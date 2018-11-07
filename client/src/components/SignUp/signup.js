@@ -6,6 +6,7 @@ import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
 import Checkout from '../Checkout/checkout';
 import validateEmail from '../../validateEmail';
+import postRequest from '../../postReqest';
 
 // Checkout button is clicked
 // Check if info inputted is valid                 // if failed break
@@ -59,18 +60,7 @@ class SignUp extends Component {
       randomNumber: this.state.fiveDigitCode,
     }
     const url = `/api/phoneTestValidateNumber`
-    const response = await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
+    const json = await postRequest(url, data)
     if (json.success) {
       alert("Phone number is valid, woohoo!")
       this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
@@ -93,17 +83,7 @@ class SignUp extends Component {
         // recaptchaToken: that.state.recaptchaToken
       }
       const url = `/api/phoneTest`
-      const response = await fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
+      await postRequest(url, data)
       if (this.state.city && this.state.email && this.state.yourPick === ' Customer' && this.state.password === this.state.passwordConfirm && this.state.phoneNumber &&this.state.membershipExperationDate) return true;
       else return false;
     }
@@ -123,17 +103,7 @@ class SignUp extends Component {
     }
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
-      const response = await fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
+      const json = await postRequest(url, data)
       if (json.loggedInKey) {
         this.props.parentMethod(json.loggedInKey, this.state.email);
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
@@ -156,17 +126,7 @@ class SignUp extends Component {
     }
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
-      const response = await fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify(data),
-      })
-      const json = await response.json()
+      const json = await postRequest(url, data)
       if (json.loggedInKey) {
         this.props.parentMethod(json.loggedInKey, this.state.email)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
@@ -286,7 +246,7 @@ class SignUp extends Component {
             <div className="popup">
               <h2>Please Enter Your 5 digit security code</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
-              <div className="popupcontent">
+              <div className="popupcontent fivedigit">
               <InputField
                 htmlFor="5 digit code"
                 type="number"

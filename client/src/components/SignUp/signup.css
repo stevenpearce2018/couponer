@@ -16,6 +16,9 @@
   margin-right:100px;
   margin-left: 10%;
 }
+.fivedigit{
+  text-align: left;
+}
 .phoneHolder{
   display: inline;
 }
