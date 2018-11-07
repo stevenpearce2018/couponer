@@ -63,7 +63,7 @@ class CouponForm extends Component {
       window.location.pathname = '/Home';
       alert('You are not logged in!')
     }
-    else if(loggedInKey[23].substr(-1) !== "b") {
+    else if(loggedInKey.slice(-1) !== "b") {
       window.location.pathname = '/Home';
       alert('Only buiness owners can access this page!')
     }
