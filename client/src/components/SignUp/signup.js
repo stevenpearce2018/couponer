@@ -29,6 +29,7 @@ class SignUp extends Component {
       buisnessName: '',
       yourPick: '',
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
+      showSignUp: 'hideBuissnessIfCustomer',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
       recaptchaToken: '',
       membershipExperationDate: '',
@@ -64,6 +65,7 @@ class SignUp extends Component {
     if (json.success) {
       alert("Phone number is valid, woohoo!")
       this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
+      if (this.state.yourPick === " Buisness Owner") this.setState({showSignUp:"showBuissnessIfCustomer", checkout: "hidden"})
       this.togglePopup();
     }
     else alert("The number you have entered is incorrect")
@@ -275,7 +277,7 @@ class SignUp extends Component {
       <br/>
       <br/>
     </div>
-    <div className={this.state.showOrHideBuisInput}>
+    <div className={this.state.showSignUp}>
       <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>
     </div>
     </div>
@@ -288,10 +290,12 @@ class SignUp extends Component {
       this.setState({
         yourPick: e.target.value,
         showOrHideBuisInput: 'hideBuissnessIfCustomer',
-        showOrHideAccountMem: 'showBuissnessIfCustomer'
+        showOrHideAccountMem: 'showBuissnessIfCustomer',
+        showSignUp:'hideBuissnessIfCustomer'
       })
     }
     else if(e.target.value === ' Buisness Owner') {
+      if (this.state.boolValidPhoneNumber) this.setState({showSignUp:'showBuissnessIfCustomer'})
       this.setState({
         yourPick: e.target.value,
         membershipExperationDate: '',
