@@ -213,6 +213,8 @@ class CouponForm extends Component {
       category: this.state.category,
       city: this.state.city,
       zip: this.state.zip,
+      longitude: Number(this.state.longitude),
+      latitude: Number(this.state.latitude)
     }
     const google = window.google
     const geocoder = new google.maps.Geocoder();
@@ -364,7 +366,7 @@ class CouponForm extends Component {
           </a>
           <div className={this.state.popupClass}>
             <div className="popup">
-              <h2>What are Super Coupons?</h2>
+              <h2 className="popupheader">What are Super Coupons?</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
                 Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons are also the only coupons that can appear on the home page. Super Coupons cost 1.00$ per coupon instead of the standard 0.50$.

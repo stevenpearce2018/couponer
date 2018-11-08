@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import './myCoupons.css';
 import postRequest from '../../postReqest';
+import HaversineInMiles from '../../HaversineInMiles';
 
 class MyCoupons extends Component {
   constructor(props, context) {
@@ -15,6 +16,22 @@ class MyCoupons extends Component {
     this.getCoupons = this.getCoupons.bind(this);
   }
   async componentDidMount () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } 
+    const that = this;
+    const google = window.google
+    // eslint-disable-next-line
+    const geocoder = new google.maps.Geocoder;
+    async function cityNotFound () {
+      that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
+    }
+    function showPosition(position) {
+      that.setState({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      })
+    }
     const CouponsMaker = (props) => {
       try {
         const content = props.map((coupons) =>
@@ -51,8 +68,9 @@ class MyCoupons extends Component {
           <hr/>
           <br/>
           <p>{coupons.address}</p>
-          <hr/>
           <br/>
+          <p>{HaversineInMiles(this.state.latitude, this.state.longitude, coupons.latitude, coupons.longitude)}</p>
+          <hr/>
           <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
         {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
         </div>
@@ -75,9 +93,9 @@ class MyCoupons extends Component {
         window.location.pathname = '/Home';
         alert('You are not logged in!')
     }
-    else if(loggedInKey.slice(-1) !== "b" || loggedInKey.slice(-1) !== "c") {
+    else if(loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
         window.location.pathname = '/Home';
-        alert('Only buiness owners can access this page!')
+        alert('You are not logged in!')
     }
     else {
       const data = {

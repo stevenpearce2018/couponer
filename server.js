@@ -23,14 +23,6 @@ const escapeRegex = (text) => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
-const convertIdsForMongoSearch = (couponIds) => {
-  let cleanedArray = []
-  for (let i = 0; i < couponIds.length; i++) {
-    cleanedArray.push(mongoose.Types.ObjectId(couponIds[i]))
-  }
-  return cleanedArray;
-}
-
 const generateQR = async text => {
   try {
     return await QRCode.toDataURL(text)
@@ -191,8 +183,6 @@ app.post('/api/phoneTest', async (req, res) => {
 app.post('/api/phoneTestValidateNumber', async (req, res) => {
   redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
   function compareRandomNumber(randomNumber){
-    console.log(req.body.randomNumber, "req.body.randomNumber")
-    console.log(randomNumber, "randomNumber")
     if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
     else res.json({success:false})
   }
@@ -261,12 +251,12 @@ app.post('/api/signin', async (req, res) => {
 
 app.post(`/api/signout`, async(req, res) => {
   const email = req.body.email;
-  const loggedInKey = req.body.loggedInKey.replace('"', '');
+  const loggedInKey = req.body.loggedInKey;
   const ip = req.headers['x-forwarded-for'] || 
     req.connection.remoteAddress || 
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  const outcome = await AccountInfo.find({'email' : email, "ip":ip, "loggedInKey": loggedInKey }).limit(1)
+  const outcome = await AccountInfo.find({'email' : email, "ip":ip, "loggedInKey": loggedInKey.replace('"', '').replace('"', '') }).limit(1)
   console.log(req.body)
   if (outcome.length > 0) {
     if(outcome[0].loggedInKey === loggedInKey) {
@@ -306,8 +296,12 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
             base64image: req.body.imagePreviewUrl,
             superCoupon: req.body.superCoupon,
             couponCodes: couponCodes,
-            couponStillValid: true
+            couponStillValid: true,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude
           })
+          console.log(req.body.longitude, "req.body.longitude")
+          console.log(req.body.latitude, "req.body.latitude")
           await coupon.save()
             .catch(err => console.log(err))
         }
@@ -340,18 +334,7 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
 });
 
 app.post('/api/getYourCoupons', async (req, res) => {
-  console.log(req.body)
-  const loggedInKey = req.body.loggedInKey;
-  const email = req.body.email;
-  if (!loggedInKey || !email) res.json({response: "You need to be logged in to view your coupons!"});
-  else {
-    const ip = req.headers['x-forwarded-for'] || 
-      req.connection.remoteAddress || 
-      req.socket.remoteAddress ||
-      (req.connection.socket ? req.connection.socket.remoteAddress : null);
-      const account = await AccountInfo.find({'email': email, 'ip': ip, loggedInKey: loggedInKey }).limit(1)
-      if (!account) res.json({response: "You need to be logged in to view your coupons!"});
-  }
+  console.log('/api/getYourCoupons')
   // let coupons;
   // if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
   // res.json({coupons: coupons});

@@ -260,9 +260,6 @@ body {
 }
 
 @media screen and (max-width: 700px){
-  .box{
-    width: 70%;
-  }
   .popup{
     width: 70%;
   }
@@ -315,6 +312,9 @@ input[type="file"] {
 }
 .formHeaderMobile{
   display:none;
+}
+.popupheader{
+  width: 85%;
 }
 
 @media only screen and (max-width: 1000px) {

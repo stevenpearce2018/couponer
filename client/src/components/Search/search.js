@@ -4,6 +4,7 @@ import Select from '../SubComponents/Select/select';
 import CouponsMaker from '../../couponsMaker';
 import uppcaseFirstWord from '../../uppcaseFirstWord';
 import capitalizeCase from '../../capitalizeCase';
+import HaversineInMiles from '../../HaversineInMiles';
 
 const getParameterByName = (name, url) => {
   if (!url) url = window.location.href;
@@ -41,7 +42,9 @@ class Search extends Component {
       coupons: '',
       keywords: '',
       pageNumber: 1,
-      incrementPageClass: "hidden"
+      incrementPageClass: "hidden",
+      latitude: "",
+      longitude: ''
     }
     this.updateCategory = this.updateCategory.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
@@ -51,6 +54,22 @@ class Search extends Component {
     this.changePage = this.changePage.bind(this)
   }
   async componentDidMount() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } 
+    const that = this;
+    const google = window.google
+    // eslint-disable-next-line
+    const geocoder = new google.maps.Geocoder;
+    async function cityNotFound () {
+      that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
+    }
+    function showPosition(position) {
+      that.setState({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      })
+    }
     const url = '/'+window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
     const city = getParameterByName('city', url)
     if (city) this.setState({city: city})
@@ -74,6 +93,7 @@ class Search extends Component {
     })
     const couponsData = await response.json();
     this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber)})
+    // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
   }
   async changePage(number) {
     const pageNumber = Number(this.state.pageNumber) + Number(number);
@@ -129,6 +149,7 @@ class Search extends Component {
         <br/>
         <p>{capitalizeCase(coupons.city)}</p>
         <br/>
+        <p>{HaversineInMiles(this.state.latitude, this.state.longitude, coupons.latitude, coupons.longitude)}</p>
         <hr/>
         <br/>
         <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>

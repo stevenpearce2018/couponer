@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './home.css';
 import capitalizeCase from '../../capitalizeCase';
 import uppcaseFirstWord from '../../uppcaseFirstWord';
+import HaversineInMiles from '../../HaversineInMiles';
 
 // import this.CouponsMaker from '../../this.CouponsMaker';
 
@@ -23,6 +24,7 @@ class Home extends Component {
     this.changePage = this.changePage.bind(this);
   }
   componentDidMount () {
+    // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
     } 
@@ -112,8 +114,8 @@ class Home extends Component {
         <br/>
         <p>{capitalizeCase(coupons.city)}</p>
         <br/>
+        <p>{HaversineInMiles(this.state.latitude, this.state.longitude, coupons.latitude, coupons.longitude)}</p>
         <hr/>
-        <br/>
         <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
       {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
       </div>

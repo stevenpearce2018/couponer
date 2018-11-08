@@ -14,7 +14,9 @@ const couponSchema = mongoose.Schema({
     base64image: String,
     superCoupon: String,
     couponCodes: { type : Array , "default" : [] },
-    couponStillValid: Boolean
+    couponStillValid: Boolean,
+    longitude: Number,
+    latitude: Number
 })
 
 module.exports = mongoose.model('Coupon', couponSchema)
