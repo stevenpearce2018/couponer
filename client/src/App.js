@@ -109,6 +109,9 @@ async componentDidMount () {
     }
   }
   if (sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerKey').length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail') })
+  if(sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "b") {
+    this.setState({loggedInBuisness: 'notHidden'})
+  }
 }
   showOrHideNav(){
     if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden", ignoreClick: true})
@@ -222,8 +225,14 @@ async componentDidMount () {
   setStateLoggedIn(key, email) {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
-    if(key.substr(-1) === "c") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
-    else if(key.substr(-1) === "b") this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
+    if(key.substr(-1) === "c") {
+      this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+      window.location.href = '/Home';
+    }
+    else if(key.substr(-1) === "b") {
+      this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
+      window.location.href = '/Home';
+    }
   }
   render () {
     return (
