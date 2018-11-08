@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './search.css';
 import Select from '../SubComponents/Select/select';
-import CouponsMaker from '../../couponsMaker';
+// import CouponsMaker from '../../couponsMaker';
 import uppcaseFirstWord from '../../uppcaseFirstWord';
 import capitalizeCase from '../../capitalizeCase';
 import HaversineInMiles from '../../HaversineInMiles';
@@ -61,9 +61,6 @@ class Search extends Component {
     const google = window.google
     // eslint-disable-next-line
     const geocoder = new google.maps.Geocoder;
-    async function cityNotFound () {
-      that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
-    }
     function showPosition(position) {
       that.setState({
         latitude: position.coords.latitude,
@@ -189,21 +186,14 @@ class Search extends Component {
   }
   async handleSearch(e){
     e.preventDefault();
-    const data = {
-      city: this.state.city,
-      zip: this.state.zip,
-      category: this.state.category,
-      keyword: this.state.keywords,
-      pageNumber: this.state.pageNumber
-    }
     let searchSubUrl;
     if (this.state.city !== '') searchSubUrl = `&city=${this.state.city}`
     if (this.state.category !== '') searchSubUrl = `${searchSubUrl}&category=${this.state.category}`
     if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
     if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
-      window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
+      window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
     }
 }                
   render() {

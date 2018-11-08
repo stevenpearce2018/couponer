@@ -23,9 +23,6 @@ class MyCoupons extends Component {
     const google = window.google
     // eslint-disable-next-line
     const geocoder = new google.maps.Geocoder;
-    async function cityNotFound () {
-      that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
-    }
     function showPosition(position) {
       that.setState({
         latitude: position.coords.latitude,
