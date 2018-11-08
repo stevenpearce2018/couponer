@@ -67,7 +67,7 @@ class Login extends Component {
     })
     const json = await response.json()
     alert(JSON.stringify(json))
-    if (json.success === true) {
+    if (json && json.success === true) {
       alert("A message has been sent to your email, please check it to recover your account")
       this.togglePopup();
     } else alert("Something went wrong, please try again.")
@@ -84,8 +84,8 @@ class Login extends Component {
     }
     const url = `/api/signin`
     const json = await postRequest(url, data)
-    if (json.loggedInKey){
-      this.props.parentMethod(json.loggedInKey, this.state.email);
+    if (json && json.loggedInKey){
+      this.props.parentMethod(json && json.loggedInKey, this.state.email);
       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
     } else alert("Invalid Login")
   }

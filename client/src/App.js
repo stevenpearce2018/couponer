@@ -147,7 +147,7 @@ async componentDidMount () {
     }
     const url = `/api/signout`;
     const json = await postRequest(url, data)
-    if(json.response === "Logout Failed") alert(json.response)
+    if(json && json.response === "Logout Failed") alert(json && json.response)
     this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
     sessionStorage.setItem('UnlimitedCouponerKey', '')
   }
