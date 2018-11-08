@@ -1,7 +1,9 @@
 # Copyright 2018 Steven Pearce
-<strong> You will need a twilio key to create accounts because the current twilio key is bound to my phone number.</strong>
+<strong> You will need a twilio key to create accounts because the current twilio key is bound to my phone number and a mongoDB connection string. All other keys are included for you.</strong>
 
-You will need a redis server running locally for the server to compile. All other keys are included for you.
+<strong> Currently there is an issue with the webpack node modules. It runs locally for me fine but will require a bit of googling and installing different webpack versions to compile if you are making a fresh clone. </strong>
+
+You will need a redis server running locally for the server to compile. 
 
 btest@gmail.com to test buisness owner functionality
 ctest@gmail.com to test customer functionality
@@ -16,8 +18,6 @@ Both passwords are password.
 npm run dev will run the client and server at the same time.
 
 Make sure you install the node packages for the server AND the client.
-
-The mongodb connection string is public and should allow you to connect to it. Do with it what you want it is not using useful data or and is just the mongodb trial cluster.
 
 You will need a redis server running locally for the server to compile.
 
