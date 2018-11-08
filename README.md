@@ -19,8 +19,6 @@ npm run dev will run the client and server at the same time.
 
 Make sure you install the node packages for the server AND the client.
 
-You will need a redis server running locally for the server to compile.
-
 [ ] === Not complete
 [/] === Partial
 [X] === Done
