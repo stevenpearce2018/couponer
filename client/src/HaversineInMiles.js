@@ -6,7 +6,7 @@ const HaversineInMiles = (lat1, long1, lat2, long2) => {
     const a = Math.pow(Math.sin(dlat / 2.0), 2.0) + Math.cos(lat1 * d2r) * Math.cos(lat2 * d2r) * Math.pow(Math.sin(dlong / 2.0), 2.0);
     const c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
     const d = eQuatorialEarthRadius * c * 0.621371;
-    return d.toFixed(2) + ' miles';
+    return d.toFixed(2) + ' miles from you.';
 }
 
 module.exports = HaversineInMiles;

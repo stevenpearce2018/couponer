@@ -65,10 +65,10 @@ class Coupon extends Component {
             <hr/>
             <br/>
             <p>{this.props.address}</p>
-            <hr/>
             <br/>
+            <p>{this.props.distance}</p>
+            <hr/>
             <button className="getCoupon"> Get Coupon </button>
-            <button className="declineCoupon"> No Thanks </button>
           </div>
           <br/>
         </div>

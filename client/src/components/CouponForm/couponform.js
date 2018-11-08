@@ -5,19 +5,47 @@ import Input from '../SubComponents/Input/input';
 import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
 import Checkout from '../Checkout/checkout';
+import HaversineInMiles from '../../HaversineInMiles';
 
 const validateCouponForm = (state) => {
-  if (state.latitude === '' || state.longitude === '') return alert('Invalid Address, please check address!');
-  else if (state.title === 'Rent your very own kitten today!') return alert('You must have a unique title!');
-  else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') return alert('You must have an address!');
-  else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') return alert('You must upload an image!');
-  else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') return alert('You must upload a custom description!');
-  else if (state.city === '') return alert('You must have a city!')
-  else if (state.category === '') return alert('You must have a category!')
+  if (state.latitude === '' || state.longitude === '') {
+    alert('Invalid Address, please check address!')
+    return false;
+  }
+  else if (state.title === 'Rent your very own kitten today!') {
+    alert('You must have a unique title!');
+    return false;
+  }
+  else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') {
+    alert('You must have an address!');
+    return false;
+  }
+  else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') {
+    alert('You must upload an image!!!!!')
+    return false;
+  }
+  else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') {
+    alert('You must upload a custom description!');
+    return false;
+  }
+  else if (state.city === '') {
+    alert('You must have a city!')
+    return false;
+  }
+  else if (state.category === '') {
+    alert('You must have a category!')
+    return false;
+  }
   // !todo, fix this check
   // else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your current price!')
-  else if (state.city === '') return alert('You must have a city!')
-  else if (state.zip === '' || state.zip.length < 3) return alert('You must have a zipcode!')
+  else if (state.city === '') {
+    alert('You must have a city!')
+    return false;
+  }
+  else if (state.zip === '' || state.zip.length < 3) {
+    alert('You must have a zipcode!')
+    return false;
+  }
 }
 
 class CouponForm extends Component {
@@ -27,6 +55,8 @@ class CouponForm extends Component {
       title: 'Rent your very own kitten today!',
       longitude: '',
       latitude: '',
+      mylongitude: '',
+      mylatitude: '',
       address: '123 Cuddle Street, Kittentown, MA. 0 Miles Away.',
       amountCoupons: '100',
       currentPrice: '10.00',
@@ -67,6 +97,19 @@ class CouponForm extends Component {
       window.location.pathname = '/Home';
       alert('Only buiness owners can access this page!')
     }
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } 
+    const that = this;
+    const google = window.google
+    // eslint-disable-next-line
+    const geocoder = new google.maps.Geocoder;
+    function showPosition(position) {
+      that.setState({
+        mylongitude: position.coords.longitude,
+        mylatitude: position.coords.latitude,
+      })
+    }
   }
   handleChange = (event) => {
     const { target: { name, value } } = event
@@ -105,9 +148,9 @@ class CouponForm extends Component {
     if (this.state.popupClass !== nextState.popupClass) return true;
     if (this.state.textarea !== nextState.textarea) return true;
     if (this.state.imagePreviewUrl !== nextState.imagePreviewUrl) return true;
-    return false;
+    if (this.state.superCoupon !== nextState.superCoupon) return true;
+    return true;
   }
-
   uploadFile(e) {
     e.preventDefault();
     let that = this;
@@ -134,12 +177,12 @@ class CouponForm extends Component {
     let that = this;
     if (e.target.value === '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
     else this.setState({address: e.target.value})
+    
     const google = window.google
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
       try {
           if (results[0] && that.state.address.length > 5) {
-            console.log(results[0].geometry.location.lat())
             that.setState({
               latitude:results[0].geometry.location.lat(),
               longitude: results[0].geometry.location.lng(),
@@ -219,15 +262,16 @@ class CouponForm extends Component {
     const google = window.google
     const geocoder = new google.maps.Geocoder();
     const that = this;
-    geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
+    geocoder.geocode({ 'address': this.state.address}, async (results, status) => {
       if (google.maps.GeocoderStatus.OK === 'OK') {
         if (results[0] && that.state.address.length > 5) {
           that.setState({
             latitude:results[0].geometry.location.lat(),
             longitude: results[0].geometry.location.lng()
           })
-          validateCouponForm(this.state)
-          that.props.uploadCoupons(data)
+          const value = validateCouponForm(this.state)
+          alert(value)
+          if(value === undefined) that.props.uploadCoupons(data)
         }
       } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });
@@ -253,6 +297,7 @@ class CouponForm extends Component {
         length = {this.state.length}
         textarea = {this.state.textarea}
         address = {this.state.address}
+        distance = {HaversineInMiles(this.state.mylatitude, this.state.mylongitude, this.state.latitude, this.state.longitude)}
         />
         <div className='formHeaderMobile'>
           <h1>Coupon details</h1>
