@@ -149,7 +149,8 @@ async componentDidMount () {
     const json = await postRequest(url, data)
     if(json && json.response === "Logout Failed") alert(json && json.response)
     this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
-    sessionStorage.setItem('UnlimitedCouponerKey', '')
+    sessionStorage.removeItem('UnlimitedCouponerKey')
+    sessionStorage.removeItem('UnlimitedCouponerEmail')
   }
   async fetchCoupons(accountID) {
     const data = {
