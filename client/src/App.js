@@ -222,6 +222,7 @@ async componentDidMount () {
   setMainToMyCoupons(){
     this.setState({mainContent: <MyCoupons parentMethod={this.getCoupons}/>})
   }
+  
   setStateLoggedIn(key, email) {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
