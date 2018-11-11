@@ -108,8 +108,9 @@ async componentDidMount () {
       urlHandler(urlPath)
     }
   }
-  if (sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerKey').length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail') })
-  if(sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "b") {
+  const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
+  if ( loggedInKey && loggedInKey.length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail') })
+  if(loggedInKey && loggedInKey.substr(-1) === "b") {
     this.setState({loggedInBuisness: 'notHidden'})
   }
 }
@@ -146,9 +147,10 @@ async componentDidMount () {
     }
     const url = `/api/signout`;
     const json = await postRequest(url, data)
-    if(json.response === "Logout Failed") alert(json.response)
+    if(json && json.response === "Logout Failed") alert(json && json.response)
     this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
-    sessionStorage.setItem('UnlimitedCouponerKey', '')
+    sessionStorage.removeItem('UnlimitedCouponerKey')
+    sessionStorage.removeItem('UnlimitedCouponerEmail')
   }
   async fetchCoupons(accountID) {
     const data = {

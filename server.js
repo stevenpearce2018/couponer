@@ -278,36 +278,36 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
     const loggedInKey = req.body.loggedInKey;
     const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
     if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-      if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
-        const amountCoupons = req.body.amountCoupons;
-        let couponCodes = [];
-        for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-        const saveCoupon = async () => {
-          const coupon = new Coupon({
-            _id: new mongoose.Types.ObjectId(),
-            title: req.body.title,
-            address: req.body.address,
-            city: req.body.city.toLowerCase(),
-            amountCoupons: amountCoupons,
-            currentPrice: req.body.currentPrice,
-            discountedPrice: req.body.discountedPrice,
-            category: req.body.category,
-            textarea: req.body.textarea,
-            base64image: req.body.imagePreviewUrl,
-            superCoupon: req.body.superCoupon,
-            couponCodes: couponCodes,
-            couponStillValid: true,
-            latitude: req.body.latitude,
-            longitude: req.body.longitude
-          })
-          console.log(req.body.longitude, "req.body.longitude")
-          console.log(req.body.latitude, "req.body.latitude")
-          await coupon.save()
-            .catch(err => console.log(err))
-        }
-        saveCoupon();
-        res.json({response: 'Coupon Created'})
-    } else res.json({response: "You are not logged in!"});
+    else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+      const amountCoupons = req.body.amountCoupons;
+      let couponCodes = [];
+      for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+      const saveCoupon = async () => {
+        const coupon = new Coupon({
+          _id: new mongoose.Types.ObjectId(),
+          title: req.body.title,
+          address: req.body.address,
+          city: req.body.city.toLowerCase(),
+          amountCoupons: amountCoupons,
+          currentPrice: req.body.currentPrice,
+          discountedPrice: req.body.discountedPrice,
+          category: req.body.category,
+          textarea: req.body.textarea,
+          base64image: req.body.imagePreviewUrl,
+          superCoupon: req.body.superCoupon,
+          couponCodes: couponCodes,
+          couponStillValid: true,
+          latitude: req.body.latitude,
+          longitude: req.body.longitude
+        })
+        console.log(req.body.longitude, "req.body.longitude")
+        console.log(req.body.latitude, "req.body.latitude")
+        await coupon.save()
+          .catch(err => console.log(err))
+      }
+      saveCoupon();
+      res.json({response: 'Coupon Created'})
+  } else res.json({response: "You are not logged in!"});
 })
 
 app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
@@ -335,9 +335,16 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
 
 app.post('/api/getYourCoupons', async (req, res) => {
   console.log('/api/getYourCoupons')
-  // let coupons;
-  // if(city && zip && category) coupons = await Coupon.find({'city' : city, 'zip' : zip, 'category' : category})
-  // res.json({coupons: coupons});
+  const ip = req.headers['x-forwarded-for'] || 
+  req.connection.remoteAddress || 
+  req.socket.remoteAddress ||
+  (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  const loggedInKey = req.body.loggedInKey;
+  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
+  if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+  else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+    res.json({response: 'Coupon Created'})
+  } else res.json({response: "You are not logged in!"});
 });
 
 app.post('/api/searchCoupons/:pageNumber', async (req, res) => {
@@ -704,8 +711,7 @@ app.post(`/api/getCoupon`, async(req, res) => {
         // console.log(outcome[0].couponIds)
         // console.log(outcome[0].couponCodes)
         // console.log(req.body._id)
-        // if (outcome[0].couponsCurrentlyClaimed < 5) {
-          res.json({response: "Coupon Claimed!"});
+        if (outcome[0].couponsCurrentlyClaimed < 5) {
           const coupon = await Coupon.find({'_id':req.body._id });
           console.log(coupon, "coupon")
           let couponCode;
@@ -715,17 +721,19 @@ app.post(`/api/getCoupon`, async(req, res) => {
               break;
             }
           }
-          console.log(couponCode, "couponCode")
-          await AccountInfo.updateOne(
-            { "_id" : outcome[0]._id }, 
-            { "$set" : { 
-              couponIds: []},
-              couponsCurrentlyClaimed: 0,
-              couponCodes: []
-            }, 
-            { "upsert" : false } 
-          );
-        // } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
+          if(couponCode) {
+            res.json({response: "Coupon Claimed!"});
+            await AccountInfo.updateOne(
+              { "_id" : outcome[0]._id }, 
+              { "$set" : { 
+                couponIds: couponIds.push(req.body._id)},
+                couponsCurrentlyClaimed: 0,
+                couponCodes: couponCodes.push(couponCode)
+              }, 
+              { "upsert" : false } 
+            );
+          } else res.json({response: "These coupons are no longer available. Please try another coupon."});
+        } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
       }
     }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});

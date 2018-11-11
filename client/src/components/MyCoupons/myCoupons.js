@@ -101,7 +101,7 @@ class MyCoupons extends Component {
       }
       const url = `/api/getYourCoupons`
       const json = await postRequest(url, data)
-      this.setState({coupons: CouponsMaker(json.coupons)})
+      this.setState({coupons: CouponsMaker(json && json.coupons)})
     }
   }
   async getCoupons(id) {

@@ -62,7 +62,7 @@ class SignUp extends Component {
     }
     const url = `/api/phoneTestValidateNumber`
     const json = await postRequest(url, data)
-    if (json.success) {
+    if (json && json.success) {
       alert("Phone number is valid, woohoo!")
       this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
       if (this.state.yourPick === " Buisness Owner") this.setState({showSignUp:"showBuissnessIfCustomer", checkout: "hidden"})
@@ -106,8 +106,8 @@ class SignUp extends Component {
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
       const json = await postRequest(url, data)
-      if (json.loggedInKey) {
-        this.props.parentMethod(json.loggedInKey, this.state.email);
+      if (json && json.loggedInKey) {
+        this.props.parentMethod(json && json.loggedInKey, this.state.email);
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
     } else alert("Your email is not valid!")
@@ -129,8 +129,8 @@ class SignUp extends Component {
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
       const json = await postRequest(url, data)
-      if (json.loggedInKey) {
-        this.props.parentMethod(json.loggedInKey, this.state.email)
+      if (json && json.loggedInKey) {
+        this.props.parentMethod(json && json.loggedInKey, this.state.email)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
     } else alert("Your email is not valid!")
