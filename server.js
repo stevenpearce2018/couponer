@@ -228,7 +228,7 @@ app.post('/api/signin', async (req, res) => {
   if(outcome[0] && bcrypt.compareSync(req.body.password, outcome[0].password)) {
     const loginStringBase = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const loggedInKey = outcome[0].yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b"
-    res.json({loggedInKey: loggedInKey});
+    outcome[0].yourPick === " Customer" ? res.json({loggedInKey: loggedInKey, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed}) : res.json({loggedInKey: loggedInKey});
     await AccountInfo.updateOne(
       { "_id" : outcome[0]._id }, 
       { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
@@ -290,9 +290,9 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         })
         // couponIds
         res.json({response: 'Coupon Created'})
-        // spread previous array values and add new id to end of list.
         // pushing the value seemed to a new array seemed to not work so I had to do this hack.
-        const arr = [...outcome[0].couponIds, mongodbID]
+        // [].concat is for performance
+        const arr = [].concat(outcome[0].couponIds).push(mongodbID)
         await AccountInfo.updateOne(
           { "_id" : outcome[0]._id },
           { "$set" : { "ip" : ip}, "couponIds": arr}, 
@@ -715,8 +715,8 @@ app.post(`/api/getCoupon`, async(req, res) => {
               break;
             }
           }
-          const arrIds = [...outcome[0].couponIds, req.body._id]
-          const arrCouponCodes = [...outcome[0].couponCodes, couponCode]
+          const arrIds = [].concat(outcome[0].couponIds).push(req.body._id);
+          const arrCouponCodes = [].concat(outcome[0].couponCodes).push(couponCode);
           if(couponCode) {
             res.json({response: "Coupon Claimed!"});
             await AccountInfo.updateOne(

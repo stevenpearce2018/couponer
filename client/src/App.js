@@ -43,7 +43,7 @@ class App extends Component {
       loggedInKey: '',
       showOrHideNav: 'hidden',
       loggedInBuisness: 'hidden',
-      ignoreClick: true,
+      ignoreClick: true, // handles navbar closing when open and clicking outside it.
       couponData: <div className="loaderContainer"><div className="loader"></div></div>
   };
   this.setMainSearch = this.setMainSearch.bind(this);
