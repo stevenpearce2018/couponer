@@ -9,7 +9,7 @@ const accountInfo = mongoose.Schema({
     city: String,
     yourPick: String,
     loggedInKey: String,
-    membershipExperationDate: [Date | String],
+    membershipExperationDate: Date | String,
     couponsCurrentlyClaimed: Number,
     couponIds: [String], // mongodb ID
     usedCoupons: [String],

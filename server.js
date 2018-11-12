@@ -19,6 +19,30 @@ const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
 const db = require('./config/db')
 const QRCode = require('qrcode');
 
+const searchableMongoIDs = (IDS) => {
+  const arrayLength = IDS.length;
+  let i = 0;
+  let searchAbleIDS = []
+  for(;i < arrayLength;i++) {
+    searchAbleIDS.push(mongoose.Types.ObjectId(IDS[i]))
+  }
+  return searchAbleIDS;
+}
+
+const claimCode = (codes) => {
+  let i = 0;
+  let iMax = codes.length;
+  let couponCodes = codes;
+  let claimed = false;
+  for (; i< iMax ; i++) {
+    if(couponCodes[i].substr(-1) === "a" && claimed === false) {
+      couponCodes[i] = couponCodes[i].substring(0, couponCodes[i].length - 1) + "c";
+      break;
+    }
+  }
+  return couponCodes;
+}
+
 const escapeRegex = (text) => {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
@@ -190,7 +214,6 @@ app.post('/api/phoneTestValidateNumber', async (req, res) => {
 
 app.post('/api/updateAccount', async (req, res) => {
   //!todo, flush out updateAccount api
-  console.log(JSON.stringify(req.body))
   const email = req.body.email;
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email' : email, "ip": ip, "loggedInKey":loggedInKey}).limit(1)
@@ -257,7 +280,6 @@ app.post(`/api/signout`, async(req, res) => {
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
   const outcome = await AccountInfo.find({'email' : email, "ip":ip, "loggedInKey": loggedInKey.replace('"', '').replace('"', '') }).limit(1)
-  console.log(req.body)
   if (outcome.length > 0) {
     if(outcome[0].loggedInKey === loggedInKey) {
       res.json({response:"Logout Successful"})
@@ -283,8 +305,9 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
       let couponCodes = [];
       for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
       const saveCoupon = async () => {
+        const mongodbID = new mongoose.Types.ObjectId();
         const coupon = new Coupon({
-          _id: new mongoose.Types.ObjectId(),
+          _id: mongodbID,
           title: req.body.title,
           address: req.body.address,
           city: req.body.city.toLowerCase(),
@@ -300,13 +323,20 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
           latitude: req.body.latitude,
           longitude: req.body.longitude
         })
-        console.log(req.body.longitude, "req.body.longitude")
-        console.log(req.body.latitude, "req.body.latitude")
+        // couponIds
+        res.json({response: 'Coupon Created'})
+        // spread previous array values and add new id to end of list.
+        // pushing the value seemed to a new array seemed to not work so I had to do this hack.
+        const arr = [...outcome[0].couponIds, mongodbID]
+        await AccountInfo.updateOne(
+          { "_id" : outcome[0]._id },
+          { "$set" : { "ip" : ip}, "couponIds": arr}, 
+          { "upsert" : false } 
+        );
         await coupon.save()
           .catch(err => console.log(err))
       }
       saveCoupon();
-      res.json({response: 'Coupon Created'})
   } else res.json({response: "You are not logged in!"});
 })
 
@@ -329,22 +359,30 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
         else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
         redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*30)
       }
-    } else res.json({ coupons: data });
+    } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+    else res.json({ coupons: data });
   }
 });
 
 app.post('/api/getYourCoupons', async (req, res) => {
-  console.log('/api/getYourCoupons')
   const ip = req.headers['x-forwarded-for'] || 
   req.connection.remoteAddress || 
   req.socket.remoteAddress ||
   (req.connection.socket ? req.connection.socket.remoteAddress : null);
   const loggedInKey = req.body.loggedInKey;
-  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
-  if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-  else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
-    res.json({response: 'Coupon Created'})
-  } else res.json({response: "You are not logged in!"});
+  let coupons;
+  const outcome = await AccountInfo.find({'email':req.body.email, "ip": ip, "loggedInKey": req.body.loggedInKey})
+  if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+    console.log(JSON.stringify(outcome[0].couponIds))
+    const searchIDS = searchableMongoIDs(outcome[0].couponIds)
+    coupons = await Coupon.find({
+      '_id': { $in: searchIDS}
+    })
+    if (coupons.length === 0 ) coupons = "No coupons found.";
+    res.json({coupons: coupons});
+  } else {
+    res.json({response: "You are not logged in!"});
+  }
 });
 
 app.post('/api/searchCoupons/:pageNumber', async (req, res) => {
@@ -689,13 +727,7 @@ app.get('/search', async (req, res) => {
   }
 });
 
-app.post(`/api/getAccountCoupons`, async(req, res) => {
-  console.log(JSON.stringify(req.body))
-  res.json({response:"hello"})
-})
-
 app.post(`/api/getCoupon`, async(req, res) => {
-  console.log(req.body)
   const loggedInKey = req.body.loggedInKey;
   if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   else {
@@ -704,34 +736,43 @@ app.post(`/api/getCoupon`, async(req, res) => {
       req.socket.remoteAddress ||
       (req.connection.socket ? req.connection.socket.remoteAddress : null);
     const outcome = await AccountInfo.find({'email':req.body.email, 'ip': ip, loggedInKey: loggedInKey }).limit(1)
-    console.log(JSON.stringify(outcome))
     if (outcome) {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
       else {
-        // console.log(outcome[0].couponIds)
-        // console.log(outcome[0].couponCodes)
-        // console.log(req.body._id)
         if (outcome[0].couponsCurrentlyClaimed < 5) {
-          const coupon = await Coupon.find({'_id':req.body._id });
-          console.log(coupon, "coupon")
+          const coupon = await Coupon.find({'_id':req.body._id }).limit(1);
           let couponCode;
-          for (let i = 0; i < coupon[0].couponCodes.length; i++) {
+          let i = 0;
+          const iMax = coupon[0].couponCodes.length;
+          for (;i < iMax; i++) {
             if(coupon[0].couponCodes[i].substr(-1) === "a") {
-              couponCode = coupon[i];
+              couponCode = coupon[0].couponCodes[i].substring(0, coupon[0].couponCodes[i].length - 1) + "c";
               break;
             }
           }
+          const arrIds = [...outcome[0].couponIds, req.body._id]
+          const arrCouponCodes = [...outcome[0].couponCodes, couponCode]
           if(couponCode) {
             res.json({response: "Coupon Claimed!"});
             await AccountInfo.updateOne(
               { "_id" : outcome[0]._id }, 
               { "$set" : { 
-                couponIds: couponIds.push(req.body._id)},
-                couponsCurrentlyClaimed: 0,
-                couponCodes: couponCodes.push(couponCode)
+                "couponIds": arrIds}, //
+                "couponsCurrentlyClaimed": 0,
+                "couponCodes": arrCouponCodes
               }, 
               { "upsert" : false } 
             );
+            console.log(coupon[0].couponCodes)
+            const updatedCodes = await claimCode(coupon[0].couponCodes)
+            console.log(updatedCodes)
+            await Coupon.updateOne(
+              { "_id" : req.body._id },
+              { "$set" : { "couponCodes": updatedCodes}}, 
+              { "upsert" : false } 
+            );
+            // const coupontwo = await Coupon.find({'_id':req.body._id }).limit(1);
+            // console.log(JSON.stringify(coupontwo))
           } else res.json({response: "These coupons are no longer available. Please try another coupon."});
         } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
       }

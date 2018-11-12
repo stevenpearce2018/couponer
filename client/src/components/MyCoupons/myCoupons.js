@@ -13,12 +13,10 @@ class MyCoupons extends Component {
         longitude: '',
         coupons: <div className="loaderContainer"><div className="loader"></div></div>
     };
-    this.getCoupons = this.getCoupons.bind(this);
+    // this.getCoupons = this.getCoupons.bind(this);
   }
   async componentDidMount () {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
-    } 
+    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
     const that = this;
     const google = window.google
     // eslint-disable-next-line
@@ -68,7 +66,7 @@ class MyCoupons extends Component {
           <br/>
           <p>{HaversineInMiles(this.state.latitude, this.state.longitude, coupons.latitude, coupons.longitude)}</p>
           <hr/>
-          <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
+          {/* <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button> */}
         {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
         </div>
         <br/>
@@ -96,7 +94,7 @@ class MyCoupons extends Component {
     }
     else {
       const data = {
-        loggedinkeykey: loggedInKey,
+        loggedInKey: loggedInKey,
         email: email
       }
       const url = `/api/getYourCoupons`
@@ -104,9 +102,9 @@ class MyCoupons extends Component {
       this.setState({coupons: CouponsMaker(json && json.coupons)})
     }
   }
-  async getCoupons(id) {
-    this.props.parentMethod(id)
-  }
+  // async getCoupons(id) {
+  //   this.props.parentMethod(id)
+  // }
   render() {
     return (
       <div>

@@ -136,7 +136,7 @@ async componentDidMount () {
         email: this.state.email
       }
       const url = `/api/getCoupon`
-      const json = postRequest(url, data)
+      const json = await postRequest(url, data)
       alert(JSON.stringify(json))
     }
   }
