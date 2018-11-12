@@ -15,45 +15,14 @@ const request = require('request');
 const stripe = require('./stripe');
 const nodemailer = require('nodemailer');
 //!todo, change recaptcha key and put in .env
-const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98"
-const db = require('./config/db')
-const QRCode = require('qrcode');
+const recaptchaSecretKey = "6Lf9D3QUAAAAAHfnc-VISWptFohHPV2hyfee9_98";
+const db = require('./config/db');
+const searchableMongoIDs = require("./lib/searchableMongoIDs");
+const claimCode = require("./lib/claimCode");
+const escapeRegex = require("./lib/escapeRegex");
+const generateQR = require("./lib/generateQR");
+const validateEmail = require('./lib/validateEmail');
 
-const searchableMongoIDs = (IDS) => {
-  const arrayLength = IDS.length;
-  let i = 0;
-  let searchAbleIDS = []
-  for(;i < arrayLength;i++) {
-    searchAbleIDS.push(mongoose.Types.ObjectId(IDS[i]))
-  }
-  return searchAbleIDS;
-}
-
-const claimCode = (codes) => {
-  let i = 0;
-  let iMax = codes.length;
-  let couponCodes = codes;
-  let claimed = false;
-  for (; i< iMax ; i++) {
-    if(couponCodes[i].substr(-1) === "a" && claimed === false) {
-      couponCodes[i] = couponCodes[i].substring(0, couponCodes[i].length - 1) + "c";
-      break;
-    }
-  }
-  return couponCodes;
-}
-
-const escapeRegex = (text) => {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-};
-
-const generateQR = async text => {
-  try {
-    return await QRCode.toDataURL(text)
-  } catch (err) {
-    console.error("Failed to make qrcode: " + err)
-  }
-}
 app.post('/api/generateQR', async(req, res) => {
   try {
     client.messages
@@ -79,10 +48,6 @@ const mailOptions = {
   subject: 'Welcome!', // Subject line
   html: '<p>Welcome to UnlimitedCouponer</p>'// plain text body
 };
-const validateEmail = (email) => {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-}
 // const fs = require('fs')
 // const htttpsOptions = {
 //   cert: fs.readFileSync('./ssl/server.crt'),
@@ -109,14 +74,14 @@ const postStripeCharge = res => (stripeErr, stripeRes) => {
   else res.status(200).send({ success: stripeRes });
 }
 
-const didRecaptchaPass = async(req) => {
-  const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
-  await request(verifyUrl, (err, response, body) => {
-    body = JSON.parse(body);
-    if(body.success !== undefined && !body.success) return false;
-    else return true;
-  })
-}
+// const didRecaptchaPass = async(req) => {
+//   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${recaptchaSecretKey}&response=${req.body.recaptchaToken}&remoteip=${req.connection.remoteAddress}`;
+//   await request(verifyUrl, (err, response, body) => {
+//     body = JSON.parse(body);
+//     if(body.success !== undefined && !body.success) return false;
+//     else return true;
+//   })
+// }
 
 app.post('/api/charge', async(req, res) => {
   stripe.charges.create(req.body, postStripeCharge(res));
@@ -764,7 +729,7 @@ app.post(`/api/getCoupon`, async(req, res) => {
               { "upsert" : false } 
             );
             console.log(coupon[0].couponCodes)
-            const updatedCodes = await claimCode(coupon[0].couponCodes)
+            const updatedCodes = claimCode(coupon[0].couponCodes)
             console.log(updatedCodes)
             await Coupon.updateOne(
               { "_id" : req.body._id },
