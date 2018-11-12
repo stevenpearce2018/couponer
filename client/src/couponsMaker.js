@@ -62,55 +62,64 @@ import React, { Component } from 'react';
 //       }
 // }
 
-const CouponsMaker = (props) => {
-    const content = props.map((coupons) =>
-    <div className="coupon">
-    <h1 className = "exampleTitle">{coupons.title}</h1>
-    <img  className = "exampleImage" src={coupons.base64image} />
-    <div className="pricing">
-      <div className='oldPrice'>
-          Was: {(coupons.currentPrice - 0).toFixed(2)}$
-      </div>
-      <div className='percentOff'>
-          {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
-      </div>
-      <br/>
-      <div className='newPrice'>
-          Now: {(coupons.discountedPrice - 0).toFixed(2)}$
-      </div>
-      <div className='savings'>
-          Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
-      </div>
-      <br/>
+CouponsMaker = (props, callback) => {
+    try {
+      const content = props.map((coupons) =>
+      <div className="coupon" id={coupons._id}>
+      <h1 className = "exampleTitle">{coupons.title}</h1>
+      <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
+      <div className="pricing">
+        <div className='oldPrice'>
+            Was: {(coupons.currentPrice - 0).toFixed(2)}$
+        </div>
+        <div className='percentOff'>
+            {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
+        </div>
+        <br/>
+        <div className='newPrice'>
+            Now: {(coupons.discountedPrice - 0).toFixed(2)}$
+        </div>
+        <div className='savings'>
+            Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
+        </div>
+        <br/>
+        <hr/>
+        <div className="amountLeft">
+            Only {coupons.amountCoupons} Coupons Left!
+        </div>
       <hr/>
-      <div className="amountLeft">
-          Only {coupons.amountCoupons} Coupons Left!
+      <div className="description">
+      <br/>
+        <p>{uppcaseFirstWord(coupons.textarea)}</p>
+        <br/>
+        <hr/>
+        <br/>
+        <p>{capitalizeCase(coupons.address)}</p>
+        <br/>
+        <p>{capitalizeCase(coupons.city)}</p>
+        <br/>
+        <p>{HaversineInMiles(props.latitude, props.longitude, coupons.latitude, coupons.longitude)}</p>
+        <hr/>
+        <button className="getCoupon" onClick={callback(coupons._id)}> Get Coupon </button>
+      {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
       </div>
-    <hr/>
-    <div className="description">
-    <br/>
-      <p>{coupons.textarea}</p>
       <br/>
-      <hr/>
-      <br/>
-      <p className="timeLeft"> Don't delay, only <strong>{coupons.lengthInDays}</strong> left until these coupons expire! </p>
-      <hr/>
-      <br/>
-      <p>{coupons.address}</p>
-      <hr/>
-      <br/>
-    <button className="getCoupon" onClick={this.getCoupons}> Get Coupon </button>
-    <button className ="declineCoupon"> No Thanks </button>
     </div>
-    <br/>
   </div>
-</div>
-    );
-    return (
-    <div className='flextape'>
-        {content}
+      );
+      return (
+      <div className='flextape'>
+          {content}
+        </div>
+      );
+    } catch (error) {
+      return (
+      <div className='center'>
+      <br/>
+      <h2>Unable to automatically search for coupons. Try searching manually.</h2>
       </div>
-    );
+      )
+    }
   }
 
 export default CouponsMaker;
