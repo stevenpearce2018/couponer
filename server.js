@@ -268,7 +268,8 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
     else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
       const amountCoupons = req.body.amountCoupons;
       let couponCodes = [];
-      for(let i = 0; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+      let i = 0
+      for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
       const saveCoupon = async () => {
         const mongodbID = new mongoose.Types.ObjectId();
         const coupon = new Coupon({
