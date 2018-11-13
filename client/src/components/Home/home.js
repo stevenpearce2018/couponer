@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import './home.css';
-import capitalizeCase from '../../capitalizeCase';
-import uppcaseFirstWord from '../../uppcaseFirstWord';
-import HaversineInMiles from '../../HaversineInMiles';
-
-// import this.CouponsMaker from '../../this.CouponsMaker';
+import CouponsMaker from '../../couponsMaker';
 
 class Home extends Component {
   constructor(props) {
@@ -20,7 +16,6 @@ class Home extends Component {
     };
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
-    this.CouponsMaker = this.CouponsMaker.bind(this);
     this.changePage = this.changePage.bind(this);
   }
   componentDidMount () {
@@ -41,6 +36,8 @@ class Home extends Component {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
       })
+      sessionStorage.setItem('couponlatitude', position.coords.latitude);
+      sessionStorage.setItem('couponlongitude', position.coords.longitude);
       const latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
       try {
         geocoder.geocode({location: latlng}, async (results, status) => {
@@ -64,7 +61,7 @@ class Home extends Component {
                   }
                 })
                 const data = await response.json();
-                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: that.CouponsMaker(data.coupons), incrementPageClass: "center"})
+                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: CouponsMaker(data.coupons), incrementPageClass: "center"})
                 else that.setState({coupons:<div className="center"><br/><h2>No coupons found near you, try searching manually.</h2></div>})
               } else cityNotFound();
             } else cityNotFound();
@@ -75,75 +72,13 @@ class Home extends Component {
       }
     }
   }
-  getCoupons(id) {
-    this.props.parentMethod(id)
-  }
-  CouponsMaker = (props) => {
-    try {
-      const content = props.map((coupons) =>
-      <div className="coupon" id={coupons._id}>
-      <h1 className = "exampleTitle">{coupons.title}</h1>
-      <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
-      <div className="pricing">
-        <div className='oldPrice'>
-            Was: {(coupons.currentPrice - 0).toFixed(2)}$
-        </div>
-        <div className='percentOff'>
-            {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
-        </div>
-        <br/>
-        <div className='newPrice'>
-            Now: {(coupons.discountedPrice - 0).toFixed(2)}$
-        </div>
-        <div className='savings'>
-            Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
-        </div>
-        <br/>
-        <hr/>
-        <div className="amountLeft">
-            Only {coupons.amountCoupons} Coupons Left!
-        </div>
-      <hr/>
-      <div className="description">
-      <br/>
-        <p>{uppcaseFirstWord(coupons.textarea)}</p>
-        <br/>
-        <hr/>
-        <br/>
-        <p>{capitalizeCase(coupons.address)}</p>
-        <br/>
-        <p>{capitalizeCase(coupons.city)}</p>
-        <br/>
-        <p>{HaversineInMiles(this.state.latitude, this.state.longitude, coupons.latitude, coupons.longitude)}</p>
-        <hr/>
-        <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
-      {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
-      </div>
-      <br/>
-    </div>
-  </div>
-      );
-      return (
-      <div className='flextape'>
-          {content}
-        </div>
-      );
-    } catch (error) {
-      return (
-      <div className='center'>
-      <br/>
-      <h2>Unable to automatically search for coupons. Try searching manually.</h2>
-      </div>
-      )
-    }
-  }
   async changePage(number){
     const pageNumber = Number(this.state.pageNumber) + number;
     if (pageNumber >= 1) {
       const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(pageNumber)
       const response = await fetch(url);
       const data = await response.json();
-      this.setState({coupons: this.CouponsMaker(data.coupons), incrementPageClass: "center", pageNumber: pageNumber})
+      this.setState({coupons: CouponsMaker(data.coupons), incrementPageClass: "center", pageNumber: pageNumber})
     }
     else alert("You cannot go lower than page one!") 
   }

@@ -1,4 +1,30 @@
 import React, { Component } from 'react';
+import capitalizeCase from './capitalizeCase';
+import uppcaseFirstWord from './uppcaseFirstWord';
+import HaversineInMiles from './HaversineInMiles';
+import postRequest from './postReqest';
+
+const latitude = sessionStorage.getItem('couponlatitude');
+const longitude = sessionStorage.getItem('couponlongitude');
+
+const getCoupons = async(_id) => {
+  const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
+  const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
+  if (!loggedInKey || !email) {
+    alert('You are not logged in!')
+    window.location.href = '/Login'
+  }
+  else {
+    const data = {
+      _id: _id,
+      loggedInKey: loggedInKey,
+      email: email
+    }
+    const url = `/api/getCoupon`
+    const json = await postRequest(url, data)
+    alert(JSON.stringify(json))
+  }
+}
 
 // class CouponsMaker extends Component {
 //     constructor(props) {
@@ -62,7 +88,7 @@ import React, { Component } from 'react';
 //       }
 // }
 
-CouponsMaker = (props, callback) => {
+const CouponsMaker = (props) => {
     try {
       const content = props.map((coupons) =>
       <div className="coupon" id={coupons._id}>
@@ -98,9 +124,9 @@ CouponsMaker = (props, callback) => {
         <br/>
         <p>{capitalizeCase(coupons.city)}</p>
         <br/>
-        <p>{HaversineInMiles(props.latitude, props.longitude, coupons.latitude, coupons.longitude)}</p>
+        <p>{HaversineInMiles(latitude, longitude, coupons.latitude, coupons.longitude)}</p>
         <hr/>
-        <button className="getCoupon" onClick={callback(coupons._id)}> Get Coupon </button>
+        <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Get Coupon </button>
       {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
       </div>
       <br/>

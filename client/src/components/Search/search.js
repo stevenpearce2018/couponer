@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import './search.css';
 import Select from '../SubComponents/Select/select';
-// import CouponsMaker from '../../couponsMaker';
-import uppcaseFirstWord from '../../uppcaseFirstWord';
-import capitalizeCase from '../../capitalizeCase';
-import HaversineInMiles from '../../HaversineInMiles';
+import CouponsMaker from '../../couponsMaker';
 
 const getParameterByName = (name, url) => {
   if (!url) url = window.location.href;
@@ -50,8 +47,7 @@ class Search extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.decreasePage = this.decreasePage.bind(this);
     this.incrementPage = this.incrementPage.bind(this);
-    this.CouponsMaker = this.CouponsMaker.bind(this)
-    this.changePage = this.changePage.bind(this)
+    this.changePage = this.changePage.bind(this);
   }
   async componentDidMount() {
     if (navigator.geolocation) {
@@ -66,6 +62,8 @@ class Search extends Component {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
       })
+      sessionStorage.setItem('couponlatitude', position.coords.latitude);
+      sessionStorage.setItem('couponlongitude', position.coords.longitude);
     }
     const url = '/'+window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
     const city = getParameterByName('city', url)
@@ -89,7 +87,7 @@ class Search extends Component {
       },
     })
     const couponsData = await response.json();
-    this.setState({coupons: this.CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber)})
+    this.setState({coupons: CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber)})
     // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
   }
   async changePage(number) {
@@ -109,65 +107,6 @@ class Search extends Component {
   }
   incrementPage(){
     this.changePage(1)
-  }
-  CouponsMaker = (props) => {
-    try {
-      const content = props.map((coupons) =>
-      <div className="coupon" id={coupons._id}>
-      <h1 className = "exampleTitle">{coupons.title}</h1>
-      <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
-      <div className="pricing">
-        <div className='oldPrice'>
-            Was: {(coupons.currentPrice - 0).toFixed(2)}$
-        </div>
-        <div className='percentOff'>
-            {(((coupons.currentPrice - coupons.discountedPrice)/coupons.currentPrice)*100).toFixed(2)}% Percent Off!
-        </div>
-        <br/>
-        <div className='newPrice'>
-            Now: {(coupons.discountedPrice - 0).toFixed(2)}$
-        </div>
-        <div className='savings'>
-            Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$
-        </div>
-        <br/>
-        <hr/>
-        <div className="amountLeft">
-            Only {coupons.amountCoupons} Coupons Left!
-        </div>
-      <hr/>
-      <div className="description">
-      <br/>
-      <p>{uppcaseFirstWord(coupons.textarea)}</p>
-        <br/>
-        <hr/>
-        <br/>
-        <p>{capitalizeCase(coupons.address)}</p>
-        <br/>
-        <p>{capitalizeCase(coupons.city)}</p>
-        <br/>
-        <p>{HaversineInMiles(this.state.latitude, this.state.longitude, coupons.latitude, coupons.longitude)}</p>
-        <hr/>
-        <br/>
-        <button className="getCoupon" onClick={this.getCoupons.bind(this, coupons._id)}> Get Coupon </button>
-      </div>
-      <br/>
-    </div>
-  </div>
-      );
-      return (
-      <div className='flextape'>
-          {content}
-        </div>
-      );
-    } catch (error) {
-      return (
-      <div className='center'>
-      <br/>
-      <h3>Unable to automatically search for coupons. Try searching manually.</h3>
-      </div>
-      )
-    }
   }
   handleChange = (event) => {
     const { target: { name, value } } = event
