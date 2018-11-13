@@ -55,7 +55,6 @@ class App extends Component {
   this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
   this.logout = this.logout.bind(this);
   this.setMainToAbout = this.setMainToAbout.bind(this);
-  this.getCoupons = this.getCoupons.bind(this);
   this.showOrHideNav = this.showOrHideNav.bind(this);
   this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
   this.uploadCoupons = this.uploadCoupons.bind(this);
@@ -120,25 +119,6 @@ async componentDidMount () {
   }
   hideNav(){
     if (this.showOrHideNav !== "hidden" && this.state.ignoreClick === false) this.setState({showOrHideNav: "hidden", ignoreClick: true})
-  }
-  async getCoupons(_id){
-    const loggedInKey = this.state.loggedInKey;
-    const email = this.state.email;
-    if (loggedInKey === '' || email === '') {
-      alert('You are not logged in!!')
-      window.location.href = '/Login'
-    }
-    else {
-      alert(_id)
-      const data = {
-        _id: _id,
-        loggedInKey: this.state.loggedInKey,
-        email: this.state.email
-      }
-      const url = `/api/getCoupon`
-      const json = await postRequest(url, data)
-      alert(JSON.stringify(json))
-    }
   }
   async logout(){
     const data = {
@@ -210,30 +190,30 @@ async componentDidMount () {
     this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
   }
   setMainHome(e){
-    this.setState({mainContent: <Home parentMethod={this.getCoupons}/>})
+    this.setState({mainContent: <Home/>})
   }
   setMainLogin(e){
     this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
   }
   setMainSearch(e){
-    this.setState({mainContent: <Search parentMethod={this.getCoupons}/>})
+    this.setState({mainContent: <Search/>})
   }
   setMainToAbout(){
     this.setState({mainContent: <About/>})
   }
   setMainToMyCoupons(){
-    this.setState({mainContent: <MyCoupons parentMethod={this.getCoupons}/>})
+    this.setState({mainContent: <MyCoupons/>})
   }
   
   setStateLoggedIn(key, email) {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
-      this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+      this.setState({mainContent: <Home/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
       window.location.href = '/Home';
     }
     else if(key.substr(-1) === "b") {
-      this.setState({mainContent: <Home parentMethod={this.getCoupons}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
+      this.setState({mainContent: <Home/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
       window.location.href = '/Home';
     }
   }

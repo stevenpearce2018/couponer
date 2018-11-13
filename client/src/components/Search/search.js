@@ -116,13 +116,6 @@ class Search extends Component {
     const choices = ["Food", "Entertainment", "Health and Fitness", "Retail", "Home Improvement", "Activities", "Other", "Any" ]
     this.setState({ category: choices[e.target.value] });
   }
-  async getCoupons(id){
-    const loggedInKey = sessionStorage.getItem("UnlimitedCouponerKey")
-    if (!loggedInKey) alert('You are not logged in!')
-    else {
-      this.props.getCoupons(id)
-    }
-  }
   async handleSearch(e){
     e.preventDefault();
     let searchSubUrl;
