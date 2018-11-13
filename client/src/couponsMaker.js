@@ -57,9 +57,7 @@ const CouponsMaker = (props) => {
         <p>{uppcaseFirstWord(coupons.textarea)}</p>
         <br/>
         <hr/>
-        <p>{capitalizeCase(coupons.address)}</p>
-        <br/>
-        <p>{capitalizeCase(coupons.city)}</p>
+        <p>{capitalizeCase(coupons.address)}, {capitalizeCase(coupons.city)}</p>
         <br/>
         <p>{HaversineInMiles(latitude, longitude, coupons.latitude, coupons.longitude)}</p>
         <hr/>
