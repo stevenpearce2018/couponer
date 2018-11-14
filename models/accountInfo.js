@@ -13,7 +13,10 @@ const accountInfo = mongoose.Schema({
     couponsCurrentlyClaimed: Number,
     couponIds: [String], // mongodb ID
     usedCoupons: [String],
-    couponCodes: [String], // random string code
+    couponCodes: [{
+        _id: String,
+        couponCode: String
+    }],
     ip: String
 })
 
