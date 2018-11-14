@@ -131,6 +131,7 @@ async componentDidMount () {
     this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
+    sessionStorage.removeItem('buisnessOwner');
   }
   async fetchCoupons(accountID) {
     const data = {
@@ -163,7 +164,6 @@ async componentDidMount () {
     alert(JSON.stringify(json), "json")
   }
   async updateAccountSettings(data){
-    console.log({data})
     const dataObject = {
       oldPassword: data.oldPassword,
       newPassword:  data.newPassword,
@@ -209,10 +209,12 @@ async componentDidMount () {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
+      const buisnessOwner = sessionStorage.setItem('buisnessOwner', "false");
       this.setState({mainContent: <Home/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
       window.location.href = '/Home';
     }
     else if(key.substr(-1) === "b") {
+      const buisnessOwner = sessionStorage.setItem('buisnessOwner', "true");
       this.setState({mainContent: <Home/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
       window.location.href = '/Home';
     }
@@ -227,7 +229,10 @@ async componentDidMount () {
           </h1>
           <p>Debug info:</p>
           <p>loggedInKey: {this.state.loggedInKey}</p>
-          <p>email: {this.state.email}</p>
+          {
+            (this.state.email !== "") ? <strong><p>Logged in as, {this.state.email}.</p></strong> :
+            <strong><p>Welcome, Guest!</p></strong>
+          }
         <header className='homeHeader'>
           <section>
             <a href="/Home" onClick={this.setMainHome} id="logo">

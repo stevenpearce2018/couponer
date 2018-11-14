@@ -6,6 +6,7 @@ import postRequest from './postReqest';
 
 const latitude = sessionStorage.getItem('couponlatitude');
 const longitude = sessionStorage.getItem('couponlongitude');
+const buisnessOwner = sessionStorage.getItem('buisnessOwner');
 
 const getCoupons = async(_id) => {
   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
@@ -62,8 +63,13 @@ const CouponsMaker = (props) => {
         <p>{HaversineInMiles(latitude, longitude, coupons.latitude, coupons.longitude)}</p>
         <hr/>
         <br/>
-        <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Get Coupon </button>
-      {/* <button className="getCoupon" onClick={this.props.parentMethod(coupons._id)}> Get Coupon </button> */}
+        {
+          (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "true") ?
+            <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Validate Customer Codes </button> :
+          (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "false") ? 
+            <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Show Your Coupon Code </button> :
+            <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Get Coupon </button>
+        }
       </div>
       <br/>
     </div>
