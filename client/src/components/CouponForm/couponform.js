@@ -449,7 +449,7 @@ class CouponForm extends Component {
             name={'UnlimitedCouponer Coupons'}
             description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
             amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
-            panelLabel="Get membership"
+            panelLabel="Upload coupons"
           />
       </div>
       </div>

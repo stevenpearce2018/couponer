@@ -292,8 +292,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         // couponIds
         res.json({response: 'Coupon Created'})
         // pushing the value seemed to a new array seemed to not work so I had to do this hack.
-        // [].concat is for performance
-        const arr = [].concat(outcome[0].couponIds).push(mongodbID)
+        const arr = [...outcome[0].couponIds, mongodbID]
         await AccountInfo.updateOne(
           { "_id" : outcome[0]._id },
           { "$set" : { "ip" : ip}, "couponIds": arr}, 
@@ -338,17 +337,16 @@ app.post('/api/getYourCoupons', async (req, res) => {
   const loggedInKey = req.body.loggedInKey;
   let coupons;
   const outcome = await AccountInfo.find({'email':req.body.email, "ip": ip, "loggedInKey": req.body.loggedInKey})
-  if(outcome[0] && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+  if(outcome[0] && outcome[0].couponCodes.length > 0 && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     const searchIDS = searchableMongoIDs(outcome[0].couponIds)
-    console.log(outcome[0].couponCodes)
     coupons = await Coupon.find({
       '_id': { $in: searchIDS}
     })
     if (coupons.length === 0 ) coupons = "No coupons found.";
     res.json({coupons: coupons});
-  } else {
-    res.json({response: "You are not logged in!"});
   }
+  else if (outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
+  else res.json({response: "No coupons found."});
 });
 
 app.post('/api/searchCoupons/:pageNumber', async (req, res) => {
@@ -658,6 +656,7 @@ app.get('/search', async (req, res) => {
   else if(city) {
     redisHelper.get(`city:${city}/${pageNumber}`, getCachedCouponsCity)
     async function getCachedCouponsCity (data) {
+      console.log({data})
       if(!data) {
         coupons = await Coupon.find({'city' : city, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
@@ -706,7 +705,7 @@ app.post(`/api/getCoupon`, async(req, res) => {
     if (outcome) {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
       else {
-        console.log(outcome[0].couponsCurrentlyClaimed)
+        // console.log(outcome[0].couponsCurrentlyClaimed)
         // if (outcome[0].couponsCurrentlyClaimed < 5) {
           const coupon = await Coupon.find({'_id':_id }).limit(1);
           let couponCode;
@@ -715,11 +714,11 @@ app.post(`/api/getCoupon`, async(req, res) => {
           const iMax = coupon[0].couponCodes.length;
           for (;i < iMax; i++) {
             if(coupon[0].couponCodes[i].substr(-1) === "a") {
-              if (iMax === i) couponStillValid = false;
               couponCode = coupon[0].couponCodes[i].substring(0, coupon[0].couponCodes[i].length - 1) + "c";
               break;
             }
           }
+          if (coupon[0].amountCoupons - 1 <= 0) couponStillValid = false;
           const arrIds = [...outcome[0].couponIds, _id];
           const arrCouponCodes = [...outcome[0].couponCodes, {_id: _id, couponCode: couponCode}]
           // console.log(arrIds, "arrids")
