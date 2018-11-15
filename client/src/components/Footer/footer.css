@@ -3,3 +3,14 @@ footer{display:table; padding-bottom:30px; width:100%;}
 .social li{float:left; padding:0px 10px;}
 .social li a{color:#002e5b; transition: all 0.5s ease 0s;}
 .social li a:hover{color:#fde428; transition: all 0.5s ease 0s;}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+  }

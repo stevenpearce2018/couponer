@@ -97,10 +97,10 @@ class Login extends Component {
             <h2>Log In</h2>
             <div className="inputGroup">
               <div className="emailPass">
-                  <label>Email</label>
+                  <label for="emailSignin">Email</label>
                   <input type="email" name="email" id="emailSignin" onChange={this.handleChange}/>
                   <br/>
-                  <label>Password</label>
+                  <label for="passwordSignin">Password</label>
                   <input type="password" name="password" id="passwordSignin" onChange={this.handleChange}/>
                   <br/>
                 <button className='signupbtn signupbtnn' value="send" onClick={this.handleSubmit}><strong>Sign In</strong></button>

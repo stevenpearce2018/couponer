@@ -269,9 +269,8 @@ class CouponForm extends Component {
             latitude:results[0].geometry.location.lat(),
             longitude: results[0].geometry.location.lng()
           })
-          const value = validateCouponForm(this.state)
-          alert(value)
-          if(value === undefined) that.props.uploadCoupons(data)
+          validateCouponForm(this.state)
+          that.props.uploadCoupons(data)
         }
       } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });

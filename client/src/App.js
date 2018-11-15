@@ -240,13 +240,13 @@ async componentDidMount () {
                 UnlimitedCouponer
               </strong>
             </a>
-            <label htmlFor="toggle-1" className="toggle-menu" onClick={this.showOrHideNav}>
+            <span htmlFor="toggle-1" className="toggle-menu" onClick={this.showOrHideNav}>
               <ul>
                 <li ></li>
                 <li ></li>
                 <li ></li>
               </ul>
-            </label>
+            </span>
             {/* <input type="checkbox" id="toggle-1" onClick={this.showOrHideNav}/> */}
           <nav className = {this.state.showOrHideNav} onClick={this.showOrHideNav}>
             <ul>
