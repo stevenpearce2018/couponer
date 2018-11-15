@@ -710,12 +710,12 @@ app.post(`/api/getCoupon`, async(req, res) => {
         // if (outcome[0].couponsCurrentlyClaimed < 5) {
           const coupon = await Coupon.find({'_id':_id }).limit(1);
           let couponCode;
-          let lastCoupon = false;
+          let couponStillValid = true;
           let i = 0;
           const iMax = coupon[0].couponCodes.length;
           for (;i < iMax; i++) {
             if(coupon[0].couponCodes[i].substr(-1) === "a") {
-              if (iMax === i) lastCoupon = true;
+              if (iMax === i) couponStillValid = false;
               couponCode = coupon[0].couponCodes[i].substring(0, coupon[0].couponCodes[i].length - 1) + "c";
               break;
             }
@@ -743,7 +743,7 @@ app.post(`/api/getCoupon`, async(req, res) => {
               { "$set" : { 
                 "couponCodes": updatedCodes},
                 "amountCoupons": (coupon[0].amountCoupons - 1),
-                "couponStillValid": lastCoupon
+                "couponStillValid": couponStillValid
               }, 
               { "upsert" : false } 
             );
