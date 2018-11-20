@@ -1,13 +1,7 @@
 # Copyright 2018 Steven Pearce
-<strong> You will need a twilio key to create accounts because the current twilio key is bound to my phone number and a mongoDB connection string. All other keys are included for you.</strong>
+<strong> You will need a twilio key, mongodb connection string, and a redis server running locally in order to use this application.</strong>
 
-<strong> Currently there is an issue with the webpack node modules. It runs locally for me fine but will require a bit of googling and installing different webpack versions to compile if you are making a fresh clone. </strong>
-
-You will need a redis server running locally for the server to compile. 
-
-btest@gmail.com to test buisness owner functionality
-ctest@gmail.com to test customer functionality
-Both passwords are password.
+<strong> Currently there is an issue with the webpack node modules. It runs locally for me fine but will require a bit of debugging the webpack versions to compile if you are making a fresh clone. </strong>
 
 1) cd Couponer
 2) npm install
@@ -59,7 +53,7 @@ Make sure you install the node packages for the server AND the client.
 [ ] Serverside rendering react to increase performance <br />
 [ ] Production MongoDB Setup <br />
 [ ] Production Redis Setup <br />
-[ ] Enviromnet Variables setup <br />
+[X] Enviromnet Variables setup <br />
 [ ] Production Payment Setup <br />
 [/] AWS S3 hosting of assets <br />
 [ ] Deployed on AWS <br />
