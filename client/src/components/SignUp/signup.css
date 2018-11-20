@@ -68,14 +68,14 @@ padding: 1rem;
 
 @media all and (min-width: 35rem) and (max-width: 60rem) {
 
-label {
+span {
 display: block;
 }
 }
 
 
 @media all and (min-width:60rem) {
-label {
+span {
 display: inline;
 }
 
