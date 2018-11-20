@@ -29,13 +29,9 @@ class MyCoupons extends Component {
       sessionStorage.setItem('couponlatitude', position.coords.latitude);
       sessionStorage.setItem('couponlongitude', position.coords.longitude);
     }
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '')
-    const email = sessionStorage.getItem('UnlimitedCouponerEmail')
-    if (!loggedInKey) {
-        window.location.pathname = '/Home';
-        alert('You are not logged in!')
-    }
-    else if(loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
+    if (!loggedInKey || loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
         window.location.pathname = '/Home';
         alert('You are not logged in!')
     }
@@ -46,7 +42,8 @@ class MyCoupons extends Component {
       }
       const url = `/api/getYourCoupons`
       const json = await postRequest(url, data)
-      this.setState({coupons: CouponsMaker(json.coupons)})
+      if(json.coupons) this.setState({coupons: CouponsMaker(json.coupons)})
+      else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim some coupons today!</h2></div>})
     }
   }
   // async getCoupons(id) {

@@ -8,6 +8,10 @@ const latitude = sessionStorage.getItem('couponlatitude');
 const longitude = sessionStorage.getItem('couponlongitude');
 const buisnessOwner = sessionStorage.getItem('buisnessOwner');
 
+const showCode = (code) => {
+  alert(JSON.stringify(code))
+}
+
 const getCoupons = async(_id) => {
   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
   const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
@@ -67,7 +71,7 @@ const CouponsMaker = (props) => {
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "true") ?
             <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Validate Customer Codes </button> :
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "false") ? 
-            <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Show Your Coupon Code </button> :
+            <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0])}> Show Your Coupon Code </button> :
             <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Get Coupon </button>
         }
       </div>
