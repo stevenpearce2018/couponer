@@ -41,6 +41,8 @@ class App extends Component {
       logoutButton: 'hidden',
       email: '',
       loggedInKey: '',
+      couponsCurrentlyClaimed: 0,
+      membershipExperationDate: '',
       showOrHideNav: 'hidden',
       loggedInBuisness: 'hidden',
       ignoreClick: true, // handles navbar closing when open and clicking outside it.
@@ -60,7 +62,8 @@ class App extends Component {
   this.uploadCoupons = this.uploadCoupons.bind(this);
   this.hideNav = this.hideNav.bind(this);
   this.updateAccountSettings = this.updateAccountSettings.bind(this);
-  this.fetchCoupons = this.fetchCoupons.bind(this);
+  // this.fetchCoupons = this.fetchCoupons.bind(this);
+  this.bubbleState= this.bubbleState.bind(this);
 }
 async componentDidMount () {
   // loadReCaptcha();
@@ -108,7 +111,9 @@ async componentDidMount () {
     }
   }
   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
-  if ( loggedInKey && loggedInKey.length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail') })
+  const couponsCurrentlyClaimed = sessionStorage.getItem('couponsCurrentlyClaimed')
+  const membershipExperationDate = sessionStorage.getItem('membershipExperationDate')
+  if (loggedInKey && loggedInKey.length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail'), membershipExperationDate: membershipExperationDate, couponsCurrentlyClaimed: couponsCurrentlyClaimed })
   if(loggedInKey && loggedInKey.substr(-1) === "b") {
     this.setState({loggedInBuisness: 'notHidden'})
   }
@@ -128,19 +133,20 @@ async componentDidMount () {
     const url = `/api/signout`;
     const json = await postRequest(url, data)
     if(json && json.response === "Logout Failed") alert(json && json.response)
-    this.setState({mainContent: <Home/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden"})
+    this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden",couponsCurrentlyClaimed: '', couponsCurrentlyClaimed: '',})
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
     sessionStorage.removeItem('buisnessOwner');
+    sessionStorage.removeItem('couponsCurrentlyClaimed')
+    sessionStorage.removeItem('membershipExperationDate')
   }
-  async fetchCoupons(accountID) {
-    const data = {
-      accountID: accountID
-    }
-    const url = "/api/getAccountCoupons"
-    const json = await postRequest(url, data)
-    console.log(json)
-  }
+  // async fetchCoupons(accountID) {
+  //   const data = {
+  //     accountID: accountID
+  //   }
+  //   const url = "/api/getAccountCoupons"
+  //   const json = await postRequest(url, data)
+  // }
   async uploadCoupons(state){
     const url = `/api/uploadCoupons`
     const data = {
@@ -177,8 +183,9 @@ async componentDidMount () {
     alert(JSON.stringify(json), "json")
   }
   setMainAccountSettings(e) {
-    this.setState({mainContent: <AccountSettings fetchCoupons={this.fetchCoupons}
-        couponData={this.state.couponData}
+    this.setState({mainContent: <AccountSettings 
+      // fetchCoupons={this.fetchCoupons}
+      //   couponData={this.state.couponData}
         updateAccountSettings={this.updateAccountSettings}
       />
     })
@@ -189,8 +196,11 @@ async componentDidMount () {
   setMainSignUp(e){
     this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
   }
+  bubbleState(){
+
+  }
   setMainHome(e){
-    this.setState({mainContent: <Home/>})
+    this.setState({mainContent: <Home bubbleState={this.bubbleState}/>})
   }
   setMainLogin(e){
     this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
@@ -205,17 +215,19 @@ async componentDidMount () {
     this.setState({mainContent: <MyCoupons/>})
   }
   
-  setStateLoggedIn(key, email) {
+  setStateLoggedIn(key, email, couponsCurrentlyClaimed, membershipExperationDate) {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
-      const buisnessOwner = sessionStorage.setItem('buisnessOwner', "false");
-      this.setState({mainContent: <Home/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden'})
+      sessionStorage.setItem('buisnessOwner', "false");
+      this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
+      sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
+      sessionStorage.setItem('membershipExperationDate', membershipExperationDate)
       window.location.href = '/Home';
     }
     else if(key.substr(-1) === "b") {
-      const buisnessOwner = sessionStorage.setItem('buisnessOwner', "true");
-      this.setState({mainContent: <Home/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
+      sessionStorage.setItem('buisnessOwner', "true");
+      this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
       window.location.href = '/Home';
     }
   }
@@ -227,11 +239,18 @@ async componentDidMount () {
               Save money, grow your business, try something new.
             </span>
           </h1>
-          <p>Debug info:</p>
-          <p>loggedInKey: {this.state.loggedInKey}</p>
           {
-            (this.state.email !== "") ? <strong><p>Logged in as, {this.state.email}.</p></strong> :
+            (this.state.loggedInKey !== "") ? <p>loggedInKey: {this.state.loggedInKey}</p> : <p></p>
+          }
+          {
+            (this.state.email !== "") ? <strong><p>Logged in as: {this.state.email}.</p></strong> :
             <strong><p>Welcome, Guest!</p></strong>
+          }
+          {
+            (this.state.couponsCurrentlyClaimed && this.state.couponsCurrentlyClaimed !== "" && this.state.membershipExperationDate && this.state.membershipExperationDate !== "" ) ?
+            <strong><p>Currently Claimed Coupons: {(this.state.couponsCurrentlyClaimed !== "undefined" && this.state.couponsCurrentlyClaimed !== "NaN") ? this.state.couponsCurrentlyClaimed + '/5' : 0 + '/5'}</p>
+            <p>Membership Experation Date: {this.state.membershipExperationDate.substring(0, this.state.membershipExperationDate.indexOf('T'))}</p></strong> :
+            <p></p>
           }
         <header className='homeHeader'>
           <section>

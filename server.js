@@ -100,6 +100,7 @@ app.post('/api/recoverAccount', async(req, res) => {
 });
 
 app.post('/api/signupCustomer', async(req, res) => {
+  console.log(JSON.stringify(req.body))
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
     if (randomNumber === req.body.randomNumber) {
@@ -116,7 +117,7 @@ app.post('/api/signupCustomer', async(req, res) => {
               const hashedPass = await bcrypt.hashSync(req.body.password, 10);
               const email = req.body.email;
               if(validateEmail(email)){
-                const membershipExperationDate = req.body.buisnessName ? req.body.buisnessName : "N/A" ;
+                const membershipExperationDate = (yourPick === ' Buisness Owner') ? "N/A" : req.body.membershipExperationDate;
                 const accountInfo = new AccountInfo({
                   _id: new mongoose.Types.ObjectId(),
                   email: email,
@@ -124,7 +125,7 @@ app.post('/api/signupCustomer', async(req, res) => {
                   password: hashedPass,
                   city: req.body.city,
                   phoneNumber: req.body.phoneNumber,
-                  yourPick: req.body.yourPick,
+                  yourPick: yourPick,
                   loggedInKey: loggedInKey,
                   couponIds: [],
                   couponsCurrentlyClaimed: 0,
@@ -135,9 +136,9 @@ app.post('/api/signupCustomer', async(req, res) => {
                 })
                 await accountInfo.save()
                 .catch(err => console.log(err))
-                redisHelper.set(loggedInKey, loggedInKey)
                 res.json({
-                  loggedInKey:loggedInKey
+                  loggedInKey:loggedInKey,
+                  membershipExperationDate: membershipExperationDate
                 });
               } else res.json({resp:'Your email is not valid!'});
               if(yourPick === ' Customer') {
@@ -230,7 +231,7 @@ app.post('/api/signin', async (req, res) => {
   if(outcome[0] && bcrypt.compareSync(req.body.password, outcome[0].password)) {
     const loginStringBase = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const loggedInKey = outcome[0].yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b"
-    outcome[0].yourPick === " Customer" ? res.json({loggedInKey: loggedInKey, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed}) : res.json({loggedInKey: loggedInKey});
+    outcome[0].yourPick === " Customer" ? res.json({loggedInKey: loggedInKey, membershipExperationDate: outcome[0].membershipExperationDate, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed}) : res.json({loggedInKey: loggedInKey});
     await AccountInfo.updateOne(
       { "_id" : outcome[0]._id }, 
       { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
@@ -592,6 +593,6 @@ app.post(`/api/getCoupon`, async(req, res) => {
   }
 })
 
-const port = 4000;
+const port = 8080;
 
 app.listen(port, () => `Server running on port ${port}`);

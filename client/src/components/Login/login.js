@@ -55,17 +55,7 @@ class Login extends Component {
       // recaptchaToken: this.state.recaptchaToken
     }
     const url = `/api/recoverAccount`
-    const response = await fetch(url, {
-      method: "POST", 
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify(data),
-    })
-    const json = await response.json()
+    const json = await postRequest(url, data)
     alert(JSON.stringify(json))
     if (json && json.success === true) {
       alert("A message has been sent to your email, please check it to recover your account")
@@ -85,8 +75,12 @@ class Login extends Component {
     const url = `/api/signin`
     const json = await postRequest(url, data)
     if (json && json.loggedInKey){
-      this.props.parentMethod(json && json.loggedInKey, this.state.email);
+      this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate);
       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
+      // if(json.loggedInKey.substr(-1) === "c") {
+      //   sessionStorage.setItem('UnlimitedCouponerMembershipExperationDate', json.membershipExperationDate)
+      //   sessionStorage.setItem('UnlimitedCouponerCouponsCurrentlyClaimed', json.couponsCurrentlyClaimed)
+      // }
     } else alert("Invalid Login")
   }
     

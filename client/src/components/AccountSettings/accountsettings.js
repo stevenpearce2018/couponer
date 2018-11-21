@@ -3,6 +3,7 @@ import './accountsettings.css';
 import InputField from '../SubComponents/InputField/inputField';
 import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
+import Checkout from '../Checkout/checkout';
 
 class AccountSettings extends Component {
   constructor(props) {
@@ -15,9 +16,13 @@ class AccountSettings extends Component {
       phoneNumber:'',
       latitude: '',
       longitude: '',
+      numberOfMonths: '',
+      membershipExperationDate: '',
       coupons: <div className="loaderContainer"><div className="loader"></div></div>,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this)
+    this.addMonths = this.addMonths.bind(this);
   }
   
   async componentDidMount() {
@@ -51,9 +56,14 @@ class AccountSettings extends Component {
       this.setState({coupons: CouponsMaker(json && json.coupons)})
     }
   }
-  handleChange = (event) => {
+  handleChange = event => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
+  }
+  updateMembershipExperationDate(event){
+    let d = new Date();
+    d.setMonth( d.getMonth() + Number(event.target.value));
+    this.setState({numberOfMonths: Number(event.target.value), membershipExperationDate: d})
   }
   async handleSubmit(e){
     e.preventDefault();
@@ -66,6 +76,17 @@ class AccountSettings extends Component {
       email: this.state.email,
     }
     this.props.updateAccountSettings(data)
+  }
+  async addMonths(dataFromStripe){
+    const data = {
+      membershipExperationDate: this.state.membershipExperationDate,
+      description: dataFromStripe.description,
+      source: dataFromStripe.source,
+      currency: dataFromStripe.currency,
+      amount: dataFromStripe.amount,
+    }
+    const url = `/api/signupCustomer`
+    const json = await postRequest(url, data)
   }
 
   render() {
@@ -114,10 +135,32 @@ class AccountSettings extends Component {
         name="buisnessName"
         placeholder="Buisness Name"
         onChange={this.handleChange}
-      /> 
+      />
+      <InputField
+        htmlFor="Add more months to your subscription"
+        type="text"
+        labelHTML="Add more months to your subscription"
+        name="numberOfMonths"
+        placeholder="4.99$ per additional month for unlimited coupons"
+        onChange={this.updateMembershipExperationDate}
+      />
+      <br/>
+      <div className="checkout-account-settings">
+        <Checkout
+          parentMethod = {this.addMonths}
+          name={'UnlimitedCouponer Membership'}
+          description={this.state.numberOfMonths + ' Month(s) of Unlimted Coupons'}
+          amount={this.state.numberOfMonths * 4.99}
+          panelLabel="Get membership"
+        />
+      </div>
+      <br/>
       <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
       </form>
-
+      <div className={this.state.checkout}>
+      <br/>
+      <br/>
+    </div>
       <div className="center">
         <br/>
         <h2>Your Coupons</h2>

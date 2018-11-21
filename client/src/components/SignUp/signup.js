@@ -130,7 +130,7 @@ class SignUp extends Component {
       const url = `/api/signupCustomer`
       const json = await postRequest(url, data)
       if (json && json.loggedInKey) {
-        this.props.parentMethod(json && json.loggedInKey, this.state.email)
+        this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
     } else alert("Your email is not valid!")
@@ -298,8 +298,6 @@ class SignUp extends Component {
       if (this.state.boolValidPhoneNumber) this.setState({showSignUp:'showBuissnessIfCustomer'})
       this.setState({
         yourPick: e.target.value,
-        membershipExperationDate: '',
-        numberOfMonths: '',
         showOrHideBuisInput: 'showBuissnessIfCustomer',
         showOrHideAccountMem: 'hideBuissnessIfCustomer',
         checkout: "hidden"

@@ -27,11 +27,13 @@ const getCoupons = async(_id) => {
     }
     const url = `/api/getCoupon`
     const json = await postRequest(url, data)
+    const couponsCurrentlyClaimed = Number(sessionStorage.getItem('couponsCurrentlyClaimed')) + 1;
+    sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed )
     alert(JSON.stringify(json))
   }
 }
 
-const CouponsMaker = (props) => {
+const CouponsMaker = props => {
     try {
       const content = props.map((coupons) =>
       <div className="coupon" id={coupons._id}>
