@@ -5,6 +5,8 @@ import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
 import Checkout from '../Checkout/checkout';
 
+const buisnessOwner = sessionStorage.getItem('buisnessOwner');
+
 class AccountSettings extends Component {
   constructor(props) {
     super(props);
@@ -43,7 +45,7 @@ class AccountSettings extends Component {
     const email = sessionStorage.getItem('UnlimitedCouponerEmail');
     this.setState({loggedInKey:loggedInKey})
     if (!loggedInKey || loggedInKey.substr(-1) !== "b" && loggedInKey.substr(-1) !== "c") {
-      window.location.pathname = '/Home';
+      window.history.pushState(null, '', '/Home');
       alert('You are not logged in!')
     }
     else {
@@ -145,6 +147,7 @@ class AccountSettings extends Component {
         onChange={this.updateMembershipExperationDate}
       />
       <br/>
+      {!buisnessOwner ?
       <div className="checkout-account-settings">
         <Checkout
           parentMethod = {this.addMonths}
@@ -153,7 +156,10 @@ class AccountSettings extends Component {
           amount={this.state.numberOfMonths * 4.99}
           panelLabel="Get membership"
         />
-      </div>
+      </div> : 
+      <div></div>
+      }
+
       <br/>
       <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
       </form>

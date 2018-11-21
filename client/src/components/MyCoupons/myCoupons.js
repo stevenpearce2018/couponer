@@ -32,8 +32,8 @@ class MyCoupons extends Component {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
     const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
     if (!loggedInKey || loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
-        window.location.pathname = '/Home';
-        alert('You are not logged in!')
+      window.history.pushState(null, '', '/Home');
+      alert('You are not logged in!')
     }
     else {
       const data = {

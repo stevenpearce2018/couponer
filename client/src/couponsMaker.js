@@ -17,7 +17,8 @@ const getCoupons = async(_id) => {
   const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
   if (!loggedInKey || !email) {
     alert('You are not logged in!')
-    window.location.href = '/Login'
+    // window.location.href = '/Login'
+    window.history.pushState(null, '', decodeURIComponent(`/Login`));
   }
   else {
     const data = {

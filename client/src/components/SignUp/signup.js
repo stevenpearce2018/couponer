@@ -50,7 +50,14 @@ class SignUp extends Component {
     this.togglePopup = this.togglePopup.bind(this);
     this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
   }
-  componentDidMount() { }
+  componentWillMount() {
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
+    if(loggedInKey && email) {
+      window.location.pathname = '/Home';
+      alert("You are already logged in!")
+    }
+  }
   handleChange = (event) => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })

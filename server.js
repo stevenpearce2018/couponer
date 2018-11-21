@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
-const accountSid = process.env.ACCOUNT_SID; // !todo, dev keys, change for production
+const accountSid = process.env.ACCOUNT_SID; // !todo, change dev keys to prod keys
 const authToken = process.env.AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 const Coupon = require('./models/coupons')
@@ -14,9 +14,7 @@ const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
 const stripe = require('./stripe');
 const nodemailer = require('nodemailer');
-//!todo, change recaptcha key and put in .env
 const recaptchaSecretKey = process.env.recaptchaSecretKey;
-// const db = require('./config/db');
 const searchableMongoIDs = require("./lib/searchableMongoIDs");
 const claimCode = require("./lib/claimCode");
 const escapeRegex = require("./lib/escapeRegex");
@@ -24,6 +22,7 @@ const generateQR = require("./lib/generateQR");
 const validateEmail = require('./lib/validateEmail');
 const associateCouponCodeByID = require('./lib/associateCouponCodeByID');
 const cleanCoupons = require("./lib/cleanCoupons");
+const moment = require("moment");
 
 app.post('/api/generateQR', async(req, res) => {
   try {
@@ -142,9 +141,7 @@ app.post('/api/signupCustomer', async(req, res) => {
                 });
               } else res.json({resp:'Your email is not valid!'});
               if(yourPick === ' Customer') {
-                const successfulSignup = () => {
-                  console.log("Successful Signup!")
-                }
+                const successfulSignup = () => console.log("Successful Signup!");
                 const chargeData = {
                   description: req.body.description,
                   source: req.body.source,
@@ -292,7 +289,14 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
           latitude: req.body.latitude,
           longitude: req.body.longitude
         })
-        // couponIds
+        const successfulSignup = () => console.log("Successful Signup!");
+        const chargeData = {
+          description: req.body.description,
+          source: req.body.source,
+          currency: req.body.currency,
+          amount: req.body.amount
+        }
+        stripe.charges.create(chargeData, successfulSignup());
         res.json({response: 'Coupon Created'})
         // pushing the value seemed to a new array seemed to not work so I had to do this hack.
         const arr = [...outcome[0].couponIds, mongodbID]

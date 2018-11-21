@@ -32,7 +32,13 @@ class Login extends Component {
     if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
     this.setState({popupClass: newClass})
   }
-  componentDidMount() {
+  componentWillMount() {
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
+    if(loggedInKey && email) {
+      window.location.pathname = '/Home';
+      alert("You are already logged in!")
+    }
   //   loadReCaptcha()
   //   if (this.captchaDemo) {
   //       this.captchaDemo.reset();

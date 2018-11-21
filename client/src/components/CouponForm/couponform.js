@@ -239,7 +239,6 @@ class CouponForm extends Component {
   }
 
   payForCoupons(dataFromStripe){
-    console.log(dataFromStripe)
     const data = {
       description: dataFromStripe.description,
       source: dataFromStripe.source,
@@ -288,25 +287,25 @@ class CouponForm extends Component {
         </div>
         <div className="flextape">
         <Coupon
-        title = {this.state.title}
-        imagePreviewUrl = {this.state.imagePreviewUrl}
-        currentPrice = {this.state.currentPrice}
-        discountedPrice = {this.state.discountedPrice}
-        amountCoupons = {this.state.amountCoupons}
-        length = {this.state.length}
-        textarea = {this.state.textarea}
-        address = {this.state.address}
-        distance = {HaversineInMiles(this.state.mylatitude, this.state.mylongitude, this.state.latitude, this.state.longitude)}
+          title = {this.state.title}
+          imagePreviewUrl = {this.state.imagePreviewUrl}
+          currentPrice = {this.state.currentPrice}
+          discountedPrice = {this.state.discountedPrice}
+          amountCoupons = {this.state.amountCoupons}
+          length = {this.state.length}
+          textarea = {this.state.textarea}
+          address = {this.state.address}
+          distance = {HaversineInMiles(this.state.mylatitude, this.state.mylongitude, this.state.latitude, this.state.longitude)}
         />
         <div className='formHeaderMobile'>
           <h1>Coupon details</h1>
         </div>
         <div className='uploadCouponForm'>
         <form
-        method="post"
-        encType="multipart/form-data"
-        className='uploadForm'
-        action="/api/uploadCoupons">
+          method="post"
+          encType="multipart/form-data"
+          className='uploadForm'
+          action="/api/uploadCoupons">
         <br/>
         <br/>
         <Input
@@ -444,12 +443,12 @@ class CouponForm extends Component {
           </button>
       </form>
       <Checkout
-            parentMethod={this.payForCoupons}
-            name={'UnlimitedCouponer Coupons'}
-            description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
-            amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
-            panelLabel="Upload coupons"
-          />
+          parentMethod={this.payForCoupons}
+          name={'UnlimitedCouponer Coupons'}
+          description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
+          amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
+          panelLabel="Upload coupons"
+        />
       </div>
       </div>
       </div>

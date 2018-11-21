@@ -131,8 +131,7 @@ async componentDidMount () {
       email: this.state.email
     }
     const url = `/api/signout`;
-    const json = await postRequest(url, data)
-    if(json && json.response === "Logout Failed") alert(json && json.response)
+    await postRequest(url, data)
     this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden",couponsCurrentlyClaimed: '', couponsCurrentlyClaimed: '',})
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
@@ -150,6 +149,10 @@ async componentDidMount () {
   async uploadCoupons(state){
     const url = `/api/uploadCoupons`
     const data = {
+      description: state.description,
+      source: state.source,
+      currency: state.currency,
+      amount: state.amount,
       title: state.title,
       longitude: state.longitude,
       latitude: state.latitude,
@@ -220,15 +223,17 @@ async componentDidMount () {
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
       sessionStorage.setItem('buisnessOwner', "false");
+      alert()
       this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
       sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
       sessionStorage.setItem('membershipExperationDate', membershipExperationDate)
-      window.location.href = '/Home';
+      window.history.pushState(null, '', '/Home');
+      window.location.pathname = '/Home';
     }
     else if(key.substr(-1) === "b") {
       sessionStorage.setItem('buisnessOwner', "true");
       this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
-      window.location.href = '/Home';
+      window.history.pushState(null, '', '/Home');
     }
   }
   render () {
@@ -248,7 +253,7 @@ async componentDidMount () {
           }
           {
             (this.state.couponsCurrentlyClaimed && this.state.couponsCurrentlyClaimed !== "" && this.state.membershipExperationDate && this.state.membershipExperationDate !== "" ) ?
-            <strong><p>Currently Claimed Coupons: {(this.state.couponsCurrentlyClaimed !== "undefined" && this.state.couponsCurrentlyClaimed !== "NaN") ? this.state.couponsCurrentlyClaimed + '/5' : 0 + '/5'}</p>
+            <strong><p>Currently Claimed Coupons: {(this.state.couponsCurrentlyClaimed !== "undefined" && this.state.couponsCurrentlyClaimed !== "NaN" && this.state.couponsCurrentlyClaimed !=='N/A') ? this.state.couponsCurrentlyClaimed + '/5' : 0 + '/5'}</p>
             <p>Membership Experation Date: {this.state.membershipExperationDate.substring(0, this.state.membershipExperationDate.indexOf('T'))}</p></strong> :
             <p></p>
           }
