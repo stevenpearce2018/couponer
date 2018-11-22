@@ -87,7 +87,7 @@ class Search extends Component {
       },
     })
     const couponsData = await response.json();
-    this.setState({coupons: CouponsMaker(couponsData.coupons), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber)})
+    this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber)})
     // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
   }
   async changePage(number) {

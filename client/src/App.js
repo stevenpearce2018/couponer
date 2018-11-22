@@ -63,7 +63,7 @@ class App extends Component {
   this.hideNav = this.hideNav.bind(this);
   this.updateAccountSettings = this.updateAccountSettings.bind(this);
   // this.fetchCoupons = this.fetchCoupons.bind(this);
-  this.bubbleState= this.bubbleState.bind(this);
+  this.updateCouponsClaimed= this.updateCouponsClaimed.bind(this);
 }
 async componentDidMount () {
   // loadReCaptcha();
@@ -132,7 +132,7 @@ async componentDidMount () {
     }
     const url = `/api/signout`;
     await postRequest(url, data)
-    this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden",couponsCurrentlyClaimed: '', couponsCurrentlyClaimed: '',})
+    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden",couponsCurrentlyClaimed: '', couponsCurrentlyClaimed: '',})
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
     sessionStorage.removeItem('buisnessOwner');
@@ -190,6 +190,7 @@ async componentDidMount () {
       // fetchCoupons={this.fetchCoupons}
       //   couponData={this.state.couponData}
         updateAccountSettings={this.updateAccountSettings}
+        updateCouponsClaimed={this.updateCouponsClaimed}
       />
     })
   }
@@ -199,17 +200,17 @@ async componentDidMount () {
   setMainSignUp(e){
     this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
   }
-  bubbleState(){
-
+  updateCouponsClaimed(number){
+    number === -1 ? this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) - 1)}) : this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) + 1)})
   }
   setMainHome(e){
-    this.setState({mainContent: <Home bubbleState={this.bubbleState}/>})
+    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>})
   }
   setMainLogin(e){
     this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
   }
   setMainSearch(e){
-    this.setState({mainContent: <Search/>})
+    this.setState({mainContent: <Search updateCouponsClaimed={this.updateCouponsClaimed}/>})
   }
   setMainToAbout(){
     this.setState({mainContent: <About/>})
@@ -223,8 +224,7 @@ async componentDidMount () {
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
       sessionStorage.setItem('buisnessOwner', "false");
-      alert()
-      this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
+      this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
       sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
       sessionStorage.setItem('membershipExperationDate', membershipExperationDate)
       window.history.pushState(null, '', '/Home');
@@ -232,7 +232,7 @@ async componentDidMount () {
     }
     else if(key.substr(-1) === "b") {
       sessionStorage.setItem('buisnessOwner', "true");
-      this.setState({mainContent: <Home bubbleState={this.bubbleState}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
+      this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
       window.history.pushState(null, '', '/Home');
     }
   }

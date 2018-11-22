@@ -61,7 +61,7 @@ class Home extends Component {
                   }
                 })
                 const data = await response.json();
-                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: CouponsMaker(data.coupons), incrementPageClass: "center"})
+                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed), incrementPageClass: "center"})
                 else that.setState({coupons:<div className="center"><br/><h2>No coupons found near you, try searching manually.</h2></div>})
               } else cityNotFound();
             } else cityNotFound();
@@ -78,7 +78,7 @@ class Home extends Component {
       const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(pageNumber)
       const response = await fetch(url);
       const data = await response.json();
-      this.setState({coupons: CouponsMaker(data.coupons), incrementPageClass: "center", pageNumber: pageNumber})
+      this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber: pageNumber})
     }
     else alert("You cannot go lower than page one!") 
   }

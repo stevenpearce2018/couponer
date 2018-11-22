@@ -8,11 +8,11 @@ const latitude = sessionStorage.getItem('couponlatitude');
 const longitude = sessionStorage.getItem('couponlongitude');
 const buisnessOwner = sessionStorage.getItem('buisnessOwner');
 
-const showCode = (code) => {
+const showCode = code => {
   alert(JSON.stringify(code))
 }
 
-const getCoupons = async(_id) => {
+const getCoupons = async (_id, updateCouponsClaimed) => {
   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
   const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
   if (!loggedInKey || !email) {
@@ -30,11 +30,12 @@ const getCoupons = async(_id) => {
     const json = await postRequest(url, data)
     const couponsCurrentlyClaimed = Number(sessionStorage.getItem('couponsCurrentlyClaimed')) + 1;
     sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed )
+    updateCouponsClaimed(1)
     alert(JSON.stringify(json))
   }
 }
 
-const CouponsMaker = props => {
+const CouponsMaker = (props, updateCouponsClaimed) => {
     try {
       const content = props.map((coupons) =>
       <div className="coupon" id={coupons._id}>
@@ -72,10 +73,10 @@ const CouponsMaker = props => {
         <br/>
         {
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "true") ?
-            <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Validate Customer Codes </button> :
+            <button className="getCoupon" onClick={ () => getCoupons(coupons._id, updateCouponsClaimed)}> Validate Customer Codes </button> :
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "false") ? 
             <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0])}> Show Your Coupon Code </button> :
-            <button className="getCoupon" onClick={ () => getCoupons(coupons._id)}> Get Coupon </button>
+            <button className="getCoupon" onClick={ () => getCoupons(coupons._id, updateCouponsClaimed)}> Get Coupon </button>
         }
       </div>
       <br/>
