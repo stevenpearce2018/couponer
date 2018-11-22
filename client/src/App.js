@@ -228,7 +228,6 @@ async componentDidMount () {
       sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
       sessionStorage.setItem('membershipExperationDate', membershipExperationDate)
       window.history.pushState(null, '', '/Home');
-      window.location.pathname = '/Home';
     }
     else if(key.substr(-1) === "b") {
       sessionStorage.setItem('buisnessOwner', "true");
