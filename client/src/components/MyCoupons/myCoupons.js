@@ -69,8 +69,21 @@ class MyCoupons extends Component {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
   }
-  validateCode(){
+  async validateCode(){
     alert("validateCode")
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
+    const data = {
+      id: this.state.id,
+      loggedInKey: loggedInKey,
+      email: email,
+      couponCode: this.state.couponCode
+    }
+    const url = `/api/validateCode`
+    const json = await postRequest(url, data)
+    console.log(json.response)
+    // if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, null, this.showPopup)})
+    // else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
   }
   render() {
     return (

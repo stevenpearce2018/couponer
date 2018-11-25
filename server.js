@@ -23,8 +23,10 @@ const validateEmail = require('./lib/validateEmail');
 const associateCouponCodeByID = require('./lib/associateCouponCodeByID');
 const cleanCoupons = require("./lib/cleanCoupons");
 const moment = require("moment");
+const handleAsync = require('async-error-handler');
+const getIP = require('./lib/getIP');
 
-app.post('/api/generateQR', async(req, res) => {
+app.post('/api/generateQR', handleAsync(async(req, res) => {
   try {
     client.messages
     .create({from: '+13124108678', mediaUrl: await generateQR("Hello world"), to: "+15614807156"})
@@ -33,7 +35,7 @@ app.post('/api/generateQR', async(req, res) => {
   } catch (error) {
     res.json({success:false})
   }
-});
+}));
 
 
 const transporter = nodemailer.createTransport({
@@ -84,10 +86,10 @@ const postStripeCharge = res => (stripeErr, stripeRes) => {
 //   })
 // }
 
-app.post('/api/charge', async(req, res) => {
+app.post('/api/charge', handleAsync(async(req, res) => {
   stripe.charges.create(req.body, postStripeCharge(res));
-});
-app.post('/api/recoverAccount', async(req, res) => {
+}));
+app.post('/api/recoverAccount', handleAsync(async(req, res) => {
   const email = req.body.recoveryEmail;
     const mailOptions = {
       from: 'sender@email.com', // sender address
@@ -96,18 +98,15 @@ app.post('/api/recoverAccount', async(req, res) => {
       html: '<p>Welcome to UnlimitedCouponer</p>'// plain text body
     };
     res.json({success:true})
-});
+}));
 
-app.post('/api/signupCustomer', async(req, res) => {
+app.post('/api/signupCustomer', handleAsync(async(req, res) => {
   console.log(JSON.stringify(req.body))
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
     if (randomNumber === req.body.randomNumber) {
       const yourPick = req.body.yourPick
-      const ip = req.headers['x-forwarded-for'] || 
-        req.connection.remoteAddress || 
-        req.socket.remoteAddress ||
-        (req.connection.socket ? req.connection.socket.remoteAddress : null);
+      const ip = getIP(req)
       const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
       const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
@@ -155,9 +154,9 @@ app.post('/api/signupCustomer', async(req, res) => {
       } else res.json({resp:'Email address is taken!'});
     } else res.json({resp:'Wrong number, please try again!'});
   }
-});
+}));
 
-app.post('/api/phoneTest', async (req, res) => {
+app.post('/api/phoneTest', handleAsync(async (req, res) => {
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
   redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
   try {
@@ -168,23 +167,20 @@ app.post('/api/phoneTest', async (req, res) => {
   } catch (error) {
     res.json({success:false})
   }
-})
-app.post('/api/phoneTestValidateNumber', async (req, res) => {
+}))
+app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
   redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
   function compareRandomNumber(randomNumber){
     if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
     else res.json({success:false})
   }
-})
+}))
 
-app.post('/api/updateAccount', async (req, res) => {
+app.post('/api/updateAccount', handleAsync(async (req, res) => {
   //!todo, flush out updateAccount api
   const email = req.body.email;
   const loggedInKey = req.body.loggedInKey;
-  const ip = req.headers['x-forwarded-for'] || 
-    req.connection.remoteAddress || 
-    req.socket.remoteAddress ||
-    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  const ip = getIP(req)
   const outcome = await AccountInfo.find({'email' : email, "ip": ip, "loggedInKey":loggedInKey}).limit(1)
   if (outcome.length === 1) {
     if (req.body.phoneNumber) {
@@ -220,9 +216,9 @@ app.post('/api/updateAccount', async (req, res) => {
       } else res.json({response: "Failed To Update Password"}) 
     }
   } else res.json({response: "Failed to update"})
-});
+}));
 
-app.post('/api/signin', async (req, res) => {
+app.post('/api/signin', handleAsync(async (req, res) => {
   const email = req.body.email;
   const outcome = await AccountInfo.find({'email' : email}).limit(1)
   if(outcome[0] && bcrypt.compareSync(req.body.password, outcome[0].password)) {
@@ -235,15 +231,12 @@ app.post('/api/signin', async (req, res) => {
       { "upsert" : false } 
     );
   } else res.json({response: "Invalid login"});
-});
+}));
 
-app.post(`/api/signout`, async(req, res) => {
+app.post(`/api/signout`, handleAsync(async(req, res) => {
   const email = req.body.email;
   const loggedInKey = req.body.loggedInKey;
-  const ip = req.headers['x-forwarded-for'] || 
-    req.connection.remoteAddress || 
-    req.socket.remoteAddress ||
-    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  const ip = getIP(req)
   const outcome = await AccountInfo.find({'email' : email, "ip":ip, "loggedInKey": loggedInKey.replace('"', '').replace('"', '') }).limit(1)
   if (outcome.length > 0) {
     if(outcome[0].loggedInKey === loggedInKey) {
@@ -255,67 +248,62 @@ app.post(`/api/signout`, async(req, res) => {
       );
     } else res.json({response:"Logout Failed"})
   } else res.json({response:"Logout Failed"})
-})
+}))
 
-app.post(`/api/uploadCoupons`, async(req, res) => {
-    const ip = req.headers['x-forwarded-for'] || 
-      req.connection.remoteAddress || 
-      req.socket.remoteAddress ||
-      (req.connection.socket ? req.connection.socket.remoteAddress : null);
-    const loggedInKey = req.body.loggedInKey;
-    const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
-    if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-    else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
-      const amountCoupons = req.body.amountCoupons;
-      let couponCodes = [];
-      let i = 0
-      for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-      const saveCoupon = async () => {
-        const mongodbID = new mongoose.Types.ObjectId();
-        const coupon = new Coupon({
-          _id: mongodbID,
-          title: req.body.title,
-          address: req.body.address,
-          city: req.body.city.toLowerCase(),
-          amountCoupons: amountCoupons,
-          currentPrice: req.body.currentPrice,
-          discountedPrice: req.body.discountedPrice,
-          category: req.body.category,
-          textarea: req.body.textarea,
-          base64image: req.body.imagePreviewUrl,
-          superCoupon: req.body.superCoupon,
-          couponCodes: couponCodes,
-          couponStillValid: true,
-          latitude: req.body.latitude,
-          longitude: req.body.longitude
-        })
-        const successfulSignup = () => console.log("Successful Signup!");
-        const chargeData = {
-          description: req.body.description,
-          source: req.body.source,
-          currency: req.body.currency,
-          amount: req.body.amount
-        }
-        res.json({response: 'Coupon Created'})
-        // pushing the value seemed to a new array seemed to not work so I had to do this hack.
-        const arr = [...outcome[0].couponIds, mongodbID]
-        // const arr = []
-        console.log(arr)
-        await AccountInfo.updateOne(
-          { "_id" : outcome[0]._id }, 
-          { "$set" : {"couponIds": arr}}, 
-          { "upsert" : false } 
-        );
-        await coupon.save()
-          .catch(err => console.log(err))
-          // console.log({chargeData})
-          stripe.charges.create(chargeData, successfulSignup());
+app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
+  const ip = getIP(req)
+  const loggedInKey = req.body.loggedInKey;
+  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
+  if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+  else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+    const amountCoupons = req.body.amountCoupons;
+    let couponCodes = [];
+    let i = 0
+    for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+    const saveCoupon = async () => {
+      const mongodbID = new mongoose.Types.ObjectId();
+      const coupon = new Coupon({
+        _id: mongodbID,
+        title: req.body.title,
+        address: req.body.address,
+        city: req.body.city.toLowerCase(),
+        amountCoupons: amountCoupons,
+        currentPrice: req.body.currentPrice,
+        discountedPrice: req.body.discountedPrice,
+        category: req.body.category,
+        textarea: req.body.textarea,
+        base64image: req.body.imagePreviewUrl,
+        superCoupon: req.body.superCoupon,
+        couponCodes: couponCodes,
+        couponStillValid: true,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude
+      })
+      const successfulSignup = () => console.log("Successful Signup!");
+      const chargeData = {
+        description: req.body.description,
+        source: req.body.source,
+        currency: req.body.currency,
+        amount: req.body.amount
       }
-      saveCoupon();
+      res.json({response: 'Coupon Created'})
+      // pushing the value seemed to a new array seemed to not work so I had to do this hack.
+      const arr = [...outcome[0].couponIds, mongodbID]
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : {"couponIds": arr}}, 
+        { "upsert" : false } 
+      );
+      await coupon.save()
+        .catch(err => console.log(err))
+        // console.log({chargeData})
+        stripe.charges.create(chargeData, successfulSignup());
+    }
+    saveCoupon();
   } else res.json({response: "You are not logged in!"});
-})
+}))
 
-app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
+app.get('/api/getSponseredCoupons/:city/:pageNumber', handleAsync(async (req, res) => {
   let coupons;
   const cityUserIsIn = req.params.city.toLowerCase().replace(/\"/g,"");
   const pageNumber = req.params.pageNumber;
@@ -345,13 +333,10 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
     } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
     else res.json({ coupons: data });
   }
-});
+}));
 
-app.post('/api/getYourCoupons', async (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || 
-    req.connection.remoteAddress || 
-    req.socket.remoteAddress ||
-    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
+  const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
   let coupons;
@@ -373,9 +358,17 @@ app.post('/api/getYourCoupons', async (req, res) => {
   }
   else if (outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
   else res.json({response: "No coupons found."});
-});
+}));
 
-app.get('/search', async (req, res) => {
+app.post('/api/validateCode', handleAsync(async (req, res) => {
+  const ip = getIP(req)
+  const loggedInKey = req.body.loggedInKey;
+  const email = req.body.email;
+  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
+  const coupon = await Coupon.find({'_id': req.body.id }).limit(1);
+}))
+
+app.get('/search', handleAsync(async (req, res) => {
   // Goodluck!
   let coupons;
   const city = (req.query.city) ? req.query.city.toLowerCase() : null;
@@ -543,17 +536,14 @@ app.get('/search', async (req, res) => {
       else return res.json({coupons: data});
     }
   }
-});
+}));
 
-app.post(`/api/getCoupon`, async(req, res) => {
+app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
   if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   else {
     const _id = req.body._id;
-    const ip = req.headers['x-forwarded-for'] || 
-      req.connection.remoteAddress || 
-      req.socket.remoteAddress ||
-      (req.connection.socket ? req.connection.socket.remoteAddress : null);
+    const ip = getIP(req)
     const outcome = await AccountInfo.find({'email':req.body.email, 'ip': ip, loggedInKey: loggedInKey }).limit(1)
     if (outcome) {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
@@ -607,7 +597,7 @@ app.post(`/api/getCoupon`, async(req, res) => {
     }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
-})
+}))
 
 const port = 8080;
 
