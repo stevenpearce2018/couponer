@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import StripeCheckout from 'react-stripe-checkout';
-import postRequest from '../../postReqest';
 
 const CURRENCY = 'USD';
 

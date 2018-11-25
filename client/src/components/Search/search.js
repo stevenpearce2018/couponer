@@ -19,7 +19,7 @@ class SearchField extends Component {
     return (
       <div className="searchBox">
       <div className='searchLabel'>
-      <label className='signupLabel' for={this.props.htmlFor}>
+      <label className='signupLabel' htmlFor={this.props.htmlFor}>
         <strong>{this.props.htmlFor}</strong>
       </label>
       </div>
@@ -147,6 +147,7 @@ class Search extends Component {
     if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
     if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
     if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
+      searchSubUrl = searchSubUrl.replace("undefined", "").replace("undefined", "")
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
     }

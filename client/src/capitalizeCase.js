@@ -1,8 +1,3 @@
-const capitalizeCase = str => {
-    const lower = String(str).toLowerCase();
-    return lower.replace(/(^| )(\w)/g, (x) => {
-        return x.toUpperCase();
-    });
-}
+const capitalizeCase = str => str.toLowerCase().replace(/(^| )(\w)/g, (x) => x.toUpperCase());
 
 module.exports = capitalizeCase;
