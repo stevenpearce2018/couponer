@@ -296,17 +296,20 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
           currency: req.body.currency,
           amount: req.body.amount
         }
-        stripe.charges.create(chargeData, successfulSignup());
         res.json({response: 'Coupon Created'})
         // pushing the value seemed to a new array seemed to not work so I had to do this hack.
         const arr = [...outcome[0].couponIds, mongodbID]
+        // const arr = []
+        console.log(arr)
         await AccountInfo.updateOne(
-          { "_id" : outcome[0]._id },
-          { "$set" : { "ip" : ip}, "couponIds": arr}, 
+          { "_id" : outcome[0]._id }, 
+          { "$set" : {"couponIds": arr}}, 
           { "upsert" : false } 
         );
         await coupon.save()
           .catch(err => console.log(err))
+          // console.log({chargeData})
+          stripe.charges.create(chargeData, successfulSignup());
       }
       saveCoupon();
   } else res.json({response: "You are not logged in!"});
@@ -346,14 +349,15 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
 
 app.post('/api/getYourCoupons', async (req, res) => {
   const ip = req.headers['x-forwarded-for'] || 
-  req.connection.remoteAddress || 
-  req.socket.remoteAddress ||
-  (req.connection.socket ? req.connection.socket.remoteAddress : null);
+    req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null);
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
   let coupons;
   const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
-  if(outcome[0] && outcome[0].couponCodes.length > 0 && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+  console.log({outcome})
+  if(outcome[0] && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     const searchIDS = searchableMongoIDs(outcome[0].couponIds)
     coupons = await Coupon.find({
       '_id': { $in: searchIDS}
