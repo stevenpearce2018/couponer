@@ -91,14 +91,37 @@ class Search extends Component {
     // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
   }
   async changePage(number) {
-    const pageNumber = Number(this.state.pageNumber) + Number(number);
-    if (pageNumber >= 1) {
+    if (Number(this.state.pageNumber) + Number(number) >= 1) {
       let searchSubUrl;
       if (this.state.city !== '') searchSubUrl = `&city=${this.state.city}`
       if (this.state.category !== '') searchSubUrl = `${searchSubUrl}&category=${this.state.category}`
       if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
       if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
-      window.location.href = decodeURIComponent(`/search?pageNumber=${pageNumber}${searchSubUrl}`);
+      window.history.pushState(null, '', decodeURIComponent(`/search?pageNumber=${Number(this.state.pageNumber) + Number(number)}${searchSubUrl}`));
+      const url = '/'+window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
+      const city = getParameterByName('city', url)
+      if (city) this.setState({city: city})
+      const pageNumber = getParameterByName('pageNumber', url)
+      if (Number(this.state.pageNumber) + Number(number)) this.setState({pageNumber: pageNumber})
+      const zip = getParameterByName('zip', url)
+      if (zip) this.setState({zip: zip})
+      const category = getParameterByName('category', url)
+      if (category) this.setState({category: category})
+      const keywords = getParameterByName('keywords', url)
+      if (keywords) this.setState({keywords: keywords})
+      if (keywords || category || city || zip) this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
+      const response = await fetch(url, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      })
+      const couponsData = await response.json();
+      this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), pageNumber : Number(this.state.pageNumber)})
+      // window.location.href = decodeURIComponent(`/search?pageNumber=${pageNumber}${searchSubUrl}`);
     }
     else alert("You cannot go lower than page one!")
   }
