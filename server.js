@@ -181,11 +181,11 @@ app.post('/api/updateAccount', async (req, res) => {
   //!todo, flush out updateAccount api
   const email = req.body.email;
   const loggedInKey = req.body.loggedInKey;
-  const outcome = await AccountInfo.find({'email' : email, "ip": ip, "loggedInKey":loggedInKey}).limit(1)
   const ip = req.headers['x-forwarded-for'] || 
     req.connection.remoteAddress || 
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  const outcome = await AccountInfo.find({'email' : email, "ip": ip, "loggedInKey":loggedInKey}).limit(1)
   if (outcome.length === 1) {
     if (req.body.phoneNumber) {
       await AccountInfo.updateOne(
@@ -320,15 +320,23 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
   async function getCachedCoupons (data) {
     if(!data) {
       if(cityUserIsIn) {
-        coupons = await Coupon.find({city : cityUserIsIn, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+        coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
-        else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+        else {
+          coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+          if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+          else res.json({ coupons: 'No coupons were found near you. Try searching manually' }); 
+        }
         redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*30)
       }
       else {
-        coupons = await Coupon.find({couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+        coupons = await Coupon.find({superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
-        else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+        else {
+          coupons = await Coupon.find({superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+          if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+          else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+        }
         redisHelper.set(`${cityUserIsIn}/${pageNumber}`, coupons, 60*30)
       }
     } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
