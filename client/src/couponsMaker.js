@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import capitalizeCase from './capitalizeCase';
 import uppcaseFirstWord from './uppcaseFirstWord';
 import HaversineInMiles from './HaversineInMiles';
@@ -8,9 +8,9 @@ const latitude = sessionStorage.getItem('couponlatitude');
 const longitude = sessionStorage.getItem('couponlongitude');
 const buisnessOwner = sessionStorage.getItem('buisnessOwner');
 
-const showCode = code => {
-  alert(JSON.stringify(code))
-}
+// bubble values up to mycoupons component
+const showCode = (code, showPopup, title) => showPopup(code, title);
+const validateCode = (_id, showPopup, title) => showPopup(_id, title);
 
 const getCoupons = async (_id, updateCouponsClaimed) => {
   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
@@ -35,11 +35,11 @@ const getCoupons = async (_id, updateCouponsClaimed) => {
   }
 }
 
-const CouponsMaker = (props, updateCouponsClaimed) => {
+const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
     try {
       const content = props.map((coupons) =>
       <div className="coupon" id={coupons._id}>
-      <h1 className = "exampleTitle">{coupons.title}</h1>
+      <h1 className = "exampleTitle">{capitalizeCase(coupons.title)}</h1>
       <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
       <div className="pricing">
         <div className='oldPrice'>
@@ -73,9 +73,9 @@ const CouponsMaker = (props, updateCouponsClaimed) => {
         <br/>
         {
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "true") ?
-            <button className="getCoupon" onClick={ () => getCoupons(coupons._id, updateCouponsClaimed)}> Validate Customer Codes </button> :
+            <button className="getCoupon" onClick={ () => validateCode(coupons._id, showPopup, coupons.title)}> Validate Customer Codes </button> :
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "false") ? 
-            <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0])}> Show Your Coupon Code </button> :
+            <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0], showPopup, coupons.title)}> Show Your Coupon Code </button> :
             <button className="getCoupon" onClick={ () => getCoupons(coupons._id, updateCouponsClaimed)}> Get Coupon </button>
         }
       </div>

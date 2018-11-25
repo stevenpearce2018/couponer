@@ -116,8 +116,7 @@ class CouponForm extends Component {
     this.setState({ [name]: value })
   }
   togglePopup(){
-    let newClass = "hiddenOverlay";
-    if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
+    const newClass = this.state.popupClass === "hiddenOverlay" ? "overlay" : "hiddenOverlay"
     this.setState({popupClass: newClass})
   }
   handleImageChange(e) {

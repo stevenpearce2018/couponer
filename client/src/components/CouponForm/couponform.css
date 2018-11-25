@@ -254,6 +254,9 @@ body {
 .popup .close:hover {
   color: #06D85F;
 }
+.close:hover {
+  cursor: pointer;
+}
 .popup .popupcontent {
   max-height: 30%;
   overflow: auto;

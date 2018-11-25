@@ -46,7 +46,7 @@ class App extends Component {
       showOrHideNav: 'hidden',
       loggedInBuisness: 'hidden',
       ignoreClick: true, // handles navbar closing when open and clicking outside it.
-      couponData: <div className="loaderContainer"><div className="loader"></div></div>
+      couponData: <div className="loaderContainer"><div className="loader"></div></div>,
   };
   this.setMainSearch = this.setMainSearch.bind(this);
   this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
@@ -63,7 +63,7 @@ class App extends Component {
   this.hideNav = this.hideNav.bind(this);
   this.updateAccountSettings = this.updateAccountSettings.bind(this);
   // this.fetchCoupons = this.fetchCoupons.bind(this);
-  this.updateCouponsClaimed= this.updateCouponsClaimed.bind(this);
+  this.updateCouponsClaimed = this.updateCouponsClaimed.bind(this);
 }
 async componentDidMount () {
   // loadReCaptcha();
@@ -291,7 +291,6 @@ async componentDidMount () {
           <br/>
           {/* {this.state.signinSignoutButton}
           {this.state.signupButton} */}
-
         <Footer/>
         </div>
     )

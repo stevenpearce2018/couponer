@@ -2,7 +2,6 @@ const onChangeListeners = [];
 
 function push(pathname) {
     window.history.pushState({}, '', pathname);
-
     onChangeListeners.forEach(callback => callback(pathname));
 }
 

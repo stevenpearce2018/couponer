@@ -356,7 +356,6 @@ app.post('/api/getYourCoupons', async (req, res) => {
   const email = req.body.email;
   let coupons;
   const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
-  console.log({outcome})
   if(outcome[0] && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     const searchIDS = searchableMongoIDs(outcome[0].couponIds)
     coupons = await Coupon.find({
@@ -368,7 +367,8 @@ app.post('/api/getYourCoupons', async (req, res) => {
     } else {
       // console.log(outcome[0].couponCodes)
       coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
-      res.json({ coupons: cleanCoupons(coupons) });
+      // console.log(coupons[2].couponCodes)
+      res.json({ coupons: coupons });
     }
   }
   else if (outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});

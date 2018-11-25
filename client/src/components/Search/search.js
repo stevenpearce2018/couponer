@@ -108,7 +108,7 @@ class Search extends Component {
   incrementPage(){
     this.changePage(1)
   }
-  handleChange = (event) => {
+  handleChange = event => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
   }
