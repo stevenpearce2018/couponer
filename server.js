@@ -106,18 +106,25 @@ app.post('/api/recoverAccount', handleAsync(async(req, res) => {
     });
     res.json({success:true})
   }
-  // else if(phoneNumber){
-  //   redisHelper.set("recoverAccount:"+phoneNumber, randomNumber, 60*3) // 3 minutes
-  //   try {
-  //     client.messages
-  //     .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: phoneNumber})
-  //     .then(message => res.json({success:true}))
-  //     .done();
-  //   } catch (error) {
-  //     res.json({success:false})
-  //   }
-  // }
-  else res.json({success:true});
+}));
+
+app.post('/api/recoverAccountWithCode', handleAsync(async(req, res) => {
+  const email = req.body.recoveryEmail;
+  const randomNumber = req.body.randomNumber;
+  redisHelper.get("r:"+email, confirmRandomNumber)
+  async function confirmRandomNumber(randomNumberFromRedis) {
+    if (randomNumberFromRedis === randomNumber) {
+      res.json({success:true})
+      const result = await AccountInfo.findOne({ 'email': email })
+      const hashedPass = await bcrypt.hashSync(req.body.newPassword, 10);
+      await AccountInfo.updateOne(
+        { "_id" : result._id }, 
+        { "$set" : { password: hashedPass } }, 
+        { "upsert" : false } 
+      );
+    }
+    else res.json({success:false})
+  }
 }));
 
 app.post('/api/phoneTest', handleAsync(async (req, res) => {

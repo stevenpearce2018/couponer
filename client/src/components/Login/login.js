@@ -17,6 +17,9 @@ class Login extends Component {
         recaptchaToken: '',
         popupClass: 'hiddenOverlay',
         recoveryEmail: '',
+        recoverEmailSent: false,
+        recoveryCode: '',
+        newPassword: ''
         // phoneNumber: '',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -66,7 +69,10 @@ class Login extends Component {
     }
     const url = `/api/recoverAccount`
     const json = await postRequest(url, data)
-    if (json && json.success === true) alert("Your recovery message has been sent! Please enter it in the next prompt.")
+    if (json && json.success === true) {
+      this.setState({recoverEmailSent: true})
+      alert("Your recovery message has been sent! Please enter it in the next prompt.")
+    }
     else alert("Something went wrong, please try again.")
     // this.togglePopup();
   }
@@ -92,6 +98,14 @@ class Login extends Component {
     } else alert("Invalid Login")
   }
     
+  async validateCode(){
+    const data = {
+      email: this.state.email,
+      password: this.state.password,
+    }
+    const url = `/api/recoverAccountWithCode`
+    const json = await postRequest(url, data)
+  }
   render() {
     return (
       <div className="loginForm">
@@ -114,26 +128,52 @@ class Login extends Component {
           </form>
           <div className={this.state.popupClass}>
             <div className="popup">
-              <h2 className="popupheader">Please Enter Your Email</h2>
+            {/* this.setState({recoverEmailSent: true}) */}
+              <h2 className="popupheader">
+              {this.state.recoverEmailSent === false ? 
+                "Please Enter Your Email" : 
+                "Please enter your recovery code."
+              }
+              </h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
                 <InputField
-                htmlFor="Recover account"
-                type="text"
-                name="recoveryEmail"
-                labelHTML="Your Email"
-                placeholder="helpme@ohno.com"
-                onChange={this.handleChange}
-                required
+                  htmlFor={this.state.recoverEmailSent === false ? "Recover account": "Your 5 Digit Code"}
+                  type={this.state.recoverEmailSent === false ? "text": "number"}
+                  name={this.state.recoverEmailSent === false ? "recoveryEmail": "recoveryCode"}
+                  labelHTML={this.state.recoverEmailSent === false ? "Your Email": "Your 5 Digit Code"}
+                  placeholder={this.state.recoverEmailSent === false ? "helpme@ohno.com": "12345"}
+                  onChange={this.handleChange}
+                  required
                 />
-                <br/>
+                {this.state.recoverEmailSent === false ? <div></div>: 
+                  <InputField
+                    htmlFor="New Password"
+                    type="text"
+                    name= "newPassword"
+                    labelHTML="Your New Password"
+                    placeholder= "New Password"
+                    onChange={this.handleChange}
+                    required
+                  />
+                }
                 {/* <PhoneInput
                   placeholder="Enter phone number"
                   value={ this.state.phoneNumber }
                   onChange={ phoneNumber => this.setState({ recoveryEmail: undefined, phoneNumber: phoneNumber}) } 
                 /> */}
               <div className="popupbtn">
-              <button className='signupbtn signupbtnn' value="send" onClick={this.sendRecovery}><strong>Recover</strong></button>
+              <button className='signupbtn signupbtnn' value="send" 
+                onClick = {
+                    this.state.recoverEmailSent === false ? this.sendRecovery : this.validateCode
+                  }
+              >
+                <strong>
+                  {
+                    this.state.recoverEmailSent === false ? "Send Recovery Email" : "Validate Code"
+                  }
+                </strong>
+              </button>
               </div>
               </div>
             </div>
