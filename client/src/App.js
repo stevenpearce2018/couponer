@@ -183,7 +183,8 @@ async componentDidMount () {
     }
     const url = `/api/updateAccount`
     const json = await postRequest(url, dataObject)
-    alert(JSON.stringify(json), "json")
+    if(json && json.response === "Updated Account!") alert("Updated Account!")
+    else alert("Failed to update account.")
   }
   setMainAccountSettings(e) {
     this.setState({mainContent: <AccountSettings 

@@ -43,7 +43,6 @@ class AccountSettings extends Component {
     }
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
     const email = sessionStorage.getItem('UnlimitedCouponerEmail');
-    this.setState({loggedInKey:loggedInKey})
     if (!loggedInKey || loggedInKey.substr(-1) !== "b" && loggedInKey.substr(-1) !== "c") {
       window.history.pushState(null, '', '/Home');
       alert('You are not logged in!')
@@ -75,25 +74,33 @@ class AccountSettings extends Component {
       city: this.state.city,
       oldPassword: this.state.oldPassword,
       newPassword: this.state.newPassword,
-      email: this.state.email,
     }
     this.props.updateAccountSettings(data)
   }
   async addMonths(dataFromStripe){
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail');
     const data = {
       membershipExperationDate: this.state.membershipExperationDate,
       description: dataFromStripe.description,
       source: dataFromStripe.source,
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount,
+      loggedInKey: loggedInKey,
+      email: email
     }
-    const url = `/api/signupCustomer`
+    const url = `/api/addMonths`
     const json = await postRequest(url, data)
   }
 
   render() {
     return (
     <div className="container text-center">
+        <section id="portfolio" className="content">
+          <h2 className="textHeader">How to update your account settings</h2>
+          <p className="text">In order to add more months of membership you must pay 4.99$ per month. You must validate your new phone number once again in order to change your phone number. To change your password simply type your current password and the new password you would like. To update your city or other information, simply fill out the form and click the update info button below!</p>
+        </section>
+        <br/>
       <form className="accountForm" method="post">
       <div className="adjustAccountSettings">
         <h2>Change Account Settings</h2>
@@ -138,16 +145,21 @@ class AccountSettings extends Component {
         placeholder="Buisness Name"
         onChange={this.handleChange}
       />
-      <InputField
-        htmlFor="Add more months to your subscription"
-        type="text"
-        labelHTML="Add more months to your subscription"
-        name="numberOfMonths"
-        placeholder="4.99$ per additional month for unlimited coupons"
-        onChange={this.updateMembershipExperationDate}
-      />
-      <br/>
-      {!buisnessOwner ?
+      {buisnessOwner === "false" ?
+        <div>
+          <InputField
+            htmlFor="Add more months to your subscription"
+            type="text"
+            labelHTML="Add more months to your subscription"
+            name="numberOfMonths"
+            placeholder="4.99$ per additional month for unlimited coupons"
+            onChange={this.updateMembershipExperationDate}
+          />
+        <br/>
+        </div> : 
+        <div></div>
+      }
+      {buisnessOwner === "false" && this.state.numberOfMonths !== "" && this.state.numberOfMonths !== 0 ?
       <div className="checkout-account-settings">
         <Checkout
           parentMethod = {this.addMonths}

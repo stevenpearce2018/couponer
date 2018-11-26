@@ -253,7 +253,7 @@ class SignUp extends Component {
     <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.checkInfo}><strong>Validate Phone Number</strong></button>
     <div className={this.state.popupClass}>
             <div className="popup">
-              <h2>Please Enter Your 5 digit security code</h2>
+              <h2 className="popupheader">Please Enter Your 5 digit security code</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent fivedigit">
               <InputField

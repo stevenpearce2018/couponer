@@ -8,6 +8,8 @@ app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
 const accountSid = process.env.ACCOUNT_SID; // !todo, change dev keys to prod keys
 const authToken = process.env.AUTH_TOKEN;
+const pass = process.env.PASS
+const unlimtedcouponerEmail = process.env.EMAIL
 const client = require('twilio')(accountSid, authToken);
 const Coupon = require('./models/coupons')
 const AccountInfo = require('./models/accountInfo')
@@ -41,16 +43,10 @@ app.post('/api/generateQR', handleAsync(async(req, res) => {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'youremail@address.com',
-    pass: 'yourpassword'
+    user: unlimtedcouponerEmail,
+    pass: pass
   }
 });
-const mailOptions = {
-  from: 'sender@email.com', // sender address
-  to: 'to@email.com', // list of receivers
-  subject: 'Welcome!', // Subject line
-  html: '<p>Welcome to UnlimitedCouponer</p>'// plain text body
-};
 // const fs = require('fs')
 // const htttpsOptions = {
 //   cert: fs.readFileSync('./ssl/server.crt'),
@@ -91,14 +87,59 @@ app.post('/api/charge', handleAsync(async(req, res) => {
 }));
 app.post('/api/recoverAccount', handleAsync(async(req, res) => {
   const email = req.body.recoveryEmail;
+  // const phoneNumber = req.body.phoneNumber;
+  const randomNumber = Math.floor(Math.random()*90000) + 10000;
+  if(email) {
+    // r = recoverAccount key
+    // smaller the redis string better the performance
+    redisHelper.set("r:"+email, randomNumber, 60*10) // 10 minutes
     const mailOptions = {
-      from: 'sender@email.com', // sender address
+      from: "UnlimitedCouponer", // sender address
       to: email, // list of receivers
       subject: 'Recover Account', // Subject line
-      html: '<p>Welcome to UnlimitedCouponer</p>'// plain text body
+      html: `<p>Here is your random number ${randomNumber}, it will expire in 10 minutes.</p>
+      <p>If you did not request this recovery please email us at unlimtedcouponer@gmail.com</p>`// plain text body
     };
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) return console.log(error);
+    });
     res.json({success:true})
+  }
+  // else if(phoneNumber){
+  //   redisHelper.set("recoverAccount:"+phoneNumber, randomNumber, 60*3) // 3 minutes
+  //   try {
+  //     client.messages
+  //     .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: phoneNumber})
+  //     .then(message => res.json({success:true}))
+  //     .done();
+  //   } catch (error) {
+  //     res.json({success:false})
+  //   }
+  // }
+  else res.json({success:true});
 }));
+
+app.post('/api/phoneTest', handleAsync(async (req, res) => {
+  const randomNumber = Math.floor(Math.random()*90000) + 10000;
+  redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
+  try {
+    client.messages
+    .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})
+    .then(message => res.json({success:true}))
+    .done();
+  } catch (error) {
+    res.json({success:false})
+  }
+}))
+app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
+  redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
+  function compareRandomNumber(randomNumber){
+    if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
+    else res.json({success:false})
+  }
+}))
+
 
 app.post('/api/signupCustomer', handleAsync(async(req, res) => {
   console.log(JSON.stringify(req.body))
@@ -359,6 +400,14 @@ app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
   else if (outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
   else res.json({response: "No coupons found."});
 }));
+
+app.post('/api/addMonths', handleAsync(async (req, res) => {
+  const ip = getIP(req)
+  const loggedInKey = req.body.loggedInKey;
+  const email = req.body.email;
+  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
+  const coupon = await Coupon.find({'_id': req.body.id }).limit(1);
+}))
 
 app.post('/api/validateCode', handleAsync(async (req, res) => {
   const ip = getIP(req)

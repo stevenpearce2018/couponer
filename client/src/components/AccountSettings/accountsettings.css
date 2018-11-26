@@ -29,4 +29,19 @@
     width: 80%;
 }
 .checkout-account-settings{
+    margin-top:230px;
+    margin-left:75%;
+}
+
+  @media only screen and (max-width: 1270px) {
+    .checkout-account-settings{
+        margin-left:65%;
+    }
+}  
+
+@media only screen and (max-width: 768px) {
+    .checkout-account-settings{
+        margin-top:-102px;
+        margin-left:70%;
+    }
 }
