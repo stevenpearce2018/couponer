@@ -31,7 +31,6 @@
     "new-build": "rm -rf ./dist && npm run build:client",
     "build:client": "NODE_ENV=production webpack --config build/webpack.config.js -p"
   },
-  "homepage" : "http://unlimitedcouponer.com",
   "proxy": "http://localhost:8080",
   "devDependencies": {
     "babel": "^5.8.23",

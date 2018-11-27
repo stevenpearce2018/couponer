@@ -149,13 +149,14 @@ app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
 
 
 app.post('/api/signupCustomer', handleAsync(async(req, res) => {
+  console.log(JSON.stringify(req.body))
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
     if (randomNumber === req.body.randomNumber) {
       const yourPick = req.body.yourPick
       const ip = getIP(req)
       const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
-      const result = await AccountInfo.findOne({ 'email': req.body.email })
+      const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
           if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
             if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
@@ -228,35 +229,35 @@ app.post('/api/updateAccount', handleAsync(async (req, res) => {
   const email = req.body.email;
   const loggedInKey = req.body.loggedInKey;
   const ip = getIP(req)
-  const account = await AccountInfo.findOne({'email' : email, "ip": ip, "loggedInKey":loggedInKey})
-  if (account.length === 1) {
+  const outcome = await AccountInfo.find({'email' : email, "ip": ip, "loggedInKey":loggedInKey}).limit(1)
+  if (outcome.length === 1) {
     if (req.body.phoneNumber) {
       await AccountInfo.updateOne(
-        { "_id" : account._id }, 
+        { "_id" : outcome[0]._id }, 
         { "$set" : { phoneNumber: req.body.phoneNumber } }, 
         { "upsert" : false } 
       );
     }
     if (req.body.buisnessName) {
       await AccountInfo.updateOne(
-        { "_id" : account._id }, 
+        { "_id" : outcome[0]._id }, 
         { "$set" : { buisnessName: req.body.buisnessName } }, 
         { "upsert" : false } 
       );
     }
     if (req.body.city) {
       await AccountInfo.updateOne(
-        { "_id" : account._id }, 
+        { "_id" : outcome[0]._id }, 
         { "$set" : { city: req.body.city } }, 
         { "upsert" : false } 
       );
     }
     if (req.body.oldPassword !== req.body.newPassword) {
-      if(bcrypt.compareSync(req.body.oldPassword, account.password)) {
+      if(bcrypt.compareSync(req.body.oldPassword, outcome[0].password)) {
         res.json({response: "Updated Account!"})
         const hashedPass = await bcrypt.hashSync(req.body.newPassword, 10);
         await AccountInfo.updateOne(
-          { "_id" : account._id }, 
+          { "_id" : outcome[0]._id }, 
           { "$set" : { password: hashedPass } }, 
           { "upsert" : false } 
         );
@@ -267,15 +268,14 @@ app.post('/api/updateAccount', handleAsync(async (req, res) => {
 
 app.post('/api/signin', handleAsync(async (req, res) => {
   const email = req.body.email;
-  const account = await AccountInfo.findOne({'email' : email});
-  const ip = getIP(req);
-  if(account && bcrypt.compareSync(req.body.password, account.password)) {
+  const outcome = await AccountInfo.find({'email' : email}).limit(1)
+  if(outcome[0] && bcrypt.compareSync(req.body.password, outcome[0].password)) {
     const loginStringBase = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const loggedInKey = account.yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b"
-    account.yourPick === " Customer" ? res.json({loggedInKey: loggedInKey, membershipExperationDate: account.membershipExperationDate, couponsCurrentlyClaimed: account.couponsCurrentlyClaimed}) : res.json({loggedInKey: loggedInKey});
+    const loggedInKey = outcome[0].yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b"
+    outcome[0].yourPick === " Customer" ? res.json({loggedInKey: loggedInKey, membershipExperationDate: outcome[0].membershipExperationDate, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed}) : res.json({loggedInKey: loggedInKey});
     await AccountInfo.updateOne(
-      { "_id" : account._id }, 
-      { "$set" : { "ip" : ip}, loggedInKey:loggedInKey }, 
+      { "_id" : outcome[0]._id }, 
+      { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:loggedInKey }, 
       { "upsert" : false } 
     );
   } else res.json({response: "Invalid login"});
@@ -285,12 +285,12 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
   const email = req.body.email;
   const loggedInKey = req.body.loggedInKey;
   const ip = getIP(req)
-  const account = await AccountInfo.findOne({'email' : email, "ip":ip, "loggedInKey": loggedInKey.replace('"', '').replace('"', '') });
-  if (account.length > 0) {
-    if(account.loggedInKey === loggedInKey) {
+  const outcome = await AccountInfo.find({'email' : email, "ip":ip, "loggedInKey": loggedInKey.replace('"', '').replace('"', '') }).limit(1)
+  if (outcome.length > 0) {
+    if(outcome[0].loggedInKey === loggedInKey) {
       res.json({response:"Logout Successful"})
       await AccountInfo.updateOne(
-        { "_id" : account._id }, 
+        { "_id" : outcome[0]._id }, 
         { "$set" : { "ip" : ''}, loggedInKey:'' }, 
         { "upsert" : false } 
       );
@@ -301,9 +301,9 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
 app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
-  const account = await AccountInfo.findOne({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
-  if (account.yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-  else if(account.loggedInKey === loggedInKey && account.ip === ip) {
+  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
+  if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+  else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     const amountCoupons = req.body.amountCoupons;
     let couponCodes = [];
     let i = 0
@@ -336,9 +336,9 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
       }
       res.json({response: 'Coupon Created'})
       // pushing the value seemed to a new array seemed to not work so I had to do this hack.
-      const arr = [...account.couponIds, mongodbID]
+      const arr = [...outcome[0].couponIds, mongodbID]
       await AccountInfo.updateOne(
-        { "_id" : account._id }, 
+        { "_id" : outcome[0]._id }, 
         { "$set" : {"couponIds": arr}}, 
         { "upsert" : false } 
       );
@@ -388,21 +388,23 @@ app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
   let coupons;
-  const account = await AccountInfo.findOne({'email':email, "ip": ip, "loggedInKey": loggedInKey});
-  if(account && account.loggedInKey === loggedInKey && account.ip === ip) {
-    const searchIDS = searchableMongoIDs(account.couponIds)
-    coupons = await Coupon.find({'_id': { $in: searchIDS}})
+  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
+  if(outcome[0] && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+    const searchIDS = searchableMongoIDs(outcome[0].couponIds)
+    coupons = await Coupon.find({
+      '_id': { $in: searchIDS}
+    })
     if (coupons.length === 0 ) {
       coupons = "No coupons found.";
       res.json({ coupons: cleanCoupons(coupons) });
     } else {
-      // console.log(account.couponCodes)
-      coupons = associateCouponCodeByID(account.couponCodes, coupons)
+      // console.log(outcome[0].couponCodes)
+      coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
       // console.log(coupons[2].couponCodes)
       res.json({ coupons: coupons });
     }
   }
-  else if (account.couponCodes.length === 0) res.json({response: "You are not logged in!"});
+  else if (outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
   else res.json({response: "No coupons found."});
 }));
 
@@ -410,16 +412,16 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
-  const account = await AccountInfo.findOne({'email':email, "ip": ip, "loggedInKey": loggedInKey});
-  const coupon = await Coupon.findOne({'_id': req.body.id });
+  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
+  const coupon = await Coupon.find({'_id': req.body.id }).limit(1);
 }))
 
 app.post('/api/validateCode', handleAsync(async (req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
-  const account = await AccountInfo.findOne({'email':email, "ip": ip, "loggedInKey": loggedInKey});
-  const coupon = await Coupon.findOne({'_id': req.body.id });;
+  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
+  const coupon = await Coupon.find({'_id': req.body.id }).limit(1);
 }))
 
 app.get('/search', handleAsync(async (req, res) => {
@@ -598,47 +600,47 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
   else {
     const _id = req.body._id;
     const ip = getIP(req)
-    const account = await AccountInfo.findOne({'email':req.body.email, 'ip': ip, loggedInKey: loggedInKey })
-    if (account) {
-      if (account.yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
+    const outcome = await AccountInfo.find({'email':req.body.email, 'ip': ip, loggedInKey: loggedInKey }).limit(1)
+    if (outcome) {
+      if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
       else {
-        // console.log(account.couponsCurrentlyClaimed)
-        // if (account.couponsCurrentlyClaimed < 5) {
-          const coupon = await Coupon.findOne({'_id':_id });
+        // console.log(outcome[0].couponsCurrentlyClaimed)
+        // if (outcome[0].couponsCurrentlyClaimed < 5) {
+          const coupon = await Coupon.find({'_id':_id }).limit(1);
           let couponCode;
           let couponStillValid = true;
           let i = 0;
-          const iMax = coupon.couponCodes.length;
+          const iMax = coupon[0].couponCodes.length;
           for (;i < iMax; i++) {
-            if(coupon.couponCodes[i].substr(-1) === "a") {
-              couponCode = coupon.couponCodes[i].substring(0, coupon.couponCodes[i].length - 1) + "c";
+            if(coupon[0].couponCodes[i].substr(-1) === "a") {
+              couponCode = coupon[0].couponCodes[i].substring(0, coupon[0].couponCodes[i].length - 1) + "c";
               break;
             }
           }
-          if (coupon.amountCoupons - 1 <= 0) couponStillValid = false;
-          const arrIds = [...account.couponIds, _id];
-          const arrCouponCodes = [...account.couponCodes, {_id: _id, couponCode: couponCode}]
+          if (coupon[0].amountCoupons - 1 <= 0) couponStillValid = false;
+          const arrIds = [...outcome[0].couponIds, _id];
+          const arrCouponCodes = [...outcome[0].couponCodes, {_id: _id, couponCode: couponCode}]
           // console.log(arrIds, "arrids")
           // console.log(arrCouponCodes, "arrCouponCodes")
           if(couponCode) {
             res.json({response: "Coupon Claimed!"});
             await AccountInfo.updateOne(
-              { "_id" : account._id }, 
+              { "_id" : outcome[0]._id }, 
               { "$set" : { 
                 "couponIds": arrIds}, //
-                "couponsCurrentlyClaimed": account.couponsCurrentlyClaimed + 1 ,
+                "couponsCurrentlyClaimed": outcome[0].couponsCurrentlyClaimed + 1 ,
                 "couponCodes": arrCouponCodes
               }, 
               { "upsert" : false } 
             );
             // console.log(coupon[0].couponCodes)
-            const updatedCodes = claimCode(coupon.couponCodes)
+            const updatedCodes = claimCode(coupon[0].couponCodes)
             // console.log(updatedCodes, "updatedCodes")
             await Coupon.updateOne(
               { "_id" : req.body._id },
               { "$set" : { 
                 "couponCodes": updatedCodes},
-                "amountCoupons": (coupon.amountCoupons - 1),
+                "amountCoupons": (coupon[0].amountCoupons - 1),
                 "couponStillValid": couponStillValid
               }, 
               { "upsert" : false } 
@@ -653,6 +655,6 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
   }
 }))
 
-const port = 4000;
+const port = 8080;
 
 app.listen(port, () => `Server running on port ${port}`);
