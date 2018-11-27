@@ -6,8 +6,7 @@ import './login.css';
 import InputField from '../SubComponents/InputField/inputField'
 import validateEmail from '../../validateEmail';
 import postRequest from '../../postReqest';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 class Login extends Component {
   constructor(props, context) {
@@ -89,7 +88,6 @@ class Login extends Component {
   render() {
     return (
       <div className="loginForm">
-      <ToastContainer />
           <form className="form" method="post">
             <h2>Log In</h2>
             <div className="inputGroup">

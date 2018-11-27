@@ -6,8 +6,8 @@ import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
 import Checkout from '../Checkout/checkout';
 import HaversineInMiles from '../../HaversineInMiles';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
 
 const validateCouponForm = state => {
   if (state.latitude === '' || state.longitude === '') {
@@ -275,7 +275,6 @@ class CouponForm extends Component {
   render() {
     return (
       <div className="flextape">
-      <ToastContainer/>
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"></link>
         <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"></link>
         <div className='couponHeader'>

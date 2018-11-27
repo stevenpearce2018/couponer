@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './search.css';
 import Select from '../SubComponents/Select/select';
 import CouponsMaker from '../../couponsMaker';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
 
 const getParameterByName = (name, url) => {
   if (!url) url = window.location.href;
@@ -152,7 +152,6 @@ class Search extends Component {
   render() {
     return (
       <div className="container text-center">
-      <ToastContainer />
       <form className='searchForm'>
       <h2>Search for coupons by city, zipcode, and even by category!</h2>
       <br/>

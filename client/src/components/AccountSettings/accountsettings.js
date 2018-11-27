@@ -5,7 +5,7 @@ import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
 import Checkout from '../Checkout/checkout';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 
 const buisnessOwner = sessionStorage.getItem('buisnessOwner');
 

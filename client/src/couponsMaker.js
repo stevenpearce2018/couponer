@@ -4,7 +4,7 @@ import uppcaseFirstWord from './uppcaseFirstWord';
 import HaversineInMiles from './HaversineInMiles';
 import postRequest from './postReqest';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 
 const latitude = sessionStorage.getItem('couponlatitude');
 const longitude = sessionStorage.getItem('couponlongitude');
