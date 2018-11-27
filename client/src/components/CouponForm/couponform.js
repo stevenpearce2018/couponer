@@ -273,6 +273,7 @@ class CouponForm extends Component {
   render() {
     return (
       <div className="flextape">
+      <ToastContainer/>
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"></link>
         <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"></link>
         <div className='couponHeader'>
