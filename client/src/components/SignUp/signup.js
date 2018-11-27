@@ -133,6 +133,7 @@ class SignUp extends Component {
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount,
     }
+    console.log({data})
     if (validateEmail(this.state.email)){
       const url = `/api/signupCustomer`
       const json = await postRequest(url, data)

@@ -27,6 +27,7 @@ class Login extends Component {
     // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.sendRecovery = this.sendRecovery.bind(this);
+    this.validateCode = this.validateCode.bind(this);
   }
   handleChange = event => {
     const { target: { name, value } } = event
@@ -100,8 +101,8 @@ class Login extends Component {
     
   async validateCode(){
     const data = {
-      email: this.state.email,
-      password: this.state.password,
+      recoveryEmail: this.state.recoveryEmail,
+      newPassword: this.state.newPassword,
     }
     const url = `/api/recoverAccountWithCode`
     const json = await postRequest(url, data)
@@ -149,7 +150,7 @@ class Login extends Component {
                 {this.state.recoverEmailSent === false ? <div></div>: 
                   <InputField
                     htmlFor="New Password"
-                    type="text"
+                    type="password"
                     name= "newPassword"
                     labelHTML="Your New Password"
                     placeholder= "New Password"

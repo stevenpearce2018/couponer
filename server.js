@@ -149,7 +149,6 @@ app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
 
 
 app.post('/api/signupCustomer', handleAsync(async(req, res) => {
-  console.log(JSON.stringify(req.body))
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
     if (randomNumber === req.body.randomNumber) {
@@ -182,9 +181,11 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
                 })
                 await accountInfo.save()
                 .catch(err => console.log(err))
+                console.log(membershipExperationDate)
                 res.json({
                   loggedInKey:loggedInKey,
-                  membershipExperationDate: membershipExperationDate
+                  membershipExperationDate: membershipExperationDate,
+                  couponsCurrentlyClaimed: 0
                 });
               } else res.json({resp:'Your email is not valid!'});
               if(yourPick === ' Customer') {
@@ -195,7 +196,9 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
                   currency: req.body.currency,
                   amount: req.body.amount
                 }
-                stripe.charges.create(chargeData, successfulSignup());
+                // console.log({chargeData})
+                const chargeResponse = await stripe.charges.create(chargeData)
+                console.log(chargeResponse)
               }
             } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
         } else res.json({resp:'You need to fill out all fields!'});
@@ -345,7 +348,7 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
       await coupon.save()
         .catch(err => console.log(err))
         // console.log({chargeData})
-        stripe.charges.create(chargeData, successfulSignup());
+        stripe.charges.create(chargeData);
     }
     saveCoupon();
   } else res.json({response: "You are not logged in!"});
