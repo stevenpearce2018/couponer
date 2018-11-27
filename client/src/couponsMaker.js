@@ -92,6 +92,7 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
     } catch (error) {
       return (
       <div className='center'>
+      <ToastContainer/>
       <br/>
       <h2>Unable to automatically search for coupons. Try searching manually.</h2>
       </div>

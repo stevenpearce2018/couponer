@@ -46,7 +46,7 @@ class Login extends Component {
     }
   }
   async sendRecovery(){
-    if (validateEmail(this.state.recoveryEmail) === false) return toast.error("You need to enter a valid email")
+    if (validateEmail(this.state.recoveryEmail) === false) return toast.warn("You need to enter a valid email")
     const data = {
       recoveryEmail: this.state.recoveryEmail,
       // phoneNumber: this.state.phoneNumber
@@ -61,7 +61,6 @@ class Login extends Component {
   }
   async handleSubmit(e){
     e.preventDefault();
-    if (this.state.email === '') return toast.error("You need to enter a valid email")
     if (validateEmail(this.state.email) === false) return toast.error("You need to enter a valid email")
     if (this.state.password === '') return toast.error("You need to enter a password")
     const data = {
