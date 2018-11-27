@@ -91,10 +91,12 @@ class CouponForm extends Component {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
     this.setState({loggedInKey:loggedInKey})
     if (!loggedInKey) {
+      this.props.setMainHome()
       window.location.pathname = '/Home';
       toast.error('You are not logged in!')
     }
     else if(loggedInKey.slice(-1) !== "b") {
+      this.props.setMainHome()
       window.location.pathname = '/Home';
       toast.error('Only buiness owners can access this page!')
     }

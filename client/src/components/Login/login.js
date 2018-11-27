@@ -41,8 +41,8 @@ class Login extends Component {
   componentWillMount() {
     if(sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerEmail')) {
       window.location.pathname = '/Home';
-      toast.error("You are already logged in!")
       this.props.setMainHome()
+      toast.error("You are already logged in!")
     }
   }
   async sendRecovery(){

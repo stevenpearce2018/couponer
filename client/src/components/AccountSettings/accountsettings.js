@@ -32,9 +32,6 @@ class AccountSettings extends Component {
   async componentDidMount() {
     if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
     const that = this;
-    const google = window.google
-    // eslint-disable-next-line
-    const geocoder = new google.maps.Geocoder;
     function showPosition(position) {
       that.setState({
         latitude: position.coords.latitude,
@@ -46,6 +43,7 @@ class AccountSettings extends Component {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
     const email = sessionStorage.getItem('UnlimitedCouponerEmail');
     if (!loggedInKey || loggedInKey.substr(-1) !== "b" && loggedInKey.substr(-1) !== "c") {
+      this.props.setMainHome()
       window.history.pushState(null, '', '/Home');
       toast.error('You are not logged in!')
     }

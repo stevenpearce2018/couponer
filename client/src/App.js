@@ -176,9 +176,9 @@ class App extends Component {
     if(json && json.response === "Updated Account!") toast.success("Updated Account!")
     else toast.error("Failed to update account.")
   }
-  setMainAccountSettings = () => this.setState({mainContent: <AccountSettings updateAccountSettings={this.updateAccountSettings} updateCouponsClaimed={this.updateCouponsClaimed}/>})
+  setMainAccountSettings = () => this.setState({mainContent: <AccountSettings setMainHome={this.setMainHome} updateAccountSettings={this.updateAccountSettings} updateCouponsClaimed={this.updateCouponsClaimed}/>})
   
-  setMainUploadCoupon = () => this.setState({mainContent: <CouponForm uploadCoupons={this.uploadCoupons}/>})
+  setMainUploadCoupon = () => this.setState({mainContent: <CouponForm setMainHome={this.setMainHome} uploadCoupons={this.uploadCoupons}/>})
   
   setMainSignUp = () => this.setState({mainContent: <SignUp setMainHome={this.setMainHome} parentMethod={this.setStateLoggedIn}/>})
   
@@ -186,13 +186,13 @@ class App extends Component {
 
   setMainHome = () => this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>})
 
-  setMainLogin = () => this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
+  setMainLogin = () => this.setState({mainContent: <Login setMainHome={this.setMainHome} parentMethod={this.setStateLoggedIn}/>})
   
   setMainSearch = () => this.setState({mainContent: <Search updateCouponsClaimed={this.updateCouponsClaimed}/>})
 
   setMainToAbout = () => this.setState({mainContent: <About/>})
 
-  setMainToMyCoupons = () => this.setState({mainContent: <MyCoupons/>})
+  setMainToMyCoupons = () => this.setState({mainContent: <MyCoupons setMainHome={this.setMainHome}/>})
   
   setStateLoggedIn = (key, email, couponsCurrentlyClaimed, membershipExperationDate) => {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
