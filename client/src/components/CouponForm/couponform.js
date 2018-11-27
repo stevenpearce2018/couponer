@@ -134,20 +134,6 @@ class CouponForm extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.title !== nextState.title) return true;
-    if (this.state.address !== nextState.address) return true;
-    if (this.state.city !== nextState.city) return true;
-    if (this.state.amountCoupons !== nextState.amountCoupons) return true;
-    if (this.state.currentPrice !== nextState.currentPrice) return true;
-    if (this.state.discountedPrice !== nextState.discountedPrice) return true;
-    if (this.state.category !== nextState.category) return true;
-    if (this.state.popupClass !== nextState.popupClass) return true;
-    if (this.state.textarea !== nextState.textarea) return true;
-    if (this.state.imagePreviewUrl !== nextState.imagePreviewUrl) return true;
-    if (this.state.superCoupon !== nextState.superCoupon) return true;
-    return true;
-  }
   uploadFile = e => {
     e.preventDefault();
     let that = this;
@@ -228,7 +214,7 @@ class CouponForm extends Component {
     ]
     this.setState({category: categoryChoices[e.target.value]})
   }
-  handleSuperChange = e =>{
+  handleSuperChange = e => {
     const superChoices = [
       "Let's go super",
       'No thanks',
