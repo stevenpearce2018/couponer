@@ -5,6 +5,8 @@ import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
 import InputField from '../SubComponents/InputField/inputField';
 import capitalizeCase from '../../capitalizeCase';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 class MyCoupons extends Component {
@@ -28,9 +30,6 @@ class MyCoupons extends Component {
   async componentDidMount () {
     if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
     const that = this;
-    const google = window.google
-    // eslint-disable-next-line
-    const geocoder = new google.maps.Geocoder;
     function showPosition(position) {
       that.setState({
         latitude: position.coords.latitude,
@@ -43,7 +42,7 @@ class MyCoupons extends Component {
     const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
     if (!loggedInKey || loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
       window.history.pushState(null, '', '/Home');
-      alert('You are not logged in!')
+      toast.error('You are not logged in!')
     }
     else {
       loggedInKey.slice(-1) === "b" ? this.setState({isBusinessOwner: true}) : this.setState({isBusinessOwner: false})
@@ -51,17 +50,14 @@ class MyCoupons extends Component {
         loggedInKey: loggedInKey,
         email: email
       }
-      const url = `/api/getYourCoupons`
-      const json = await postRequest(url, data)
+      const json = await postRequest(`/api/getYourCoupons`, data)
       if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, null, this.showPopup)})
       else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
     }
   }
-  togglePopup(){
-    const newClass = this.state.popupClass === "hiddenOverlay" ? "overlay" : "hiddenOverlay"
-    this.setState({popupClass: newClass})
-  }
-  showPopup(id, title) {
+  togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})
+
+  showPopup = (id, title) => {
     this.setState({id: id, title: title})
     this.togglePopup()
   }
@@ -70,7 +66,6 @@ class MyCoupons extends Component {
     this.setState({ [name]: value })
   }
   async validateCode(){
-    alert("validateCode")
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
     const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
     const data = {
@@ -79,8 +74,7 @@ class MyCoupons extends Component {
       email: email,
       couponCode: this.state.couponCode
     }
-    const url = `/api/validateCode`
-    const json = await postRequest(url, data)
+    const json = await postRequest(`/api/validateCode`, data)
     console.log(json.response)
     // if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, null, this.showPopup)})
     // else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
@@ -88,6 +82,7 @@ class MyCoupons extends Component {
   render() {
     return (
       <div>
+        <ToastContainer />
         <div className={this.state.popupClass}>
           <div className="popup">
             <h2 className="popupheader">{this.state.isBusinessOwner === true ? "Validate codes for: " + capitalizeCase(this.state.title) : "Your coupon code for " + capitalizeCase(this.state.title) + " is:"}</h2>

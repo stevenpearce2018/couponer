@@ -4,18 +4,20 @@
   "private": true,
   "dependencies": {
     "path": "^0.12.7",
+    "preact": "^8.2.7",
     "preact-compat": "^3.18.4",
+    "preact-render-to-string": "^3.7.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-flags-select": "^1.1.9",
     "react-phone-number-input": "^2.2.14",
-    "react-scripts": "1.0.17",
+    "react-scripts": "^1.0.17",
     "react-stripe-checkout": "^2.6.3",
     "react-stripe-elements": "^2.0.1",
+    "react-toastify": "^4.4.3",
     "webpack": "^4.23.1",
-    "webpack-cli": "^3.1.2",
-    "preact": "^8.2.7",
-    "preact-render-to-string": "^3.7.0"
+    "webpack-cli": "^3.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

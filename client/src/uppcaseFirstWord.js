@@ -1,3 +1,3 @@
 const uppcaseFirstWord = string => string.charAt(0).toUpperCase() + string.slice(1);
 
-module.exports = uppcaseFirstWord;
+export default uppcaseFirstWord;

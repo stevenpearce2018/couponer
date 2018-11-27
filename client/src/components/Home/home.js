@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './home.css';
 import CouponsMaker from '../../couponsMaker';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class Home extends Component {
   constructor(props) {
@@ -18,7 +20,7 @@ class Home extends Component {
     this.incrementPage = this.incrementPage.bind(this);
     this.changePage = this.changePage.bind(this);
   }
-  componentDidMount () {
+  componentDidMount() {
     // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
@@ -80,17 +82,16 @@ class Home extends Component {
       const data = await response.json();
       this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber: pageNumber})
     }
-    else alert("You cannot go lower than page one!") 
+    else toast.error("You cannot go lower than page one!") 
   }
-  decreasePage(){
-    this.changePage(-1)
-  }
-  incrementPage(){
-    this.changePage(1)
-  }
+  decreasePage = () => this.changePage(-1)
+
+  incrementPage = () => this.changePage(1)
+  
   render() {
     return (
       <div>
+        <ToastContainer />
         <div className="center">
           <h2>Coupons near you</h2>
         </div>

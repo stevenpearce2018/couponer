@@ -12,10 +12,12 @@ import history from './history';
 // import { loadReCaptcha } from 'react-recaptcha-google';
 import MyCoupons from './components/MyCoupons/myCoupons';
 import postRequest from './postReqest';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // For routing
-const Link = (props) => {
-    const onClick = (e) => {
+const Link = props => {
+    const onClick = e => {
         const aNewTab = e.metaKey || e.ctrlKey;
         const anExternalLink = props.href.startsWith('http');
         if (!aNewTab && !anExternalLink) {
@@ -34,95 +36,91 @@ const Link = (props) => {
 
 class App extends Component {
   constructor(props) {
-    super(props);
-    this.state = { 
-      mainContent: '',
-      loginButton: 'notHidden',
-      logoutButton: 'hidden',
-      email: '',
-      loggedInKey: '',
-      couponsCurrentlyClaimed: 0,
-      membershipExperationDate: '',
-      showOrHideNav: 'hidden',
-      loggedInBuisness: 'hidden',
-      ignoreClick: true, // handles navbar closing when open and clicking outside it.
-      couponData: <div className="loaderContainer"><div className="loader"></div></div>,
-  };
-  this.setMainSearch = this.setMainSearch.bind(this);
-  this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
-  this.setMainSignUp = this.setMainSignUp.bind(this);
-  this.setMainAccountSettings = this.setMainAccountSettings.bind(this);
-  this.setMainHome = this.setMainHome.bind(this);
-  this.setMainLogin = this.setMainLogin.bind(this);
-  this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
-  this.logout = this.logout.bind(this);
-  this.setMainToAbout = this.setMainToAbout.bind(this);
-  this.showOrHideNav = this.showOrHideNav.bind(this);
-  this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
-  this.uploadCoupons = this.uploadCoupons.bind(this);
-  this.hideNav = this.hideNav.bind(this);
-  this.updateAccountSettings = this.updateAccountSettings.bind(this);
-  // this.fetchCoupons = this.fetchCoupons.bind(this);
-  this.updateCouponsClaimed = this.updateCouponsClaimed.bind(this);
-}
-async componentDidMount () {
-  // loadReCaptcha();
-  const urlHandler = (currentURL) => {
-    if(currentURL.toLowerCase().substring(0, 6) === "search") {
-      this.setMainSearch();
-    }
-    else {
-      switch (currentURL.toLowerCase()) {
-        case 'home':
-            this.setMainHome();
-            break;
-        case 'uploadcoupon':
-            this.setMainUploadCoupon();
-            break;
-        case 'accountsettings':
-            this.setMainAccountSettings();
-            break;
-        case 'signup':
-            this.setMainSignUp();
-            break;
-        case 'login':
-            this.setMainLogin();
-            break;
-        case 'about':
-            this.setMainToAbout();
-            break;
-        case 'mycoupons':
-            this.setMainToMyCoupons();
-            break;
-        default:
-            window.location.pathname = '/Home';
-            this.setMainHome();
-            break;
+      super(props);
+      this.state = { 
+        mainContent: '',
+        loginButton: 'notHidden',
+        logoutButton: 'hidden',
+        email: '',
+        loggedInKey: '',
+        couponsCurrentlyClaimed: 0,
+        membershipExperationDate: '',
+        showOrHideNav: 'hidden',
+        loggedInBuisness: 'hidden',
+        ignoreClick: true, // handles navbar closing when open and clicking outside it.
+        couponData: <div className="loaderContainer"><div className="loader"></div></div>,
+    };
+    this.setMainSearch = this.setMainSearch.bind(this);
+    this.setMainUploadCoupon = this.setMainUploadCoupon.bind(this);
+    this.setMainSignUp = this.setMainSignUp.bind(this);
+    this.setMainAccountSettings = this.setMainAccountSettings.bind(this);
+    this.setMainHome = this.setMainHome.bind(this);
+    this.setMainLogin = this.setMainLogin.bind(this);
+    this.setStateLoggedIn = this.setStateLoggedIn.bind(this)
+    this.logout = this.logout.bind(this);
+    this.setMainToAbout = this.setMainToAbout.bind(this);
+    this.showOrHideNav = this.showOrHideNav.bind(this);
+    this.setMainToMyCoupons = this.setMainToMyCoupons.bind(this);
+    this.uploadCoupons = this.uploadCoupons.bind(this);
+    this.hideNav = this.hideNav.bind(this);
+    this.updateAccountSettings = this.updateAccountSettings.bind(this);
+    // this.fetchCoupons = this.fetchCoupons.bind(this);
+    this.updateCouponsClaimed = this.updateCouponsClaimed.bind(this);
+  }
+  async componentDidMount () {
+    const urlHandler = currentURL => {
+      if(currentURL.toLowerCase().substring(0, 6) === "search") this.setMainSearch();
+      else {
+        switch (currentURL.toLowerCase()) {
+          case 'home':
+              this.setMainHome();
+              break;
+          case 'uploadcoupon':
+              this.setMainUploadCoupon();
+              break;
+          case 'accountsettings':
+              this.setMainAccountSettings();
+              break;
+          case 'signup':
+              this.setMainSignUp();
+              break;
+          case 'login':
+              this.setMainLogin();
+              break;
+          case 'about':
+              this.setMainToAbout();
+              break;
+          case 'mycoupons':
+              this.setMainToMyCoupons();
+              break;
+          default:
+              window.location.pathname = '/Home';
+              this.setMainHome();
+              break;
+        }
       }
     }
-  }
-  const url = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
-  urlHandler(url);
-  this._isMounted = true;
-  window.onpopstate = () => {
-    if(this._isMounted) {
-      const urlPath = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
-      urlHandler(urlPath)
+    const url = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
+    urlHandler(url);
+    this._isMounted = true;
+    window.onpopstate = () => {
+      if(this._isMounted) {
+        const urlPath = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
+        urlHandler(urlPath)
+      }
     }
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
+    const couponsCurrentlyClaimed = sessionStorage.getItem('couponsCurrentlyClaimed')
+    const membershipExperationDate = sessionStorage.getItem('membershipExperationDate')
+    if (loggedInKey) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail'), membershipExperationDate: membershipExperationDate, couponsCurrentlyClaimed: couponsCurrentlyClaimed })
+    if (loggedInKey && loggedInKey.substr(-1) === "b") this.setState({loggedInBuisness: 'notHidden'})
   }
-  const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
-  const couponsCurrentlyClaimed = sessionStorage.getItem('couponsCurrentlyClaimed')
-  const membershipExperationDate = sessionStorage.getItem('membershipExperationDate')
-  if (loggedInKey && loggedInKey.length > 5) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail'), membershipExperationDate: membershipExperationDate, couponsCurrentlyClaimed: couponsCurrentlyClaimed })
-  if(loggedInKey && loggedInKey.substr(-1) === "b") {
-    this.setState({loggedInBuisness: 'notHidden'})
-  }
-}
-  showOrHideNav(){
+
+  showOrHideNav = () => {
     if (this.state.showOrHideNav === "navPopup") this.setState({showOrHideNav:"hidden", ignoreClick: true})
     else this.setState({showOrHideNav:"navPopup", ignoreClick: false})
   }
-  hideNav(){
+  hideNav = () => {
     if (this.showOrHideNav !== "hidden" && this.state.ignoreClick === false) this.setState({showOrHideNav: "hidden", ignoreClick: true})
   }
   async logout(){
@@ -130,8 +128,7 @@ async componentDidMount () {
       loggedInKey: this.state.loggedInKey,
       email: this.state.email
     }
-    const url = `/api/signout`;
-    await postRequest(url, data)
+    await postRequest(`/api/signout`, data)
     this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden",couponsCurrentlyClaimed: '', couponsCurrentlyClaimed: '',})
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
@@ -139,15 +136,7 @@ async componentDidMount () {
     sessionStorage.removeItem('couponsCurrentlyClaimed')
     sessionStorage.removeItem('membershipExperationDate')
   }
-  // async fetchCoupons(accountID) {
-  //   const data = {
-  //     accountID: accountID
-  //   }
-  //   const url = "/api/getAccountCoupons"
-  //   const json = await postRequest(url, data)
-  // }
   async uploadCoupons(state){
-    const url = `/api/uploadCoupons`
     const data = {
       description: state.description,
       source: state.source,
@@ -169,8 +158,10 @@ async componentDidMount () {
       loggedInKey: this.state.loggedInKey,
       email: this.state.email,
     }
-    const json = await postRequest(url, data)
-    alert(JSON.stringify(json), "json")
+    const json = await postRequest(`/api/uploadCoupons`, data)
+    //!todo, check json
+    toast.success("Coupon Created!")
+    // alert(JSON.stringify(json), "json")
   }
   async updateAccountSettings(data){
     const dataObject = {
@@ -181,46 +172,29 @@ async componentDidMount () {
       loggedInKey: this.state.loggedInKey,
       email: this.state.email
     }
-    const url = `/api/updateAccount`
-    const json = await postRequest(url, dataObject)
-    if(json && json.response === "Updated Account!") alert("Updated Account!")
-    else alert("Failed to update account.")
+    const json = await postRequest(`/api/updateAccount`, dataObject)
+    if(json && json.response === "Updated Account!") toast.success("Updated Account!")
+    else toast.error("Failed to update account.")
   }
-  setMainAccountSettings(e) {
-    this.setState({mainContent: <AccountSettings 
-      // fetchCoupons={this.fetchCoupons}
-      //   couponData={this.state.couponData}
-        updateAccountSettings={this.updateAccountSettings}
-        updateCouponsClaimed={this.updateCouponsClaimed}
-      />
-    })
-  }
-  setMainUploadCoupon(e) {
-    this.setState({mainContent: <CouponForm uploadCoupons={this.uploadCoupons}/>})
-  }
-  setMainSignUp(e){
-    this.setState({mainContent: <SignUp parentMethod={this.setStateLoggedIn}/>})
-  }
-  updateCouponsClaimed(number){
-    number === -1 ? this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) - 1)}) : this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) + 1)})
-  }
-  setMainHome(e){
-    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>})
-  }
-  setMainLogin(e){
-    this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
-  }
-  setMainSearch(e){
-    this.setState({mainContent: <Search updateCouponsClaimed={this.updateCouponsClaimed}/>})
-  }
-  setMainToAbout(){
-    this.setState({mainContent: <About/>})
-  }
-  setMainToMyCoupons(){
-    this.setState({mainContent: <MyCoupons/>})
-  }
+  setMainAccountSettings = () => this.setState({mainContent: <AccountSettings updateAccountSettings={this.updateAccountSettings} updateCouponsClaimed={this.updateCouponsClaimed}/>})
   
-  setStateLoggedIn(key, email, couponsCurrentlyClaimed, membershipExperationDate) {
+  setMainUploadCoupon = () => this.setState({mainContent: <CouponForm uploadCoupons={this.uploadCoupons}/>})
+  
+  setMainSignUp = () => this.setState({mainContent: <SignUp setMainHome={this.setMainHome} parentMethod={this.setStateLoggedIn}/>})
+  
+  updateCouponsClaimed = number => number === -1 ? this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) - 1)}) : this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) + 1)})
+
+  setMainHome = () => this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>})
+
+  setMainLogin = () => this.setState({mainContent: <Login parentMethod={this.setStateLoggedIn}/>})
+  
+  setMainSearch = () => this.setState({mainContent: <Search updateCouponsClaimed={this.updateCouponsClaimed}/>})
+
+  setMainToAbout = () => this.setState({mainContent: <About/>})
+
+  setMainToMyCoupons = () => this.setState({mainContent: <MyCoupons/>})
+  
+  setStateLoggedIn = (key, email, couponsCurrentlyClaimed, membershipExperationDate) => {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
@@ -239,6 +213,7 @@ async componentDidMount () {
   render () {
     return (
         <div className="home" onClick={this.hideNav}>
+        <ToastContainer />
           <h1 className='homeMainTitle'>
             <span>
               Save money, grow your business, try something new.

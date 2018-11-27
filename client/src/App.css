@@ -3,6 +3,7 @@ input:focus, select:focus { background: ghostwhite }
 body{margin:0px; padding:0px; font-family: 'Open Sans', sans-serif;}
 section{width:100%; max-width:1200px; margin:0px auto; display:table; position:relative;}
 h1{margin:0px auto; display:table; font-size:26px; padding:40px 0px; color:#002e5b; text-align:center;}
+h2{font-size:20px;}
 h1 span{font-weight:500;}
 
 header{width:100%; display:table; background-color:#fde428; margin-bottom:50px;}
@@ -56,6 +57,7 @@ section {max-width: 90%;}
 
 @media only screen and (max-width: 360px) {
 h1{font-size:20px;}
+h2{font-size:16px;}
 span{padding:5px 0px;}
 #logo{font-size: 20px;}
 nav{top:47px;}

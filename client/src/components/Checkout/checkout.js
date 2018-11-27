@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import StripeCheckout from 'react-stripe-checkout';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CURRENCY = 'USD';
 
@@ -60,12 +62,12 @@ const CURRENCY = 'USD';
     fromEuroToCent = amount => amount * 100;
 
     successPayment = data => {
-      alert('Payment Successful');
+      toast.success('Payment Successful');
       console.log(data);
     };
 
     errorPayment = data => {
-      alert('Payment Error');
+      toast.error('Payment Error');
       console.log(data);
     };
 

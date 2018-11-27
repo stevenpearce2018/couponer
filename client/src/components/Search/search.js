@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './search.css';
 import Select from '../SubComponents/Select/select';
 import CouponsMaker from '../../couponsMaker';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const getParameterByName = (name, url) => {
   if (!url) url = window.location.href;
@@ -54,9 +56,6 @@ class Search extends Component {
       navigator.geolocation.getCurrentPosition(showPosition);
     } 
     const that = this;
-    const google = window.google
-    // eslint-disable-next-line
-    const geocoder = new google.maps.Geocoder;
     function showPosition(position) {
       that.setState({
         latitude: position.coords.latitude,
@@ -123,19 +122,17 @@ class Search extends Component {
       this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), pageNumber : Number(this.state.pageNumber)})
       // window.location.href = decodeURIComponent(`/search?pageNumber=${pageNumber}${searchSubUrl}`);
     }
-    else alert("You cannot go lower than page one!")
+    else toast.error("You cannot go lower than page one!")
   }
-  decreasePage(){
-    this.changePage(-1)
-  }
-  incrementPage(){
-    this.changePage(1)
-  }
+  decreasePage = () => this.changePage(-1)
+
+  incrementPage = () => this.changePage(1)
+  
   handleChange = event => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
   }
-  updateCategory (e) {
+  updateCategory = e => {
     const choices = ["Food", "Entertainment", "Health and Fitness", "Retail", "Home Improvement", "Activities", "Other", "Any" ]
     this.setState({ category: choices[e.target.value] });
   }
@@ -151,10 +148,11 @@ class Search extends Component {
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
     }
-}                
+  }                
   render() {
     return (
       <div className="container text-center">
+      <ToastContainer />
       <form className='searchForm'>
       <h2>Search for coupons by city, zipcode, and even by category!</h2>
       <br/>
@@ -174,14 +172,15 @@ class Search extends Component {
       <br/>
       <strong>
       <Select
-          hasLabel='true'
-          htmlFor='select'
-          name="category"
-          label='Coupon Category'
-          options='Food, Entertainment, Health and Fitness, Retail, Home Improvement, Activities, Other'
-          required={true}
-          value={this.state.length}
-          onChange={this.updateCategory} />
+        hasLabel='true'
+        htmlFor='select'
+        name="category"
+        label='Coupon Category'
+        options='Food, Entertainment, Health and Fitness, Retail, Home Improvement, Activities, Other'
+        required={true}
+        value={this.state.length}
+        onChange={this.updateCategory} 
+      />
       </strong>
       <br/>
       <SearchField

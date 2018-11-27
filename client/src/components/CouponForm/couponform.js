@@ -6,44 +6,46 @@ import Select from '../SubComponents/Select/select';
 import Textarea from '../SubComponents/Textarea/textarea';
 import Checkout from '../Checkout/checkout';
 import HaversineInMiles from '../../HaversineInMiles';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const validateCouponForm = (state) => {
+const validateCouponForm = state => {
   if (state.latitude === '' || state.longitude === '') {
-    alert('Invalid Address, please check address!')
+    toast.error('Invalid Address, please check address!')
     return false;
   }
   else if (state.title === 'Rent your very own kitten today!') {
-    alert('You must have a unique title!');
+    toast.error('You must have a unique title!');
     return false;
   }
   else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') {
-    alert('You must have an address!');
+    toast.error('You must have an address!');
     return false;
   }
   else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') {
-    alert('You must upload an image!!!!!')
+    toast.error('You must upload an image!!!!!')
     return false;
   }
   else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') {
-    alert('You must upload a custom description!');
+    toast.error('You must upload a custom description!');
     return false;
   }
   else if (state.city === '') {
-    alert('You must have a city!')
+    toast.error('You must have a city!')
     return false;
   }
   else if (state.category === '') {
-    alert('You must have a category!')
+    toast.error('You must have a category!')
     return false;
   }
   // !todo, fix this check
   // else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your current price!')
   else if (state.city === '') {
-    alert('You must have a city!')
+    toast.error('You must have a city!')
     return false;
   }
   else if (state.zip === '' || state.zip.length < 3) {
-    alert('You must have a zipcode!')
+    toast.error('You must have a zipcode!')
     return false;
   }
 }
@@ -88,22 +90,16 @@ class CouponForm extends Component {
   componentDidMount() {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
     this.setState({loggedInKey:loggedInKey})
-    console.log(loggedInKey)
     if (!loggedInKey) {
       window.location.pathname = '/Home';
-      alert('You are not logged in!')
+      toast.error('You are not logged in!')
     }
     else if(loggedInKey.slice(-1) !== "b") {
       window.location.pathname = '/Home';
-      alert('Only buiness owners can access this page!')
+      toast.error('Only buiness owners can access this page!')
     }
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
-    } 
+    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
     const that = this;
-    const google = window.google
-    // eslint-disable-next-line
-    const geocoder = new google.maps.Geocoder;
     function showPosition(position) {
       that.setState({
         mylongitude: position.coords.longitude,
@@ -111,15 +107,15 @@ class CouponForm extends Component {
       })
     }
   }
-  handleChange = (event) => {
+  handleChange = event => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
   }
-  togglePopup(){
+  togglePopup = () => {
     const newClass = this.state.popupClass === "hiddenOverlay" ? "overlay" : "hiddenOverlay"
     this.setState({popupClass: newClass})
   }
-  handleImageChange(e) {
+  handleImageChange = e => {
     e.preventDefault();
     try {
       const reader = new FileReader();
@@ -132,7 +128,7 @@ class CouponForm extends Component {
       }
       reader.readAsDataURL(file)
     } catch (error) {
-      alert('You must select an image!')
+      toast.error('You must select an image!')
     }
   }
 
@@ -150,7 +146,7 @@ class CouponForm extends Component {
     if (this.state.superCoupon !== nextState.superCoupon) return true;
     return true;
   }
-  uploadFile(e) {
+  uploadFile = e => {
     e.preventDefault();
     let that = this;
     const google = window.google
@@ -165,14 +161,14 @@ class CouponForm extends Component {
           validateCouponForm(this.state)
           this.props.uploadCoupons(this.state)
         }
-      } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
+      } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });
   }
-  handleTitleChange(e) {
+  handleTitleChange = e => {
     if (e.target.value === '') this.setState({ title: 'Rent your very own kitten today!'})
     else this.setState({ title: e.target.value })
   }
-  handleAddressChange(e) {
+  handleAddressChange = e => {
     let that = this;
     if (e.target.value === '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
     else this.setState({address: e.target.value})
@@ -193,43 +189,44 @@ class CouponForm extends Component {
     });
   }
   
-    handleAmountCouponsChange(e) {
-      let coupons = e.target.value;
-      if (coupons.lastIndexOf('.') > -1) coupons = 0;
-      this.setState({amountCoupons: coupons})
-    }
-    handleDiscountedPriceChange(e) {
-      let price = e.target.value;
-        if (price.includes('.')) {
-          if (price.substring(price.length-3, price.length-2) === '.') this.setState({discountedPrice: e.target.value})
-          else this.setState({discountedPrice: e.target.value + '0'})
-        } else this.setState({discountedPrice: e.target.value + '.00'})
-    }
-    
-    handleCurrentPriceChange(e) {
-      let price = e.target.value;
+  handleAmountCouponsChange = e => {
+    let coupons = e.target.value;
+    if (coupons.lastIndexOf('.') > -1) coupons = 0;
+    this.setState({amountCoupons: coupons})
+  }
+  handleDiscountedPriceChange = e => {
+    let price = e.target.value;
       if (price.includes('.')) {
-        if (price.substring(price.length-3, price.length-2) === '.') this.setState({currentPrice: e.target.value})
-        else this.setState({currentPrice: e.target.value + '0'})
-      } else this.setState({currentPrice: e.target.value + '.00'})
-    }
-    handleTextareaChange(e) {
-      if(e.target.value === '') this.setState({textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.'})
-      else this.setState({ textarea: e.target.value})
-    }
-    handleCategoryChange(e){
-      const categoryChoices = [
-        'Food',
-        'Entertainment',
-        'Health and Fitness',
-        'Retail',
-        'Home improvement',
-        'Activies',
-        'Other'
-      ]
-      this.setState({category: categoryChoices[e.target.value]})
-    }
-  handleSuperChange(e){
+        if (price.substring(price.length-3, price.length-2) === '.') this.setState({discountedPrice: e.target.value})
+        else this.setState({discountedPrice: e.target.value + '0'})
+      }
+      else this.setState({discountedPrice: e.target.value + '.00'})
+  }
+    
+  handleCurrentPriceChange = e => {
+    const price = e.target.value;
+    if (price.includes('.')) {
+      if (price.substring(price.length-3, price.length-2) === '.') this.setState({currentPrice: e.target.value})
+      else this.setState({currentPrice: e.target.value + '0'})
+    } else this.setState({currentPrice: e.target.value + '.00'})
+  }
+  handleTextareaChange = e => {
+    if(e.target.value === '') this.setState({textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.'})
+    else this.setState({ textarea: e.target.value})
+  }
+  handleCategoryChange = e => {
+    const categoryChoices = [
+      'Food',
+      'Entertainment',
+      'Health and Fitness',
+      'Retail',
+      'Home improvement',
+      'Activies',
+      'Other'
+    ]
+    this.setState({category: categoryChoices[e.target.value]})
+  }
+  handleSuperChange = e =>{
     const superChoices = [
       "Let's go super",
       'No thanks',
@@ -237,7 +234,7 @@ class CouponForm extends Component {
     this.setState({superCoupon: superChoices[e.target.value]})
   }
 
-  payForCoupons(dataFromStripe){
+  payForCoupons = dataFromStripe => {
     const data = {
       description: dataFromStripe.description,
       source: dataFromStripe.source,
@@ -267,10 +264,10 @@ class CouponForm extends Component {
             latitude:results[0].geometry.location.lat(),
             longitude: results[0].geometry.location.lng()
           })
-          validateCouponForm(this.state)
-          that.props.uploadCoupons(data)
+          if (validateCouponForm(this.state)) that.props.uploadCoupons(data)
+          else toast.error("Coupon Upload Failed! Make sure that you put in the correct information.")
         }
-      } else alert('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
+      } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });
   }
   render() {
@@ -279,10 +276,10 @@ class CouponForm extends Component {
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"></link>
         <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"></link>
         <div className='couponHeader'>
-          <h1 className='formHeaderText'> Example Coupon</h1>
+          <h2 className='formHeaderText'> Example Coupon</h2>
         </div>
         <div className='formHeader'>
-          <h1 className='formHeaderText'> Coupon details</h1>
+          <h2 className='formHeaderText'> Coupon details</h2>
         </div>
         <div className="flextape">
         <Coupon
@@ -297,7 +294,7 @@ class CouponForm extends Component {
           distance = {HaversineInMiles(this.state.mylatitude, this.state.mylongitude, this.state.latitude, this.state.longitude)}
         />
         <div className='formHeaderMobile'>
-          <h1>Coupon details</h1>
+          <h2>Coupon details</h2>
         </div>
         <div className='uploadCouponForm'>
         <form

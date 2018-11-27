@@ -7,6 +7,8 @@ import InputField from '../SubComponents/InputField/inputField'
 import Checkout from '../Checkout/checkout';
 import validateEmail from '../../validateEmail';
 import postRequest from '../../postReqest';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Checkout button is clicked
 // Check if info inputted is valid                 // if failed break
@@ -45,20 +47,19 @@ class SignUp extends Component {
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
     this.handleRadio = this.handleRadio.bind(this);
-    this.checkInfo = this.checkInfo.bind(this);
+    this.validatePhone = this.validatePhone.bind(this);
     this.handleCustomerSignup = this.handleCustomerSignup.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
   }
   componentWillMount() {
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
-    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
-    if(loggedInKey && email) {
-      window.location.pathname = '/Home';
-      alert("You are already logged in!")
+    if(sessionStorage.getItem('UnlimitedCouponerEmail') && sessionStorage.getItem('UnlimitedCouponerKey')) {
+      this.props.setMainHome()
+      window.history.pushState(null, '', '/Home');
+      toast.error("You are already logged in!")
     }
   }
-  handleChange = (event) => {
+  handleChange = event => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
   }
@@ -67,39 +68,38 @@ class SignUp extends Component {
       phoneNumber: this.state.phoneNumber,
       randomNumber: this.state.fiveDigitCode,
     }
-    const url = `/api/phoneTestValidateNumber`
-    const json = await postRequest(url, data)
+    const json = await postRequest(`/api/phoneTestValidateNumber`, data)
     if (json && json.success) {
-      alert("Phone number is valid, woohoo!")
+      toast.success("Phone number is valid, woohoo!")
       this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
       if (this.state.yourPick === " Buisness Owner") this.setState({showSignUp:"showBuissnessIfCustomer", checkout: "hidden"})
       this.togglePopup();
     }
-    else alert("The number you have entered is incorrect")
+    else toast.error("The number you have entered is incorrect")
   }
-  updateMembershipExperationDate(event){
+  updateMembershipExperationDate = event => {
     let d = new Date();
     d.setMonth( d.getMonth() + Number(event.target.value));
     this.setState({numberOfMonths: Number(event.target.value), membershipExperationDate: d})
   }
-  async checkInfo(data){
-    const that = this;
-    this.togglePopup()
-    if(this.state.phoneNumber[0] !== "+") return false;
+  async validatePhone(){
+    if(this.state.phoneNumber[0] !== "+") {
+      toast.error("You need to select the country your phone is registered in!")
+      return false;
+    }
     else {
+      this.togglePopup()
       const data = {
-        phoneNumber: that.state.phoneNumber,
-        // recaptchaToken: that.state.recaptchaToken
+        phoneNumber: this.state.phoneNumber,
       }
-      const url = `/api/phoneTest`
-      await postRequest(url, data)
-      if (this.state.city && this.state.email && this.state.yourPick === ' Customer' && this.state.password === this.state.passwordConfirm && this.state.phoneNumber &&this.state.membershipExperationDate) return true;
-      else return false;
+      await postRequest(`/api/phoneTest`, data)
     }
   }
 
+  validState = state => state.phoneNumber[0] !== "+" && state.city && state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber && state.membershipExperationDate ? true : false;
+
   async handleSingup(e){
-    if(this.state.boolValidPhoneNumber === false) return alert("You must validate your phone number!")
+    if(this.state.boolValidPhoneNumber === false) return toast.error("You must validate your phone number!")
     e.preventDefault();
     const data = {
       buisnessName: this.state.buisnessName,
@@ -110,14 +110,13 @@ class SignUp extends Component {
       phoneNumber: this.state.phoneNumber,
       randomNumber: Number(this.state.fiveDigitCode)
     }
-    if (validateEmail(this.state.email)){
-      const url = `/api/signupCustomer`
-      const json = await postRequest(url, data)
+    if (validateEmail(this.state.email) && this.validState(this.state)){
+      const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
         this.props.parentMethod(json && json.loggedInKey, this.state.email);
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
-    } else alert("Your email is not valid!")
+    } else toast.error("Your email is not valid!")
   }
   async handleCustomerSignup(dataFromStripe){
     const data = {
@@ -133,21 +132,17 @@ class SignUp extends Component {
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount,
     }
-    console.log({data})
     if (validateEmail(this.state.email)){
-      const url = `/api/signupCustomer`
-      const json = await postRequest(url, data)
+      const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
         this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
-    } else alert("Your email is not valid!")
+    } else toast.error("Your email is not valid!")
   }
-  togglePopup(){
-    let newClass = "hiddenOverlay";
-    if(this.state.popupClass === "hiddenOverlay") newClass = "overlay";
-    this.setState({popupClass: newClass})
-  }
+
+  togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})
+
   render() {
     const options = this.state.customerOrBuisness.map((loan, key) => {
       const isCurrent = this.state.yourPick === loan
@@ -175,6 +170,7 @@ class SignUp extends Component {
     })
     return (
       <div className="container text-center">
+      <ToastContainer />
         <section id="portfolio" className="content">
           <h2 className="textHeader">Sign up</h2>
           <p className="text">First, validate your phone number. UnlimitedCouponer needs your phone number in order to text you claimed coupons and to allow easy verification of coupons. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee.  </p>
@@ -251,7 +247,7 @@ class SignUp extends Component {
     <div className="phoneImage">{this.state.validPhoneNumber}</div>
   </div>
   <div className='buttonAndForgot'>
-    <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.checkInfo}><strong>Validate Phone Number</strong></button>
+    <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.validatePhone}><strong>Validate Phone Number</strong></button>
     <div className={this.state.popupClass}>
             <div className="popup">
               <h2 className="popupheader">Please Enter Your 5 digit security code</h2>

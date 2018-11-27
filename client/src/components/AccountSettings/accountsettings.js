@@ -4,6 +4,8 @@ import InputField from '../SubComponents/InputField/inputField';
 import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
 import Checkout from '../Checkout/checkout';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const buisnessOwner = sessionStorage.getItem('buisnessOwner');
 
@@ -45,15 +47,14 @@ class AccountSettings extends Component {
     const email = sessionStorage.getItem('UnlimitedCouponerEmail');
     if (!loggedInKey || loggedInKey.substr(-1) !== "b" && loggedInKey.substr(-1) !== "c") {
       window.history.pushState(null, '', '/Home');
-      alert('You are not logged in!')
+      toast.error('You are not logged in!')
     }
     else {
       const data = {
         loggedInKey: loggedInKey,
         email: email
       }
-      const url = `/api/getYourCoupons`
-      const json = await postRequest(url, data)
+      const json = await postRequest(`/api/getYourCoupons`, data)
       this.setState({coupons: CouponsMaker(json && json.coupons)})
     }
   }
@@ -89,8 +90,7 @@ class AccountSettings extends Component {
       loggedInKey: loggedInKey,
       email: email
     }
-    const url = `/api/addMonths`
-    const json = await postRequest(url, data)
+    const json = await postRequest(`/api/addMonths`, data)
   }
 
   render() {

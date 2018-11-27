@@ -3,6 +3,8 @@ import capitalizeCase from './capitalizeCase';
 import uppcaseFirstWord from './uppcaseFirstWord';
 import HaversineInMiles from './HaversineInMiles';
 import postRequest from './postReqest';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const latitude = sessionStorage.getItem('couponlatitude');
 const longitude = sessionStorage.getItem('couponlongitude');
@@ -16,7 +18,7 @@ const getCoupons = async (_id, updateCouponsClaimed) => {
   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
   const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
   if (!loggedInKey || !email) {
-    alert('You are not logged in!')
+    toast.error('You are not logged in!')
     // window.location.href = '/Login'
     window.history.pushState(null, '', decodeURIComponent(`/Login`));
   }
@@ -26,12 +28,11 @@ const getCoupons = async (_id, updateCouponsClaimed) => {
       loggedInKey: loggedInKey,
       email: email
     }
-    const url = `/api/getCoupon`
-    const json = await postRequest(url, data)
+    await postRequest(`/api/getCoupon`, data)
     const couponsCurrentlyClaimed = Number(sessionStorage.getItem('couponsCurrentlyClaimed')) + 1;
     sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed )
     updateCouponsClaimed(1)
-    alert(JSON.stringify(json))
+    toast.success("Coupon Claimed!")
   }
 }
 

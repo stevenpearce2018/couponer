@@ -9,4 +9,4 @@ const HaversineInMiles = (lat1, long1, lat2, long2) => {
     return d.toFixed(2) + ' miles from you.';
 }
 
-module.exports = HaversineInMiles;
+export default HaversineInMiles;
