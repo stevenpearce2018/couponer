@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './home.css';
 import CouponsMaker from '../../couponsMaker';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
 
 class Home extends Component {
   constructor(props) {
@@ -91,7 +91,6 @@ class Home extends Component {
   render() {
     return (
       <div>
-        <ToastContainer />
         <div className="center">
           <h2>Coupons near you</h2>
         </div>

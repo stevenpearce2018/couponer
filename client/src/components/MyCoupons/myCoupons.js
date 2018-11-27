@@ -5,8 +5,8 @@ import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
 import InputField from '../SubComponents/InputField/inputField';
 import capitalizeCase from '../../capitalizeCase';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
 
 
 class MyCoupons extends Component {
@@ -83,7 +83,6 @@ class MyCoupons extends Component {
   render() {
     return (
       <div>
-        <ToastContainer />
         <div className={this.state.popupClass}>
           <div className="popup">
             <h2 className="popupheader">{this.state.isBusinessOwner === true ? "Validate codes for: " + capitalizeCase(this.state.title) : "Your coupon code for " + capitalizeCase(this.state.title) + " is:"}</h2>

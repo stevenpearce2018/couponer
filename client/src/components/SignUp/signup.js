@@ -7,8 +7,8 @@ import InputField from '../SubComponents/InputField/inputField'
 import Checkout from '../Checkout/checkout';
 import validateEmail from '../../validateEmail';
 import postRequest from '../../postReqest';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
 
 // Checkout button is clicked
 // Check if info inputted is valid                 // if failed break
@@ -116,7 +116,7 @@ class SignUp extends Component {
         this.props.parentMethod(json && json.loggedInKey, this.state.email);
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
-    } else toast.error("Your email is not valid!")
+    } else toast.error("There was an error with your submission!")
   }
   async handleCustomerSignup(dataFromStripe){
     const data = {
@@ -132,7 +132,7 @@ class SignUp extends Component {
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount,
     }
-    if (validateEmail(this.state.email)){
+    if (validateEmail(this.state.email) && this.validState(this.state)){
       const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
         this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
@@ -170,7 +170,6 @@ class SignUp extends Component {
     })
     return (
       <div className="container text-center">
-      <ToastContainer />
         <section id="portfolio" className="content">
           <h2 className="textHeader">Sign up</h2>
           <p className="text">First, validate your phone number. UnlimitedCouponer needs your phone number in order to text you claimed coupons and to allow easy verification of coupons. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee.  </p>

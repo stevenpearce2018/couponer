@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import StripeCheckout from 'react-stripe-checkout';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
 
 const CURRENCY = 'USD';
 
