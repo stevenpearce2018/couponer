@@ -411,7 +411,7 @@ app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
       res.json({ coupons: coupons });
     }
   }
-  else if (outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
+  else if (outcome[0] && outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
   else res.json({response: "No coupons found."});
 }));
 
