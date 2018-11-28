@@ -86,7 +86,7 @@ class Search extends Component {
       },
     })
     const couponsData = await response.json();
-    this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber)})
+    this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber), keywords: "", category: "", city: "", zip: ""})
     // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
   }
   async changePage(number) {
@@ -153,6 +153,10 @@ class Search extends Component {
     return (
       <div className="container text-center">
       <form className='searchForm'>
+      <p>{this.state.city}</p>
+      <p>{this.state.zip}</p>
+      <p>{this.state.category}</p>
+      <p>{this.state.keywords}</p>
       <h2>Search for coupons by city, zipcode, and even by category!</h2>
       <br/>
       <SearchField

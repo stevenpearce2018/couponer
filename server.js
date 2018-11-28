@@ -24,9 +24,10 @@ const generateQR = require("./lib/generateQR");
 const validateEmail = require('./lib/validateEmail');
 const associateCouponCodeByID = require('./lib/associateCouponCodeByID');
 const cleanCoupons = require("./lib/cleanCoupons");
-const moment = require("moment");
+const checkMembershipDate = require("./lib/checkMembershipDate");
 const handleAsync = require('async-error-handler');
 const getIP = require('./lib/getIP');
+const validateCouponForm = require("./lib/validateCouponForm");
 
 app.post('/api/generateQR', handleAsync(async(req, res) => {
   try {
@@ -157,12 +158,12 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
       const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
       const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
-          if (req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
+          if (validateEmail(req.body.email) && req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
             if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
               const hashedPass = await bcrypt.hashSync(req.body.password, 10);
               const email = req.body.email;
-              if(validateEmail(email)){
-                const membershipExperationDate = (yourPick === ' Buisness Owner') ? "N/A" : req.body.membershipExperationDate;
+              const membershipExperationDate = (yourPick === ' Buisness Owner') ? "N/A" : req.body.membershipExperationDate;
+              const registerUser = async() => {
                 const accountInfo = new AccountInfo({
                   _id: new mongoose.Types.ObjectId(),
                   email: email,
@@ -179,27 +180,26 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
                   membershipExperationDate: membershipExperationDate,
                   ip: ip
                 })
-                await accountInfo.save()
-                .catch(err => console.log(err))
-                console.log(membershipExperationDate)
+                await accountInfo.save().catch(err => console.log(err))
                 res.json({
                   loggedInKey:loggedInKey,
                   membershipExperationDate: membershipExperationDate,
                   couponsCurrentlyClaimed: 0
                 });
-              } else res.json({resp:'Your email is not valid!'});
+              }
               if(yourPick === ' Customer') {
-                const successfulSignup = () => console.log("Successful Signup!");
                 const chargeData = {
                   description: req.body.description,
                   source: req.body.source,
                   currency: req.body.currency,
                   amount: req.body.amount
                 }
-                // console.log({chargeData})
-                const chargeResponse = await stripe.charges.create(chargeData)
-                console.log(chargeResponse)
-              }
+                const charge = await stripe.charges.create(chargeData)
+                if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") registerUser()
+                else res.json({resp:'Failed to charge card!'});
+              } 
+              else if(yourPick === ' Buisness Owner') registerUser()
+              else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
             } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
         } else res.json({resp:'You need to fill out all fields!'});
       } else res.json({resp:'Email address is taken!'});
@@ -307,50 +307,54 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
   if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
   else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
-    const amountCoupons = req.body.amountCoupons;
-    let couponCodes = [];
-    let i = 0
-    for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-    const saveCoupon = async () => {
-      const mongodbID = new mongoose.Types.ObjectId();
-      const coupon = new Coupon({
-        _id: mongodbID,
-        title: req.body.title,
-        address: req.body.address,
-        city: req.body.city.toLowerCase(),
-        amountCoupons: amountCoupons,
-        currentPrice: req.body.currentPrice,
-        discountedPrice: req.body.discountedPrice,
-        category: req.body.category,
-        textarea: req.body.textarea,
-        base64image: req.body.imagePreviewUrl,
-        superCoupon: req.body.superCoupon,
-        couponCodes: couponCodes,
-        couponStillValid: true,
-        latitude: req.body.latitude,
-        longitude: req.body.longitude
-      })
-      const successfulSignup = () => console.log("Successful Signup!");
+    if(validateCouponForm(req.body) && req.body.currentPrice > req.body.discountedPrice) {
       const chargeData = {
         description: req.body.description,
         source: req.body.source,
         currency: req.body.currency,
         amount: req.body.amount
       }
-      res.json({response: 'Coupon Created'})
-      // pushing the value seemed to a new array seemed to not work so I had to do this hack.
-      const arr = [...outcome[0].couponIds, mongodbID]
-      await AccountInfo.updateOne(
-        { "_id" : outcome[0]._id }, 
-        { "$set" : {"couponIds": arr}}, 
-        { "upsert" : false } 
-      );
-      await coupon.save()
-        .catch(err => console.log(err))
-        // console.log({chargeData})
-        stripe.charges.create(chargeData);
+      const charge = await stripe.charges.create(chargeData);
+      if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
+        res.json({response: 'Coupon Created'})
+        const amountCoupons = req.body.amountCoupons;
+        let couponCodes = [];
+        let i = 0
+        for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+        const saveCoupon = async () => {
+          const mongodbID = new mongoose.Types.ObjectId();
+          const coupon = new Coupon({
+            _id: mongodbID,
+            title: req.body.title,
+            address: req.body.address,
+            city: req.body.city.toLowerCase(),
+            amountCoupons: amountCoupons,
+            currentPrice: req.body.currentPrice,
+            discountedPrice: req.body.discountedPrice,
+            category: req.body.category,
+            textarea: req.body.textarea,
+            base64image: req.body.imagePreviewUrl,
+            superCoupon: req.body.superCoupon,
+            couponCodes: couponCodes,
+            couponStillValid: true,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude
+          })
+          
+          // pushing the value seemed to a new array seemed to not work so I had to do this hack.
+          const arr = [...outcome[0].couponIds, mongodbID]
+          await AccountInfo.updateOne(
+            { "_id" : outcome[0]._id }, 
+            { "$set" : {"couponIds": arr}}, 
+            { "upsert" : false } 
+          );
+          await coupon.save()
+            .catch(err => console.log(err))
+            // console.log({chargeData})
+        }
+        saveCoupon();
+      } else res.json({response: 'Coupon Not Created'})
     }
-    saveCoupon();
   } else res.json({response: "You are not logged in!"});
 }))
 
@@ -433,7 +437,7 @@ app.get('/search', handleAsync(async (req, res) => {
   const city = (req.query.city) ? req.query.city.toLowerCase() : null;
   const zip = (req.query.zip) ? req.query.zip : null;
   const category = (req.query.category) ? req.query.category : null;
-  const keyword = (req.query.keyword) ? req.query.keyword : null;
+  const keyword = (req.query.keywords) ? req.query.keywords : null;
   const regex = (keyword) ? new RegExp(escapeRegex(keyword), 'gi') : null;
   const pageNumber = req.query.pageNumber;
   if(city && zip && category && keyword) {
@@ -606,8 +610,7 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
     const outcome = await AccountInfo.find({'email':req.body.email, 'ip': ip, loggedInKey: loggedInKey }).limit(1)
     if (outcome) {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
-      else {
-        // console.log(outcome[0].couponsCurrentlyClaimed)
+      else if(checkMembershipDate(outcome[0].membershipExperationDate)) {
         // if (outcome[0].couponsCurrentlyClaimed < 5) {
           const coupon = await Coupon.find({'_id':_id }).limit(1);
           let couponCode;
@@ -623,8 +626,6 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
           if (coupon[0].amountCoupons - 1 <= 0) couponStillValid = false;
           const arrIds = [...outcome[0].couponIds, _id];
           const arrCouponCodes = [...outcome[0].couponCodes, {_id: _id, couponCode: couponCode}]
-          // console.log(arrIds, "arrids")
-          // console.log(arrCouponCodes, "arrCouponCodes")
           if(couponCode) {
             res.json({response: "Coupon Claimed!"});
             await AccountInfo.updateOne(
@@ -636,9 +637,7 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
               }, 
               { "upsert" : false } 
             );
-            // console.log(coupon[0].couponCodes)
             const updatedCodes = claimCode(coupon[0].couponCodes)
-            // console.log(updatedCodes, "updatedCodes")
             await Coupon.updateOne(
               { "_id" : req.body._id },
               { "$set" : { 
@@ -648,11 +647,9 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
               }, 
               { "upsert" : false } 
             );
-            // const coupontwo = await Coupon.find({'_id':req.body._id }).limit(1);
-            // console.log(JSON.stringify(coupontwo))
           } else res.json({response: "These coupons are no longer available. Please try another coupon."});
-        // } else res.json({response: "You have too many coupons! Please use a coupon or discard one of your current coupons."});
-      }
+        // } else res.json({response: "You have too many coupons! Please use or discard one of your current coupons."});
+      } else res.json({response: "Your membership has expired! Please renew it under the account settings option."});
     }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
