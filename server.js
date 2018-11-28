@@ -26,8 +26,6 @@ const handleAsync = require('async-error-handler');
 const getIP = require('./lib/getIP');
 const path = require("path")
 const checkMembershipDate = require("./lib/checkMembershipDate");
-const handleAsync = require('async-error-handler');
-const getIP = require('./lib/getIP');
 const validateCouponForm = require("./lib/validateCouponForm");
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
