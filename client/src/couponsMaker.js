@@ -28,11 +28,12 @@ const getCoupons = async (_id, updateCouponsClaimed) => {
       loggedInKey: loggedInKey,
       email: email
     }
-    await postRequest(`/api/getCoupon`, data)
+    const response = await postRequest(`/api/getCoupon`, data)
     const couponsCurrentlyClaimed = Number(sessionStorage.getItem('couponsCurrentlyClaimed')) + 1;
     sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed )
     updateCouponsClaimed(1)
-    toast.success("Coupon Claimed!")
+    if (response.response === "Coupon Claimed!") toast.success("Coupon Claimed!")
+    else toast.error(response.response)
   }
 }
 

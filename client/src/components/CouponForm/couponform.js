@@ -8,7 +8,6 @@ import Checkout from '../Checkout/checkout';
 import HaversineInMiles from '../../HaversineInMiles';
 import { toast } from 'react-toastify';
 
-
 const validateCouponForm = state => {
   if (state.latitude === '' || state.longitude === '') {
     toast.error('Invalid Address, please check address!')
@@ -36,6 +35,14 @@ const validateCouponForm = state => {
   }
   else if (state.category === '') {
     toast.error('You must have a category!')
+    return false;
+  }
+  else if (state.discountedPrice === '') {
+    toast.error('You must have a category!')
+    return false;
+  }
+  else if (state.price === '') {
+    toast.error('You must have a Current Price!')
     return false;
   }
   // !todo, fix this check
@@ -91,17 +98,20 @@ class CouponForm extends Component {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
     this.setState({loggedInKey:loggedInKey})
     if (!loggedInKey) {
-      this.props.setMainHome()
       window.location.pathname = '/Home';
       toast.error('You are not logged in!')
     }
     else if(loggedInKey.slice(-1) !== "b") {
-      this.props.setMainHome()
       window.location.pathname = '/Home';
       toast.error('Only buiness owners can access this page!')
     }
-    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } 
     const that = this;
+    const google = window.google
+    // eslint-disable-next-line
+    const geocoder = new google.maps.Geocoder;
     function showPosition(position) {
       that.setState({
         mylongitude: position.coords.longitude,
@@ -113,10 +123,9 @@ class CouponForm extends Component {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
   }
-  togglePopup = () => {
-    const newClass = this.state.popupClass === "hiddenOverlay" ? "overlay" : "hiddenOverlay"
-    this.setState({popupClass: newClass})
-  }
+
+  togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})
+
   handleImageChange = e => {
     e.preventDefault();
     try {
@@ -177,43 +186,42 @@ class CouponForm extends Component {
     });
   }
   
-  handleAmountCouponsChange = e => {
-    let coupons = e.target.value;
-    if (coupons.lastIndexOf('.') > -1) coupons = 0;
-    this.setState({amountCoupons: coupons})
-  }
-  handleDiscountedPriceChange = e => {
-    let price = e.target.value;
-      if (price.includes('.')) {
-        if (price.substring(price.length-3, price.length-2) === '.') this.setState({discountedPrice: e.target.value})
-        else this.setState({discountedPrice: e.target.value + '0'})
-      }
-      else this.setState({discountedPrice: e.target.value + '.00'})
-  }
+    handleAmountCouponsChange = e => {
+      let coupons = e.target.value;
+      if (coupons.lastIndexOf('.') > -1) coupons = 0;
+      this.setState({amountCoupons: coupons})
+    }
+    handleDiscountedPriceChange = e => {
+      let price = e.target.value;
+        if (price.includes('.')) {
+          if (price.substring(price.length-3, price.length-2) === '.') this.setState({discountedPrice: e.target.value})
+          else this.setState({discountedPrice: e.target.value + '0'})
+        } else this.setState({discountedPrice: e.target.value + '.00'})
+    }
     
-  handleCurrentPriceChange = e => {
-    const price = e.target.value;
-    if (price.includes('.')) {
-      if (price.substring(price.length-3, price.length-2) === '.') this.setState({currentPrice: e.target.value})
-      else this.setState({currentPrice: e.target.value + '0'})
-    } else this.setState({currentPrice: e.target.value + '.00'})
-  }
-  handleTextareaChange = e => {
-    if(e.target.value === '') this.setState({textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.'})
-    else this.setState({ textarea: e.target.value})
-  }
-  handleCategoryChange = e => {
-    const categoryChoices = [
-      'Food',
-      'Entertainment',
-      'Health and Fitness',
-      'Retail',
-      'Home improvement',
-      'Activies',
-      'Other'
-    ]
-    this.setState({category: categoryChoices[e.target.value]})
-  }
+    handleCurrentPriceChange = e => {
+      let price = e.target.value;
+      if (price.includes('.')) {
+        if (price.substring(price.length-3, price.length-2) === '.') this.setState({currentPrice: e.target.value})
+        else this.setState({currentPrice: e.target.value + '0'})
+      } else this.setState({currentPrice: e.target.value + '.00'})
+    }
+    handleTextareaChange = e => {
+      if(e.target.value === '') this.setState({textarea: 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.'})
+      else this.setState({ textarea: e.target.value})
+    }
+    handleCategoryChange = e => {
+      const categoryChoices = [
+        'Food',
+        'Entertainment',
+        'Health and Fitness',
+        'Retail',
+        'Home improvement',
+        'Activies',
+        'Other'
+      ]
+      this.setState({category: categoryChoices[e.target.value]})
+    }
   handleSuperChange = e => {
     const superChoices = [
       "Let's go super",
@@ -223,6 +231,7 @@ class CouponForm extends Component {
   }
 
   payForCoupons = dataFromStripe => {
+    console.log("hello")
     const data = {
       description: dataFromStripe.description,
       source: dataFromStripe.source,
@@ -252,8 +261,10 @@ class CouponForm extends Component {
             latitude:results[0].geometry.location.lat(),
             longitude: results[0].geometry.location.lng()
           })
-          if (validateCouponForm(this.state)) that.props.uploadCoupons(data)
-          else toast.error("Coupon Upload Failed! Make sure that you put in the correct information.")
+          console.log("hello 2")
+          validateCouponForm(this.state)
+          that.props.uploadCoupons(data)
+          console.log("hello 3")
         }
       } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });
@@ -264,10 +275,10 @@ class CouponForm extends Component {
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"></link>
         <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"></link>
         <div className='couponHeader'>
-          <h2 className='formHeaderText'> Example Coupon</h2>
+          <h1 className='formHeaderText'> Example Coupon</h1>
         </div>
         <div className='formHeader'>
-          <h2 className='formHeaderText'> Coupon details</h2>
+          <h1 className='formHeaderText'> Coupon details</h1>
         </div>
         <div className="flextape">
         <Coupon
@@ -282,7 +293,7 @@ class CouponForm extends Component {
           distance = {HaversineInMiles(this.state.mylatitude, this.state.mylongitude, this.state.latitude, this.state.longitude)}
         />
         <div className='formHeaderMobile'>
-          <h2>Coupon details</h2>
+          <h1>Coupon details</h1>
         </div>
         <div className='uploadCouponForm'>
         <form
@@ -325,7 +336,6 @@ class CouponForm extends Component {
           onChange={this.handleChange}
         />
         <br/>
-        
         <Input
           hasLabel='true'
           htmlFor='textInput'
@@ -337,7 +347,6 @@ class CouponForm extends Component {
           onChange={this.handleChange}
         />
         <br/>
-        
         <Input
           hasLabel='true'
           htmlFor='textInput'
