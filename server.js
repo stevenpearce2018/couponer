@@ -4,8 +4,6 @@ const app = express();
 const redisHelper = require('./redisHelper')
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
-app.use(bodyParser.json({limit:'50mb'}))
-app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
 const accountSid = process.env.ACCOUNT_SID; // !todo, change dev keys to prod keys
 const authToken = process.env.AUTH_TOKEN;
 const pass = process.env.PASS
@@ -24,9 +22,16 @@ const generateQR = require("./lib/generateQR");
 const validateEmail = require('./lib/validateEmail');
 const associateCouponCodeByID = require('./lib/associateCouponCodeByID');
 const cleanCoupons = require("./lib/cleanCoupons");
-const moment = require("moment");
 const handleAsync = require('async-error-handler');
 const getIP = require('./lib/getIP');
+const path = require("path")
+app.use(express.static(path.join(__dirname, "client", "build")))
+app.use(bodyParser.json({limit:'50mb'}))
+app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+});
 
 app.post('/api/generateQR', handleAsync(async(req, res) => {
   try {
@@ -658,6 +663,6 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
   }
 }))
 
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => `Server running on port ${port}`);

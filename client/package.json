@@ -33,7 +33,7 @@
     "new-build": "rm -rf ./dist && npm run build:client",
     "build:client": "NODE_ENV=production webpack --config build/webpack.config.js -p"
   },
-  "proxy": "http://localhost:8080",
+  "proxy": "http://localhost:8000",
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-core": "^6.26.3",
