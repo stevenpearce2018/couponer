@@ -4,7 +4,7 @@ import InputField from '../SubComponents/InputField/inputField';
 import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
 import Checkout from '../Checkout/checkout';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 
 const buisnessOwner = sessionStorage.getItem('buisnessOwner');
