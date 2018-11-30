@@ -9,52 +9,20 @@ import HaversineInMiles from '../../HaversineInMiles';
 import { toast } from 'react-toastify';
 
 const validateCouponForm = state => {
-  if (state.latitude === '' || state.longitude === '') {
-    toast.error('Invalid Address, please check address!')
-    return false;
-  }
-  else if (state.title === 'Rent your very own kitten today!') {
-    toast.error('You must have a unique title!');
-    return false;
-  }
-  else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') {
-    toast.error('You must have an address!');
-    return false;
-  }
-  else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') {
-    toast.error('You must upload an image!!!!!')
-    return false;
-  }
-  else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') {
-    toast.error('You must upload a custom description!');
-    return false;
-  }
-  else if (state.city === '') {
-    toast.error('You must have a city!')
-    return false;
-  }
-  else if (state.category === '') {
-    toast.error('You must have a category!')
-    return false;
-  }
-  else if (state.discountedPrice === '') {
-    toast.error('You must have a category!')
-    return false;
-  }
-  else if (state.price === '') {
-    toast.error('You must have a Current Price!')
-    return false;
-  }
+  if (state.latitude === '' || state.longitude === '') return toast.error('Invalid Address, please check address!')
+  else if (state.title === 'Rent your very own kitten today!') return toast.error('You must have a unique title!');
+  else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') return toast.error('You must have an address!');
+  else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') return toast.error('You must upload an image!!!!!')
+  else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') return toast.error('You must upload a custom description!');
+  else if (state.city === '') return toast.error('You must have a city!')
+  else if (state.category === '') return toast.error('You must have a category!')
+  else if (state.discountedPrice === '') return toast.error('You must have a category!')
+  else if (state.price === '') return toast.error('You must have a Current Price!')
   // !todo, fix this check
   // else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your current price!')
-  else if (state.city === '') {
-    toast.error('You must have a city!')
-    return false;
-  }
-  else if (state.zip === '' || state.zip.length < 3) {
-    toast.error('You must have a zipcode!')
-    return false;
-  }
+  else if (state.city === '') return toast.error('You must have a city!')
+  else if (state.zip === '' || state.zip.length < 3) return toast.error('You must have a zipcode!')
+  else return true;
 }
 
 class CouponForm extends Component {
@@ -155,8 +123,7 @@ class CouponForm extends Component {
             latitude:results[0].geometry.location.lat(),
             longitude: results[0].geometry.location.lng()
           })
-          validateCouponForm(this.state)
-          this.props.uploadCoupons(this.state)
+          if (validateCouponForm(this.state) === true) this.props.uploadCoupons(this.state)
         }
       } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });
@@ -231,7 +198,6 @@ class CouponForm extends Component {
   }
 
   payForCoupons = dataFromStripe => {
-    console.log("hello")
     const data = {
       description: dataFromStripe.description,
       source: dataFromStripe.source,
@@ -261,10 +227,7 @@ class CouponForm extends Component {
             latitude:results[0].geometry.location.lat(),
             longitude: results[0].geometry.location.lng()
           })
-          console.log("hello 2")
-          validateCouponForm(this.state)
-          that.props.uploadCoupons(data)
-          console.log("hello 3")
+          if (validateCouponForm(this.state) === true) that.props.uploadCoupons(data)
         }
       } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
     });

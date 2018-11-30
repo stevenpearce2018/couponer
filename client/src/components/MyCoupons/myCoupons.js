@@ -7,8 +7,6 @@ import InputField from '../SubComponents/InputField/inputField';
 import capitalizeCase from '../../capitalizeCase';
 import { toast } from 'react-toastify';
 
-
-
 class MyCoupons extends Component {
   constructor(props, context) {
     super(props, context);
@@ -43,18 +41,16 @@ class MyCoupons extends Component {
     if (!loggedInKey || loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
       this.props.setMainHome()
       window.history.pushState(null, '', '/Home');
-      toast.error('You are not logged in!')
+      return toast.error('You are not logged in!')
     }
-    else {
-      loggedInKey.slice(-1) === "b" ? this.setState({isBusinessOwner: true}) : this.setState({isBusinessOwner: false})
-      const data = {
-        loggedInKey: loggedInKey,
-        email: email
-      }
-      const json = await postRequest(`/api/getYourCoupons`, data)
-      if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, null, this.showPopup)})
-      else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
+    loggedInKey.slice(-1) === "b" ? this.setState({isBusinessOwner: true}) : this.setState({isBusinessOwner: false})
+    const data = {
+      loggedInKey: loggedInKey,
+      email: email
     }
+    const json = await postRequest(`/api/getYourCoupons`, data)
+    if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, null, this.showPopup)})
+    else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
   }
   togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})
 
@@ -67,12 +63,10 @@ class MyCoupons extends Component {
     this.setState({ [name]: value })
   }
   async validateCode(){
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
-    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
+    if (this.state.email === "" || this.state.couponCode) return toast.error('Please fill out both fields!');
     const data = {
       id: this.state.id,
-      loggedInKey: loggedInKey,
-      email: email,
+      email: this.state.email,
       couponCode: this.state.couponCode
     }
     const json = await postRequest(`/api/validateCode`, data)
@@ -96,6 +90,16 @@ class MyCoupons extends Component {
                   labelHTML="Coupon Code"
                   placeholder="Coupon Code"
                   name="couponCode"
+                  onChange={this.handleChange}
+                  required
+                />
+                <br/>
+                <InputField
+                  htmlFor="Customer Email"
+                  type="text"
+                  labelHTML="Customer Email"
+                  placeholder="Customer Email"
+                  name="email"
                   onChange={this.handleChange}
                   required
                 />

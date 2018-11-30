@@ -86,6 +86,7 @@ class AccountSettings extends Component {
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount,
       loggedInKey: loggedInKey,
+      numberOfMonths: this.state.numberOfMonths,
       email: email
     }
     const json = await postRequest(`/api/addMonths`, data)

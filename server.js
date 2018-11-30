@@ -27,6 +27,9 @@ const getIP = require('./lib/getIP');
 const path = require("path")
 const checkMembershipDate = require("./lib/checkMembershipDate");
 const validateCouponForm = require("./lib/validateCouponForm");
+const ObjectId = require('mongodb').ObjectId; 
+const useCode = require("./lib/useCode");
+const moment = require("moment");
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
@@ -168,7 +171,16 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
             if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
               const hashedPass = await bcrypt.hashSync(req.body.password, 10);
               const email = req.body.email;
-              const membershipExperationDate = (yourPick === ' Buisness Owner') ? "N/A" : req.body.membershipExperationDate;
+              let today = new Date();
+              let dd = today.getDate();
+              let mm = today.getMonth()+1; //January is 0!
+              const yyyy = today.getFullYear();
+              if(dd<10) dd = '0'+dd
+              if(mm<10) mm = '0'+mm
+              today = yyyy + '-' + mm + '-' + dd;
+              // if membership is valid, start addming months from that data. Otherwise add from today
+              const finalDate = moment(today).add(req.body.numberOfMonths, 'months');
+              const membershipExperationDate = (yourPick === ' Buisness Owner') ? "N/A" : finalDate;
               const registerUser = async() => {
                 const accountInfo = new AccountInfo({
                   _id: new mongoose.Types.ObjectId(),
@@ -404,18 +416,9 @@ app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
   const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
   if(outcome[0] && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     const searchIDS = searchableMongoIDs(outcome[0].couponIds)
-    coupons = await Coupon.find({
-      '_id': { $in: searchIDS}
-    })
-    if (coupons.length === 0 ) {
-      coupons = "No coupons found.";
-      res.json({ coupons: cleanCoupons(coupons) });
-    } else {
-      // console.log(outcome[0].couponCodes)
-      coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
-      // console.log(coupons[2].couponCodes)
-      res.json({ coupons: coupons });
-    }
+    coupons = await Coupon.find({'_id': { $in: searchIDS}})
+    coupons.length === 0 ? coupons = "No coupons found." : coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
+    res.json({ coupons: coupons });
   }
   else if (outcome[0] && outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
   else res.json({response: "No coupons found."});
@@ -425,16 +428,66 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
+  const chargeData = {
+    description: req.body.description,
+    source: req.body.source,
+    currency: req.body.currency,
+    amount: req.body.amount
+  }
   const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
-  const coupon = await Coupon.find({'_id': req.body.id }).limit(1);
+  if(outcome[0].length !== 0 && req.body.numberOfMonths >= 1) {
+    const charge = await stripe.charges.create(chargeData);
+    if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
+      let today = new Date();
+      let dd = today.getDate();
+      let mm = today.getMonth()+1; //January is 0!
+      const yyyy = today.getFullYear();
+      if(dd<10) dd = '0'+dd
+      if(mm<10) mm = '0'+mm
+      today = yyyy + '-' + mm + '-' + dd;
+      // if membership is valid, start addming months from that data. Otherwise add from today
+      const date = outcome[0].membershipExperationDate
+      const startingDate = checkMembershipDate(date) ? date : today;
+      const finalDate = moment(startingDate).add(req.body.numberOfMonths, 'months');
+      res.json({response: `Added ${req.body.numberOfMonths} month(s) worth of membership. Thank you for your support!`})
+      await AccountInfo.updateOne(
+        { "_id" : outcome[0]._id }, 
+        { "$set" : { "membershipExperationDate": finalDate}}, 
+        { "upsert" : false } 
+      );
+    }
+  } else res.json({response: "Failed to add months."})
 }))
 
 app.post('/api/validateCode', handleAsync(async (req, res) => {
-  const ip = getIP(req)
-  const loggedInKey = req.body.loggedInKey;
-  const email = req.body.email;
-  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
-  const coupon = await Coupon.find({'_id': req.body.id }).limit(1);
+  const couponCode = req.body.couponCode;
+  const couponID = new ObjectId(req.body.id);
+  const coupon = await Coupon.find({'_id': couponID}).limit(1);
+  const account = await AccountInfo.find({'email':req.body.email}).limit(1)
+  if (coupon.length === 0) res.json({response: "Coupon is not valid."})
+  else if(account.length === 0) res.json({response: "Email is not valid."})
+  else {
+    const isValidCouponCode = confirmValidCouponCode(couponCode, coupon[0].couponCodes)
+    const confirmValidCouponCode = (couponCode, couponCodes) => {
+      if (couponCode.slice(-1) === "u") return false;
+      let i = 0;
+      const couponCodesLength = couponCodes.length;
+      for (; i < couponCodesLength; i++ ) if(couponCodes[i] === couponCode) return true;
+      return false;
+    }
+    isValidCouponCode ? res.json({response: "Coupon is valid!"}) : res.json({response: "Coupon is not valid."});
+    if (isValidCouponCode) {
+      const arrCouponCodes = useCode(couponCode, account[0].couponCodes)
+      await AccountInfo.updateOne(
+        { "_id" : account[0]._id }, 
+        { "$set" : { 
+          "couponsCurrentlyClaimed": account[0].couponsCurrentlyClaimed - 1}, //
+          "couponCodes": arrCouponCodes
+        }, 
+        { "upsert" : false } 
+      );
+    }
+  }
 }))
 
 app.get('/search', handleAsync(async (req, res) => {
@@ -661,6 +714,6 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
   }
 }))
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 4000;
 
 app.listen(port, () => `Server running on port ${port}`);
