@@ -34,9 +34,9 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-});
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+// });
 
 app.post('/api/generateQR', handleAsync(async(req, res) => {
   try {
@@ -714,6 +714,6 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
   }
 }))
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => `Server running on port ${port}`);
