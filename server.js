@@ -122,7 +122,7 @@ app.post('/api/recoverAccountWithCode', handleAsync(async(req, res) => {
   async function confirmRandomNumber(randomNumberFromRedis) {
     if (randomNumberFromRedis === randomNumber) { 
       res.json({success:true})
-      const result = await AccountInfo.findOne({ 'email': email })
+      const result = await AccountInfo.findOne({ 'email': email }) 
       const hashedPass = await bcrypt.hashSync(req.body.newPassword, 10);
       await AccountInfo.updateOne(
         { "_id" : result._id }, 
