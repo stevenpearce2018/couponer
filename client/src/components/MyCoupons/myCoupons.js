@@ -63,16 +63,17 @@ class MyCoupons extends Component {
     this.setState({ [name]: value })
   }
   async validateCode(){
-    if (this.state.email === "" || this.state.couponCode) return toast.error('Please fill out both fields!');
+    if (this.state.email === "" || this.state.couponCode === "") return toast.error('Please fill out both fields!');
     const data = {
       id: this.state.id,
       email: this.state.email,
-      couponCode: this.state.couponCode
+      couponCode: this.state.couponCode + ":c"
     }
     const json = await postRequest(`/api/validateCode`, data)
-    console.log(json.response)
-    // if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, null, this.showPopup)})
-    // else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
+    if(json.response === "Coupon is valid!") {
+      this.togglePopup()
+      toast.success(json.response)
+    } else toast.error(json.response)
   }
   render() {
     return (

@@ -175,7 +175,7 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
               if(mm<10) mm = '0'+mm
               today = yyyy + '-' + mm + '-' + dd;
               // if membership is valid, start addming months from that data. Otherwise add from today
-              const finalDate = moment(today).add(req.body.numberOfMonths, 'months');
+              const finalDate = moment(today).add(req.body.numberOfMonths, 'months').substring(0, 10)
               const membershipExperationDate = (yourPick === ' Buisness Owner') ? "N/A" : finalDate;
               const registerUser = async() => {
                 const accountInfo = new AccountInfo({
@@ -444,7 +444,7 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
       // if membership is valid, start addming months from that data. Otherwise add from today
       const date = outcome[0].membershipExperationDate
       const startingDate = checkMembershipDate(date) ? date : today;
-      const finalDate = moment(startingDate).add(req.body.numberOfMonths, 'months');
+      const finalDate = moment(startingDate).add(req.body.numberOfMonths, 'months').substring(0, 10);
       res.json({response: `Added ${req.body.numberOfMonths} month(s) worth of membership. Thank you for your support!`})
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
@@ -463,7 +463,14 @@ app.post('/api/validateCode', handleAsync(async (req, res) => {
   if (coupon.length === 0) res.json({response: "Coupon is not valid."})
   else if(account.length === 0) res.json({response: "Email is not valid."})
   else {
-    const isValidCouponCode = confirmValidCouponCode(couponCode, coupon[0].couponCodes)
+    const confirmCodeLinkedToAccount = (couponCode, couponCodes) => {
+      if (couponCode.slice(-1) === "u") return false;
+      let i = 0;
+      const couponCodesLength = couponCodes.length;
+      for (; i < couponCodesLength; i++ ) if(couponCodes[i].couponCode === couponCode) return true;
+      return false;
+    }
+    const codeLinkedToEmail = confirmCodeLinkedToAccount(couponCode, account[0].couponCodes)
     const confirmValidCouponCode = (couponCode, couponCodes) => {
       if (couponCode.slice(-1) === "u") return false;
       let i = 0;
@@ -471,13 +478,16 @@ app.post('/api/validateCode', handleAsync(async (req, res) => {
       for (; i < couponCodesLength; i++ ) if(couponCodes[i] === couponCode) return true;
       return false;
     }
-    isValidCouponCode ? res.json({response: "Coupon is valid!"}) : res.json({response: "Coupon is not valid."});
-    if (isValidCouponCode) {
+    const isValidCouponCode = confirmValidCouponCode(couponCode, coupon[0].couponCodes)
+    isValidCouponCode && codeLinkedToEmail ? res.json({response: "Coupon is valid!"}) : res.json({response: "Coupon is not valid."});
+    if (isValidCouponCode && codeLinkedToEmail) {
       const arrCouponCodes = useCode(couponCode, account[0].couponCodes)
+      // console.log({arrCouponCodes})
+      const couponsCurrentlyClaimed = account[0].couponsCurrentlyClaimed >= 0 ? Number(account[0].couponsCurrentlyClaimed) - 1 : 0;
       await AccountInfo.updateOne(
         { "_id" : account[0]._id }, 
         { "$set" : { 
-          "couponsCurrentlyClaimed": account[0].couponsCurrentlyClaimed - 1}, //
+          "couponsCurrentlyClaimed": couponsCurrentlyClaimed }, //
           "couponCodes": arrCouponCodes
         }, 
         { "upsert" : false } 

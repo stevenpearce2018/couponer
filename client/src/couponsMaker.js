@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 
 const latitude = sessionStorage.getItem('couponlatitude');
 const longitude = sessionStorage.getItem('couponlongitude');
-const buisnessOwner = sessionStorage.getItem('buisnessOwner');
 
 // bubble values up to mycoupons component
 const showCode = (code, showPopup, title) => showPopup(code, title);
@@ -74,9 +73,9 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
         <hr/>
         <br/>
         {
-          (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "true") ?
+          (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "b") ?
             <button className="getCoupon" onClick={ () => validateCode(coupons._id, showPopup, coupons.title)}> Validate Customer Codes </button> :
-          (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && buisnessOwner === "false") ? 
+          (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c") ? 
             <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0], showPopup, coupons.title)}> Show Your Coupon Code </button> :
             <button className="getCoupon" onClick={ () => getCoupons(coupons._id, updateCouponsClaimed)}> Get Coupon </button>
         }

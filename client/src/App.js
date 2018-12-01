@@ -226,7 +226,7 @@ class App extends Component {
           {
             (this.state.couponsCurrentlyClaimed && this.state.couponsCurrentlyClaimed !== "" && this.state.membershipExperationDate && this.state.membershipExperationDate !== "" ) ?
             <strong><p>Currently Claimed Coupons: {(this.state.couponsCurrentlyClaimed !== "undefined" && this.state.couponsCurrentlyClaimed !== "NaN" && this.state.couponsCurrentlyClaimed !=='N/A') ? this.state.couponsCurrentlyClaimed + '/5' : 0 + '/5'}</p>
-            <p>Membership Experation Date: {this.state.membershipExperationDate.substring(0, this.state.membershipExperationDate.indexOf('T'))}</p></strong> :
+            <p>Membership Experation Date: {this.state.membershipExperationDate}</p></strong> :
             <p></p>
           }
         <header className='homeHeader'>

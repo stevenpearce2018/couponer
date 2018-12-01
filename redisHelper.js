@@ -1,11 +1,7 @@
 const redis = require('redis')
-const client = redis.createClient()
-client.on('connect', () => {
-  console.log('Connected to redis')
-})
-client.on('error', (err) => {
-    console.log('Failed to connect to redis, :(. Error: ' + err);
-});
+require('dotenv').config()
+const client = process.env.REDISCONNECTION ? client = redis.createClient(process.env.REDISCONNECTION) : redis.createClient();
+client.on('connect', () => console.log('Connected to redis'))
 
 // Convert object to string if value is an object
 // if a time to live is defined then give the data a time to expire

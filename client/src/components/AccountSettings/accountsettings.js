@@ -6,9 +6,6 @@ import CouponsMaker from '../../couponsMaker';
 import Checkout from '../Checkout/checkout';
 import { toast } from 'react-toastify';
 
-
-const buisnessOwner = sessionStorage.getItem('buisnessOwner');
-
 class AccountSettings extends Component {
   constructor(props) {
     super(props);
@@ -89,7 +86,7 @@ class AccountSettings extends Component {
       numberOfMonths: this.state.numberOfMonths,
       email: email
     }
-    const json = await postRequest(`/api/addMonths`, data)
+    await postRequest(`/api/addMonths`, data)
   }
 
   render() {
@@ -100,7 +97,7 @@ class AccountSettings extends Component {
           <p className="text">In order to add more months of membership you must pay 4.99$ per month. You must validate your new phone number once again in order to change your phone number. To change your password simply type your current password and the new password you would like. To update your city or other information, simply fill out the form and click the update info button below!</p>
         </section>
         <br/>
-      <form className="accountForm" method="post">
+      <div className="accountForm">
       <div className="adjustAccountSettings">
         <h2>Change Account Settings</h2>
       </div>
@@ -144,7 +141,7 @@ class AccountSettings extends Component {
         placeholder="Buisness Name"
         onChange={this.handleChange}
       />
-      {buisnessOwner === "false" ?
+      {sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c" ?
         <div>
           <InputField
             htmlFor="Add more months to your subscription"
@@ -158,7 +155,7 @@ class AccountSettings extends Component {
         </div> : 
         <div></div>
       }
-      {buisnessOwner === "false" && this.state.numberOfMonths !== "" && this.state.numberOfMonths !== 0 ?
+      {sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c" && this.state.numberOfMonths !== "" && this.state.numberOfMonths !== 0 ?
       <div className="checkout-account-settings">
         <Checkout
           parentMethod = {this.addMonths}
@@ -170,10 +167,9 @@ class AccountSettings extends Component {
       </div> : 
       <div></div>
       }
-
       <br/>
       <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
-      </form>
+      </div>
       <div className={this.state.checkout}>
       <br/>
       <br/>
