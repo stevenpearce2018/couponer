@@ -71,6 +71,7 @@ class Login extends Component {
     if (json && json.loggedInKey){
       this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate);
       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
+      json.loggedInKey.substr(-1) === "b" ? sessionStorage.setItem('buisnessOwner', true) : sessionStorage.setItem('buisnessOwner', false)
       // if(json.loggedInKey.substr(-1) === "c") {
       //   sessionStorage.setItem('UnlimitedCouponerMembershipExperationDate', json.membershipExperationDate)
       //   sessionStorage.setItem('UnlimitedCouponerCouponsCurrentlyClaimed', json.couponsCurrentlyClaimed)

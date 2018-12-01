@@ -93,7 +93,6 @@ class MyCoupons extends Component {
                   onChange={this.handleChange}
                   required
                 />
-                <br/>
                 <InputField
                   htmlFor="Customer Email"
                   type="text"

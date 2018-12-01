@@ -1,4 +1,4 @@
-  import { ToastContainer, toast } from 'react-toastify';   
+  import { toast } from 'react-toastify';   
 
 const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
 

@@ -3,7 +3,7 @@ import capitalizeCase from './capitalizeCase';
 import uppcaseFirstWord from './uppcaseFirstWord';
 import HaversineInMiles from './HaversineInMiles';
 import postRequest from './postReqest';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 
 const latitude = sessionStorage.getItem('couponlatitude');
@@ -87,13 +87,12 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
       );
       return (
       <div className='flextape'>
-          {content}
-        </div>
+        {content}
+      </div>
       );
     } catch (error) {
       return (
       <div className='center'>
-      <ToastContainer/>
       <br/>
       <h2>Unable to automatically search for coupons. Try searching manually.</h2>
       </div>

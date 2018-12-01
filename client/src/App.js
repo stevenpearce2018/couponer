@@ -198,14 +198,12 @@ class App extends Component {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
-      sessionStorage.setItem('buisnessOwner', "false");
       this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
       sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
       sessionStorage.setItem('membershipExperationDate', membershipExperationDate)
       window.history.pushState(null, '', '/Home');
     }
     else if(key.substr(-1) === "b") {
-      sessionStorage.setItem('buisnessOwner', "true");
       this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
       window.history.pushState(null, '', '/Home');
     }
