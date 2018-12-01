@@ -1,6 +1,13 @@
 const redis = require('redis')
 require('dotenv').config()
-const client = process.env.REDISCONNECTION ? client = redis.createClient(process.env.REDISCONNECTION) : redis.createClient();
+const config = {
+    redisConf: {
+    host: process.env.REDISCONNECTION, // The redis's server ip 
+    port: process.env.REDDISPORT,
+    pass: process.env.REDISPASS
+    }
+};  
+const client = process.env.REDISCONNECTION && process.env.REDISCONNECTION && process.env.REDISCONNECTION ? redis.createClient(config) : redis.createClient();
 client.on('connect', () => console.log('Connected to redis'))
 
 // Convert object to string if value is an object
