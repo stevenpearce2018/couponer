@@ -41,7 +41,6 @@ Make sure you install the node packages for the server AND the client.
 [X] SPA design <br />
 [/] Webpack Preact Setup <br />
 [ ] Webpack Lazy Loading <br />
-[X] Recaptcha Support <br />
 [ ] Image Optimizations for Performance <br />
 [/] General Serverside Validation of data <br />
 [/] Stripe payment handling<br />

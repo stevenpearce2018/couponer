@@ -33,7 +33,6 @@ class SignUp extends Component {
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
       showSignUp: 'hideBuissnessIfCustomer',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
-      recaptchaToken: '',
       membershipExperationDate: '',
       numberOfMonths: 0,
       fiveDigitCode: '',

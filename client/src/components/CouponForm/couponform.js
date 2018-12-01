@@ -46,7 +46,6 @@ class CouponForm extends Component {
       city: '',
       zip: '',
       popupClass: 'hiddenOverlay',
-      recaptchaToken: '',
       validAddress: <span className="icon red">&#x2718;</span>,
     };
     this.togglePopup = this.togglePopup.bind(this);

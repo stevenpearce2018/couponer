@@ -14,7 +14,6 @@ const AccountInfo = require('./models/accountInfo')
 const mongoose = require('mongoose')
 const stripe = require('./stripe');
 const nodemailer = require('nodemailer');
-const recaptchaSecretKey = process.env.recaptchaSecretKey;
 const searchableMongoIDs = require("./lib/searchableMongoIDs");
 const claimCode = require("./lib/claimCode");
 const escapeRegex = require("./lib/escapeRegex");

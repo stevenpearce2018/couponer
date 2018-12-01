@@ -153,10 +153,6 @@ class Search extends Component {
     return (
       <div className="container text-center">
       <form className='searchForm'>
-      <p>{this.state.city}</p>
-      <p>{this.state.zip}</p>
-      <p>{this.state.category}</p>
-      <p>{this.state.keywords}</p>
       <h2>Search for coupons by city, zipcode, and even by category!</h2>
       <br/>
       <SearchField

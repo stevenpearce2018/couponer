@@ -9,7 +9,6 @@ import Login from './components/Login/login';
 import Search from './components/Search/search';
 import About from './components/About/about';
 import history from './history';
-// import { loadReCaptcha } from 'react-recaptcha-google';
 import MyCoupons from './components/MyCoupons/myCoupons';
 import postRequest from './postReqest';
 import { ToastContainer, toast } from 'react-toastify';

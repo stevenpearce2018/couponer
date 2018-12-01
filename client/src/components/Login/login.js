@@ -1,8 +1,6 @@
  
 import React, { Component } from 'react';
 import './login.css';
-// import { ReCaptcha } from 'react-recaptcha-google';
-// import { loadReCaptcha } from 'react-recaptcha-google';
 import InputField from '../SubComponents/InputField/inputField'
 import validateEmail from '../../validateEmail';
 import postRequest from '../../postReqest';
@@ -14,7 +12,6 @@ class Login extends Component {
     this.state = {
         email: '',
         password: '',
-        recaptchaToken: '',
         popupClass: 'hiddenOverlay',
         recoveryEmail: '',
         recoverEmailSent: false,
@@ -23,8 +20,6 @@ class Login extends Component {
         // phoneNumber: '',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
-    // this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.sendRecovery = this.sendRecovery.bind(this);
     this.validateCode = this.validateCode.bind(this);
@@ -65,7 +60,6 @@ class Login extends Component {
     const data = {
       email: this.state.email,
       password: this.state.password,
-      // recaptchaToken: this.state.recaptchaToken
     }
     const json = await postRequest(`/api/signin`, data)
     if (json && json.loggedInKey){
