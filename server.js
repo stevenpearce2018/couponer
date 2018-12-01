@@ -29,6 +29,7 @@ const validateCouponForm = require("./lib/validateCouponForm");
 const ObjectId = require('mongodb').ObjectId; 
 const useCode = require("./lib/useCode");
 const moment = require("moment");
+app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
@@ -240,7 +241,6 @@ app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
     else res.json({success:false})
   }
 }))
-
 app.post('/api/updateAccount', handleAsync(async (req, res) => {
   //!todo, flush out updateAccount api
   const email = req.body.email;
