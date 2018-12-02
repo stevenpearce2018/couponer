@@ -1,5 +1,6 @@
 const redis = require('redis')
 require('dotenv').config()
+const url = require('url');
 // const config = {
 //     redisConf: {
 //     host: process.env.REDISCONNECTION, // The redis's server ip 
