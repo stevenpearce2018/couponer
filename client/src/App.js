@@ -65,6 +65,7 @@ class App extends Component {
     this.updateAccountSettings = this.updateAccountSettings.bind(this);
     // this.fetchCoupons = this.fetchCoupons.bind(this);
     this.updateCouponsClaimed = this.updateCouponsClaimed.bind(this);
+    this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
   }
   async componentDidMount () {
     const urlHandler = currentURL => {
@@ -175,7 +176,7 @@ class App extends Component {
     if(json && json.response === "Updated Account!") toast.success("Updated Account!")
     else toast.error("Failed to update account.")
   }
-  setMainAccountSettings = () => this.setState({mainContent: <AccountSettings setMainHome={this.setMainHome} updateAccountSettings={this.updateAccountSettings} updateCouponsClaimed={this.updateCouponsClaimed}/>})
+  setMainAccountSettings = () => this.setState({mainContent: <AccountSettings updateMembershipExperationDate = {this.updateMembershipExperationDate} setMainHome={this.setMainHome} updateAccountSettings={this.updateAccountSettings} updateCouponsClaimed={this.updateCouponsClaimed}/>})
   
   setMainUploadCoupon = () => this.setState({mainContent: <CouponForm setMainHome={this.setMainHome} uploadCoupons={this.uploadCoupons}/>})
   
@@ -196,6 +197,9 @@ class App extends Component {
   setStateLoggedIn = (key, email, couponsCurrentlyClaimed, membershipExperationDate) => {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
+    alert("Called")
+    alert(membershipExperationDate, "membershipExperationDate")
+    alert(couponsCurrentlyClaimed, "couponsCurrentlyClaimed")
     if(key.substr(-1) === "c") {
       this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
       sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
@@ -207,6 +211,9 @@ class App extends Component {
       window.history.pushState(null, '', '/Home');
     }
   }
+
+  updateMembershipExperationDate = updatedMembershipEndDate => this.setState({membershipExperationDate: updatedMembershipEndDate})
+
   render () {
     return (
         <div className="home" onClick={this.hideNav}>
@@ -216,6 +223,8 @@ class App extends Component {
               Save money, grow your business, try something new.
             </span>
           </h1>
+          <p>{this.state.couponsCurrentlyClaimed}</p>
+          <p>{this.state.membershipExperationDate}</p>
           {
             (this.state.loggedInKey !== "") ? <p>loggedInKey: {this.state.loggedInKey}</p> : <p></p>
           }

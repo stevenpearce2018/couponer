@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import './signup.css';
-import PhoneInput from 'react-phone-number-input'
-import 'react-flags-select/css/react-flags-select.css';
-import 'react-phone-number-input/style.css'
+// import ReactPhoneInput from 'react-phone-input-2'
+import PhoneCode from 'react-phone-code';
+// import 'react-flags-select/css/react-flags-select.css';
+// import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
 import Checkout from '../Checkout/checkout';
 import validateEmail from '../../validateEmail';
@@ -36,6 +37,7 @@ class SignUp extends Component {
       membershipExperationDate: '',
       numberOfMonths: 0,
       fiveDigitCode: '',
+      country: "+1",
       phoneNumber: '',
       popupClass: 'hiddenOverlay',
       boolValidPhoneNumber: false,
@@ -64,7 +66,7 @@ class SignUp extends Component {
   }
   async validatePhoneNumber(){
     const data = {
-      phoneNumber: this.state.phoneNumber,
+      phoneNumber: this.state.country + this.state.phoneNumber,
       randomNumber: this.state.fiveDigitCode,
     }
     const json = await postRequest(`/api/phoneTestValidateNumber`, data)
@@ -82,20 +84,20 @@ class SignUp extends Component {
     this.setState({numberOfMonths: Number(event.target.value), membershipExperationDate: d})
   }
   async validatePhone(){
-    if(this.state.phoneNumber[0] !== "+") {
-      toast.error("You need to select the country your phone is registered in!")
+    if(this.state.phoneNumber === "") {
+      toast.error("You need to enter your phone number!")
       return false;
     }
     else {
       this.togglePopup()
       const data = {
-        phoneNumber: this.state.phoneNumber,
+        phoneNumber: this.state.country + this.state.phoneNumber,
       }
       await postRequest(`/api/phoneTest`, data)
     }
   }
 
-  validState = state => state.phoneNumber[0] === "+" && state.city && state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber && state.membershipExperationDate ? true : false;
+  validState = state => state.city && state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber ? true : false;
 
   async handleSingup(e){
     if(this.state.boolValidPhoneNumber === false) return toast.error("You must validate your phone number!")
@@ -106,7 +108,7 @@ class SignUp extends Component {
       email: this.state.email,
       yourPick: this.state.yourPick,
       password: this.state.password,
-      phoneNumber: this.state.phoneNumber,
+      phoneNumber: this.state.country + this.state.phoneNumber,
       randomNumber: Number(this.state.fiveDigitCode)
     }
     if (validateEmail(this.state.email) && this.validState(this.state)){
@@ -123,8 +125,9 @@ class SignUp extends Component {
       email: this.state.email,
       yourPick: this.state.yourPick,
       password: this.state.password,
-      phoneNumber: this.state.phoneNumber,
+      phoneNumber: this.state.country + this.state.phoneNumber,
       membershipExperationDate: this.state.membershipExperationDate,
+      numberOfMonths: this.state.numberOfMonths,
       description: dataFromStripe.description,
       randomNumber: Number(this.state.fiveDigitCode),
       source: dataFromStripe.source,
@@ -235,15 +238,39 @@ class SignUp extends Component {
           onChange={this.updateMembershipExperationDate}
         />
       </div>
+      {/* <div className="phoneHolder"> */}
+      <div class="signupBox">
+      <label class="signupLabel" for="Country"><strong>Country</strong></label>
+        <PhoneCode
+          onSelect={code => this.setState({country: code})} // required
+          showFirst={['US', 'UK', 'IN']}
+          defaultValue='select county'
+          id='some-id'
+          name='some-name'
+          className='some class name'
+          optionClassName='some option class name'
+      />
+      </div>
+      <InputField
+        htmlFor="Phone Number"
+        type="number"
+        name="phoneNumber"
+        labelHTML="Phone Number"
+        placeholder="123-456-7189"
+        onChange={this.handleChange}
+      /> 
+      {/* </div> */}
+      <div className="phoneIcon">
+          {this.state.validPhoneNumber}
+        </div>
   </form>
-  <div className="phoneHolder">
-    <PhoneInput
+
+    {/* <ReactPhoneInput
       placeholder="Enter phone number"
       value={ this.state.phoneNumber }
+      defaultCountry={'us'}
       onChange={ phoneNumber => this.setState({ phoneNumber: phoneNumber, validPhoneNumber: <span className="icon red">&#x2718;</span>, showOrHidePhoneValidationButton: "signupbtn"}) } 
-    />
-    <div className="phoneImage">{this.state.validPhoneNumber}</div>
-  </div>
+    /> */}
   <div className='buttonAndForgot'>
     <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.validatePhone}><strong>Validate Phone Number</strong></button>
     <div className={this.state.popupClass}>

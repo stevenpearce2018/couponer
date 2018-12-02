@@ -3,8 +3,15 @@
   margin-top: 15px;
 }
 .phoneImage{
-  margin-right:12.8%;
-  margin-top:-18px;
+  margin-top:300px;
+  margin-left:-50.8%;
+}
+.phoneIcon{
+  margin-top:20px;
+  margin-right:53%;
+}
+.icon{
+  margin-top:-45px;
 }
 .signupbtn{
   width: 96.5%;
@@ -15,6 +22,13 @@
   margin-top: 331px;
   margin-right:100px;
   margin-left: 10%;
+}
+.signupCountry{
+  padding-top:55px;
+}
+#some-id{
+  /* margin-top: 55px; */
+  width: 100% !important;
 }
 .fivedigit{
   text-align: left;
@@ -96,8 +110,18 @@ width: 90%;
   cursor: pointer;
 }
 @media only screen and (max-width: 959px) {
-  .phoneImage{
+  /* .phoneImage{
     margin-right:8.8%;
+  } */
+  #some-id{
+    /* margin-top: 55px; */
+    width: 102% !important;
+  }
+  .phoneIcon{
+    margin-right:0%;
+  }
+  .icon{
+    margin-right:-35px;
   }
     .forgotPass {
       width:98.5%;
@@ -187,7 +211,17 @@ text-align: center;
 text-align: center;
 margin-left:-55px;
 }
-
+.react-tel-input{
+  margin-top: 348px;
+  height: 35px !important;
+  margin-left:10% !important;
+  width: 5.5% !important;
+  margin-top: -20px !important;
+}
+.form-control{
+  /* margin-top: 348px; */
+  /* width: 8% !important; */
+}
 .StripeCheckout{
   margin-top:32px;
   margin-left:-48%;
@@ -195,6 +229,15 @@ margin-left:-55px;
 @media only screen and (max-width: 959px) {
   .StripeCheckout{
     margin-left:0%;
+  }
+}
+@media only screen and (min-width: 959px) {
+  .StripeCheckout{
+    margin-left:0%;
+  }
+  .form-control{
+    margin-top: -200px !important;
+    width: 708% !important;
   }
 }
 @media only screen and (max-width: 990px) {

@@ -38,10 +38,16 @@
         margin-left:65%;
     }
 }  
-
-@media only screen and (max-width: 768px) {
+.checkout-account-settings{
+    margin-top:-91px;
+    float:right;
+    margin-right:55px;
+}
+@media only screen and (max-width: 960px) {
     .checkout-account-settings{
         margin-top:-102px;
-        margin-left:70%;
+        /* margin-left:70%; */
+        float:right;
+        margin-right:0px;
     }
 }

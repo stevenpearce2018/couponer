@@ -184,8 +184,10 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
               if(mm<10) mm = '0'+mm
               today = yyyy + '-' + mm + '-' + dd;
               // if membership is valid, start addming months from that data. Otherwise add from today
-              const finalDate = moment(today).add(req.body.numberOfMonths, 'months').substring(0, 10)
-              const membershipExperationDate = (yourPick === ' Buisness Owner') ? "N/A" : finalDate;
+              // console.log(req.body.numberOfMonths)
+              const finalDate = req.body.numberOfMonths && req.body.numberOfMonths > 0 ? moment(today).add(req.body.numberOfMonths, 'months') : "N/A";
+              const membershipExperationDate = yourPick === ' Buisness Owner' ? "N/A" : JSON.stringify(finalDate).substring(1, 11);
+              console.log(membershipExperationDate)
               const registerUser = async() => {
                 const accountInfo = new AccountInfo({
                   _id: new mongoose.Types.ObjectId(),
@@ -217,7 +219,7 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
                   currency: req.body.currency,
                   amount: req.body.amount
                 }
-                const charge = await stripe.charges.create(chargeData)
+                const charge = (chargeData.amount / 499 === req.body.numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
                 if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") registerUser()
                 else res.json({resp:'Failed to charge card!'});
               } 
@@ -432,6 +434,7 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
+  const numberOfMonths = req.body.numberOfMonths;
   const chargeData = {
     description: req.body.description,
     source: req.body.source,
@@ -440,7 +443,7 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
   }
   const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
   if(outcome[0].length !== 0 && req.body.numberOfMonths >= 1) {
-    const charge = await stripe.charges.create(chargeData);
+    const charge = (chargeData.amount / 499 === numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
     if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
       let today = new Date();
       let dd = today.getDate();
@@ -452,11 +455,12 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
       // if membership is valid, start addming months from that data. Otherwise add from today
       const date = outcome[0].membershipExperationDate
       const startingDate = checkMembershipDate(date) ? date : today;
-      const finalDate = moment(startingDate).add(req.body.numberOfMonths, 'months').substring(0, 10);
-      res.json({response: `Added ${req.body.numberOfMonths} month(s) worth of membership. Thank you for your support!`})
+      const finalDate = moment(startingDate).add(numberOfMonths, 'months');
+      const cleanedDate = JSON.stringify(finalDate).substring(1, 11)
+      res.json({response: `Added ${numberOfMonths} month(s) worth of membership. Thank you for your support!`, cleanedDate: cleanedDate})
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
-        { "$set" : { "membershipExperationDate": finalDate}}, 
+        { "$set" : { "membershipExperationDate": cleanedDate}}, 
         { "upsert" : false } 
       );
     }
