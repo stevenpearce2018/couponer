@@ -7,7 +7,7 @@ const config = {
     pass: process.env.REDISPASS
     }
 };  
-const client = process.env.REDISCONNECTION && process.env.REDISCONNECTION && process.env.REDISCONNECTION ? redis.createClient(config) : redis.createClient();
+const client = redis.createClient(config);
 client.on('connect', () => console.log('Connected to redis'))
 
 // Convert object to string if value is an object
