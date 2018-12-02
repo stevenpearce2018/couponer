@@ -95,7 +95,7 @@ class SignUp extends Component {
     }
   }
 
-  validState = state => state.phoneNumber[0] !== "+" && state.city && state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber && state.membershipExperationDate ? true : false;
+  validState = state => state.phoneNumber[0] === "+" && state.city && state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber && state.membershipExperationDate ? true : false;
 
   async handleSingup(e){
     if(this.state.boolValidPhoneNumber === false) return toast.error("You must validate your phone number!")
