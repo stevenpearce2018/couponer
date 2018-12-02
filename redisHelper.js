@@ -1,16 +1,10 @@
 const redis = require('redis')
 require('dotenv').config()
 const url = require('url');
-// const config = {
-//     redisConf: {
-//     host: process.env.REDISCONNECTION, // The redis's server ip 
-//     port: process.env.REDDISPORT,
-//     pass: process.env.REDISPASS
-//     }
-// };  
 const redisURL = url.parse(process.env.REDISCLOUD_URL);
 const client = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
-// client.auth(redisURL.auth.split(":")[1]);
+client.auth(process.env.REDISPASS);
+
 client.on('connect', () => console.log('Connected to redis'))
 
 // Convert object to string if value is an object

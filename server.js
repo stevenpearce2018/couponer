@@ -115,6 +115,14 @@ app.post('/api/recoverAccount', handleAsync(async(req, res) => {
   }
 }));
 
+app.post('/redistest', handleAsync(async(req, res) => {
+  redisHelper.set("r", "test")
+  redisHelper.get("r", test)
+  function test(data) {
+    console.log(data)
+  } 
+}))
+
 app.post('/api/recoverAccountWithCode', handleAsync(async(req, res) => {
   const email = req.body.recoveryEmail;
   const randomNumber = req.body.randomNumber;
