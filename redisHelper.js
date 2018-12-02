@@ -10,7 +10,7 @@ const url = require('url');
 // };  
 const redisURL = url.parse(process.env.REDISCLOUD_URL);
 const client = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
-client.auth(redisURL.auth.split(":")[1]);
+// client.auth(redisURL.auth.split(":")[1]);
 client.on('connect', () => console.log('Connected to redis'))
 
 // Convert object to string if value is an object
