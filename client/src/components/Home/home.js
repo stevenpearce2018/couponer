@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './home.css';
 import CouponsMaker from '../../couponsMaker';
 import { toast } from 'react-toastify';
-
+// import getPosition from '../../getPosition';
 
 class Home extends Component {
   constructor(props) {
@@ -24,6 +24,12 @@ class Home extends Component {
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
     const couponcity = sessionStorage.getItem("couponcity")
+    // if (!couponlongitude && !couponlongitude && !couponcity && navigator.geolocation) {
+    //   getPosition(gotPosition);
+    //   function gotPosition (position) {
+    //     this.setState({latitude: "gottenFromFunction" + position.latitude, longitude: "gottenFromFunction" + position.longitude})
+    //   }
+    // }
     if (!couponcity && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
     else {
       this.setState({latitude: couponlatitude, longitude: couponlongitude})
@@ -106,6 +112,8 @@ class Home extends Component {
   render() {
     return (
       <div>
+        <p>{this.state.longitude}</p>
+        <p>{this.state.latitude}</p>
         <div className="center">
           <h2>Coupons near you</h2>
         </div>

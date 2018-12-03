@@ -184,7 +184,10 @@ class App extends Component {
   
   updateCouponsClaimed = number => number === -1 ? this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) - 1)}) : this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) + 1)})
 
-  setMainHome = () => this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>})
+  setMainHome = () => {
+    window.history.pushState(null, '', '/Home');
+    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>})
+  }
 
   setMainLogin = () => this.setState({mainContent: <Login setMainHome={this.setMainHome} parentMethod={this.setStateLoggedIn}/>})
   
@@ -197,9 +200,6 @@ class App extends Component {
   setStateLoggedIn = (key, email, couponsCurrentlyClaimed, membershipExperationDate) => {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
-    alert("Called")
-    alert(membershipExperationDate, "membershipExperationDate")
-    alert(couponsCurrentlyClaimed, "couponsCurrentlyClaimed")
     if(key.substr(-1) === "c") {
       this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
       sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
@@ -223,8 +223,6 @@ class App extends Component {
               Save money, grow your business, try something new.
             </span>
           </h1>
-          <p>{this.state.couponsCurrentlyClaimed}</p>
-          <p>{this.state.membershipExperationDate}</p>
           {
             (this.state.loggedInKey !== "") ? <p>loggedInKey: {this.state.loggedInKey}</p> : <p></p>
           }
@@ -240,7 +238,7 @@ class App extends Component {
           }
         <header className='homeHeader'>
           <section>
-            <a href="/Home" onClick={this.setMainHome} id="logo">
+            <a onClick={this.setMainHome} id="logo">
               <strong>
                 UnlimitedCouponer
               </strong>
