@@ -108,23 +108,23 @@ class CouponForm extends Component {
     }
   }
 
-  uploadFile = e => {
-    e.preventDefault();
-    let that = this;
-    const google = window.google
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
-      if (google.maps.GeocoderStatus.OK === 'OK') {
-        if (results[0] && that.state.address.length > 5) {
-          that.setState({
-            latitude:results[0].geometry.location.lat(),
-            longitude: results[0].geometry.location.lng()
-          })
-          if (validateCouponForm(this.state) === true) this.props.uploadCoupons(this.state)
-        }
-      } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
-    });
-  }
+  // uploadFile = e => {
+  //   e.preventDefault();
+  //   let that = this;
+  //   const google = window.google
+  //   const geocoder = new google.maps.Geocoder();
+  //   geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
+  //     if (google.maps.GeocoderStatus.OK === 'OK') {
+  //       if (results[0] && that.state.address.length > 5) {
+  //         that.setState({
+  //           latitude:results[0].geometry.location.lat(),
+  //           longitude: results[0].geometry.location.lng()
+  //         })
+  //         if (validateCouponForm(this.state) === true) this.props.uploadCoupons(this.state)
+  //       }
+  //     } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
+  //   });
+  // }
   handleTitleChange = e => {
     if (e.target.value === '') this.setState({ title: 'Rent your very own kitten today!'})
     else this.setState({ title: e.target.value })
@@ -388,12 +388,12 @@ class CouponForm extends Component {
               required={true}
               onChange={this.handleImageChange} />
             </label>
-          <button className="submitButton" 
+          {/* <button className="submitButton" 
             type="submit" 
             onClick={this.uploadFile}
             >
           Upload Coupons
-          </button>
+          </button> */}
       </form>
       <Checkout
           parentMethod={this.payForCoupons}
