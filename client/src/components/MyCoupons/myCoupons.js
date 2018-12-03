@@ -6,6 +6,7 @@ import CouponsMaker from '../../couponsMaker';
 import InputField from '../SubComponents/InputField/inputField';
 import capitalizeCase from '../../capitalizeCase';
 import { toast } from 'react-toastify';
+import getPosition from "../../getPosition";
 
 class MyCoupons extends Component {
   constructor(props, context) {
@@ -33,16 +34,14 @@ class MyCoupons extends Component {
     }
     const couponlatitude = sessionStorage.setItem('couponlatitude');
     const couponlongitude = sessionStorage.setItem('couponlongitude');
-    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) getPosition(gotPosition);
     else this.setState({latitude: couponlatitude, longitude: couponlongitude})
     const that = this;
-    function showPosition(position) {
+    function gotPosition(position) {
       that.setState({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
       })
-      sessionStorage.setItem('couponlatitude', position.coords.latitude);
-      sessionStorage.setItem('couponlongitude', position.coords.longitude);
     }
     loggedInKey.slice(-1) === "b" ? this.setState({isBusinessOwner: true}) : this.setState({isBusinessOwner: false})
     const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;

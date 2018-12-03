@@ -6,8 +6,6 @@ class Coupon extends Component {
     super(props);
     this.props = {
       title: 'Rent your very own kitten today!',
-      longitude: '',
-      latitude: '',
       address: '123 Cuddle Street, Kittentown, MA. 0 Miles Away.',
       amountCoupons: '100',
       currentPrice: '10.00',

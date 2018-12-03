@@ -7,6 +7,7 @@ import Textarea from '../SubComponents/Textarea/textarea';
 import Checkout from '../Checkout/checkout';
 import HaversineInMiles from '../../HaversineInMiles';
 import { toast } from 'react-toastify';
+import getPosition from '../../getPosition';
 
 const validateCouponForm = state => {
   if (state.latitude === '' || state.longitude === '') return toast.error('Invalid Address, please check address!')
@@ -74,13 +75,13 @@ class CouponForm extends Component {
     this.setState({loggedInKey:loggedInKey})
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
-    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) getPosition(gotPosition)
     else this.setState({mylongitude: couponlongitude, mylatitude: couponlatitude})
     const that = this;
-    function showPosition(position) {
+    function gotPosition(position) {
       that.setState({
-        mylongitude: position.coords.longitude,
-        mylatitude: position.coords.latitude,
+        mylongitude: position.longitude,
+        mylatitude: position.latitude,
       })
     }
   }

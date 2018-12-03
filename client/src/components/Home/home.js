@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './home.css';
 import CouponsMaker from '../../couponsMaker';
 import { toast } from 'react-toastify';
-// import getPosition from '../../getPosition';
+import getPosition from '../../getPosition';
 
 class Home extends Component {
   constructor(props) {
@@ -24,19 +24,7 @@ class Home extends Component {
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
     const couponcity = sessionStorage.getItem("couponcity")
-    // if (!couponlongitude && !couponlongitude && !couponcity && navigator.geolocation) {
-    //   getPosition(gotPosition);
-    //   function gotPosition (position) {
-    //     this.setState({latitude: "gottenFromFunction" + position.latitude, longitude: "gottenFromFunction" + position.longitude})
-    //   }
-    // }
-    // const showLocation = (position) => gotCoords(position.coords.latitude, position.coords.longitude)
-    // if(navigator.geolocation) navigator.geolocation.getCurrentPosition(showLocation)
-    // const gotCoords = (latitude, longitude) => {
-    //   alert(latitude);
-    //   alert(longitude);
-    // }
-    if (!couponcity && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    if (!couponcity && navigator.geolocation) getPosition(gotPosition)
     else {
       this.setState({latitude: couponlatitude, longitude: couponlongitude})
       const url = '/api/getSponseredCoupons/'+couponcity+'/'+this.state.pageNumber
@@ -60,14 +48,12 @@ class Home extends Component {
     async function cityNotFound () {
       that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
     }
-    function showPosition(position) {
+    function gotPosition(position) {
       that.setState({
-        geolocation: position.coords.latitude + " " + position.coords.longitude,
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
+        geolocation: position.latitude + " " + position.longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
       })
-      sessionStorage.setItem('couponlatitude', position.coords.latitude);
-      sessionStorage.setItem('couponlongitude', position.coords.longitude);
       const latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
       try {
         geocoder.geocode({location: latlng}, async (results, status) => {
@@ -118,8 +104,6 @@ class Home extends Component {
   render() {
     return (
       <div>
-        <p>{this.state.longitude}</p>
-        <p>{this.state.latitude}</p>
         <div className="center">
           <h2>Coupons near you</h2>
         </div>

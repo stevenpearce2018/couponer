@@ -5,6 +5,7 @@ import postRequest from '../../postReqest';
 import CouponsMaker from '../../couponsMaker';
 import Checkout from '../Checkout/checkout';
 import { toast } from 'react-toastify';
+import getPosition from "../../getPosition";
 
 class AccountSettings extends Component {
   constructor(props) {
@@ -34,16 +35,14 @@ class AccountSettings extends Component {
     }
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
-    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) getPosition(gotPosition);
     else this.setState({latitude: couponlatitude, longitude: couponlongitude})
     const that = this;
-    function showPosition(position) {
+    function gotPosition(position) {
       that.setState({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
       })
-      sessionStorage.setItem('couponlatitude', position.coords.latitude);
-      sessionStorage.setItem('couponlongitude', position.coords.longitude);
     }
     const email = sessionStorage.getItem('UnlimitedCouponerEmail');
     const data = {

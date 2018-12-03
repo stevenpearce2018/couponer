@@ -3,6 +3,7 @@ import './search.css';
 import Select from '../SubComponents/Select/select';
 import CouponsMaker from '../../couponsMaker';
 import { toast } from 'react-toastify';
+import getPosition from '../../getPosition';
 
 
 const getParameterByName = (name, url) => {
@@ -54,16 +55,14 @@ class Search extends Component {
   async componentDidMount() {
     const couponlatitude = sessionStorage.setItem('couponlatitude');
     const couponlongitude = sessionStorage.setItem('couponlongitude');
-    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) getPosition(gotPosition);
     else this.setState({latitude: couponlongitude, longitude: couponlongitude})
     const that = this;
-    function showPosition(position) {
+    function gotPosition(position) {
       that.setState({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
       })
-      sessionStorage.setItem('couponlatitude', position.coords.latitude);
-      sessionStorage.setItem('couponlongitude', position.coords.longitude);
     }
     const url = '/'+window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
     const city = getParameterByName('city', url)
