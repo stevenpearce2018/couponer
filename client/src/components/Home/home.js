@@ -30,6 +30,12 @@ class Home extends Component {
     //     this.setState({latitude: "gottenFromFunction" + position.latitude, longitude: "gottenFromFunction" + position.longitude})
     //   }
     // }
+    // const showLocation = (position) => gotCoords(position.coords.latitude, position.coords.longitude)
+    // if(navigator.geolocation) navigator.geolocation.getCurrentPosition(showLocation)
+    // const gotCoords = (latitude, longitude) => {
+    //   alert(latitude);
+    //   alert(longitude);
+    // }
     if (!couponcity && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
     else {
       this.setState({latitude: couponlatitude, longitude: couponlongitude})
