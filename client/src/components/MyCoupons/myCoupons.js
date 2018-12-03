@@ -26,7 +26,15 @@ class MyCoupons extends Component {
     this.validateCode = this.validateCode.bind(this);
   }
   async componentDidMount () {
-    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
+    if (!loggedInKey || loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
+      this.props.setMainHome();
+      return toast.error('You are not logged in!')
+    }
+    const couponlatitude = sessionStorage.setItem('couponlatitude');
+    const couponlongitude = sessionStorage.setItem('couponlongitude');
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    else this.setState({latitude: couponlatitude, longitude: couponlongitude})
     const that = this;
     function showPosition(position) {
       that.setState({
@@ -36,13 +44,8 @@ class MyCoupons extends Component {
       sessionStorage.setItem('couponlatitude', position.coords.latitude);
       sessionStorage.setItem('couponlongitude', position.coords.longitude);
     }
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
-    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
-    if (!loggedInKey || loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
-      this.props.setMainHome()
-      return toast.error('You are not logged in!')
-    }
     loggedInKey.slice(-1) === "b" ? this.setState({isBusinessOwner: true}) : this.setState({isBusinessOwner: false})
+    const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
     const data = {
       loggedInKey: loggedInKey,
       email: email
@@ -52,7 +55,6 @@ class MyCoupons extends Component {
     else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
   }
   togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})
-
   showPopup = (id, title) => {
     this.setState({id: id, title: title})
     this.togglePopup()

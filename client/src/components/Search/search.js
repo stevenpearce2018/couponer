@@ -52,9 +52,10 @@ class Search extends Component {
     this.changePage = this.changePage.bind(this);
   }
   async componentDidMount() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
-    } 
+    const couponlatitude = sessionStorage.setItem('couponlatitude');
+    const couponlongitude = sessionStorage.setItem('couponlongitude');
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    else this.setState({latitude: couponlongitude, longitude: couponlongitude})
     const that = this;
     function showPosition(position) {
       that.setState({
