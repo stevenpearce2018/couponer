@@ -129,7 +129,7 @@ class App extends Component {
       email: this.state.email
     }
     await postRequest(`/api/signout`, data)
-    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden",couponsCurrentlyClaimed: '', couponsCurrentlyClaimed: '',})
+    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden", couponsCurrentlyClaimed: '',})
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
     sessionStorage.removeItem('buisnessOwner');
@@ -160,7 +160,7 @@ class App extends Component {
     }
     const json = await postRequest(`/api/uploadCoupons`, data)
     //!todo, check json
-    toast.success("Coupon Created!")
+    json.response === "Coupon Not Created" ? toast.success(json.response) : toast.error(json.response)
     // alert(JSON.stringify(json), "json")
   }
   async updateAccountSettings(data){
