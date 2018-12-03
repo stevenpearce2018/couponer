@@ -27,7 +27,15 @@ class AccountSettings extends Component {
   }
   
   async componentDidMount() {
-    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
+    if (!loggedInKey || loggedInKey.substr(-1) !== "b" && loggedInKey.substr(-1) !== "c") {
+      this.props.setMainHome()
+      return toast.error('You are not logged in!')
+    }
+    const couponlatitude = sessionStorage.getItem('couponlatitude');
+    const couponlongitude = sessionStorage.getItem('couponlongitude');
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    else this.setState({latitude: couponlatitude, longitude: couponlongitude})
     const that = this;
     function showPosition(position) {
       that.setState({
@@ -37,20 +45,13 @@ class AccountSettings extends Component {
       sessionStorage.setItem('couponlatitude', position.coords.latitude);
       sessionStorage.setItem('couponlongitude', position.coords.longitude);
     }
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
     const email = sessionStorage.getItem('UnlimitedCouponerEmail');
-    if (!loggedInKey || loggedInKey.substr(-1) !== "b" && loggedInKey.substr(-1) !== "c") {
-      this.props.setMainHome()
-      toast.error('You are not logged in!')
+    const data = {
+      loggedInKey: loggedInKey,
+      email: email
     }
-    else {
-      const data = {
-        loggedInKey: loggedInKey,
-        email: email
-      }
-      const json = await postRequest(`/api/getYourCoupons`, data)
-      this.setState({coupons: CouponsMaker(json && json.coupons)})
-    }
+    const json = await postRequest(`/api/getYourCoupons`, data)
+    this.setState({coupons: CouponsMaker(json && json.coupons)})
   }
   handleChange = event => {
     const { target: { name, value } } = event

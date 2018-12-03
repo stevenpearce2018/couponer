@@ -34,8 +34,7 @@ class Login extends Component {
 
   componentWillMount() {
     if(sessionStorage.getItem('UnlimitedCouponerKey') && sessionStorage.getItem('UnlimitedCouponerEmail')) {
-      window.location.pathname = '/Home';
-      this.props.setMainHome()
+      this.props.setMainHome();
       toast.error("You are already logged in!")
     }
   }
@@ -79,6 +78,7 @@ class Login extends Component {
       newPassword: this.state.newPassword,
     }
     const json = await postRequest(`/api/recoverAccountWithCode`, data)
+    json.success ? toast.success("Successful account recover!") : toast.error("Failed to recover account.")
   }
   render() {
     return (

@@ -63,22 +63,20 @@ class CouponForm extends Component {
   }
   componentDidMount() {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
-    this.setState({loggedInKey:loggedInKey})
     if (!loggedInKey) {
-      window.location.pathname = '/Home';
-      toast.error('You are not logged in!')
+      this.props.setMainHome()
+      return toast.error('You are not logged in!')
     }
     else if(loggedInKey.slice(-1) !== "b") {
-      window.location.pathname = '/Home';
-      toast.error('Only buiness owners can access this page!')
+      this.props.setMainHome()
+      return toast.error('Only buiness owners can access this page!')
     }
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
-    } 
+    this.setState({loggedInKey:loggedInKey})
+    const couponlatitude = sessionStorage.getItem('couponlatitude');
+    const couponlongitude = sessionStorage.getItem('couponlongitude');
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
+    else this.setState({mylongitude: couponlongitude, mylatitude: couponlatitude})
     const that = this;
-    const google = window.google
-    // eslint-disable-next-line
-    const geocoder = new google.maps.Geocoder;
     function showPosition(position) {
       that.setState({
         mylongitude: position.coords.longitude,
