@@ -33,7 +33,7 @@ class Home extends Component {
     if (!couponcity && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
     else {
       this.setState({latitude: couponlatitude, longitude: couponlongitude})
-      const url = '/api/getSponseredCoupons/'+couponcity+'/'+that.state.pageNumber
+      const url = '/api/getSponseredCoupons/'+couponcity+'/'+this.state.pageNumber
       const response = await fetch(url, {
         method: "GET", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin
