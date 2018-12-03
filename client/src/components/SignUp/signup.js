@@ -56,7 +56,6 @@ class SignUp extends Component {
   componentWillMount() {
     if(sessionStorage.getItem('UnlimitedCouponerEmail') && sessionStorage.getItem('UnlimitedCouponerKey')) {
       this.props.setMainHome()
-      window.history.pushState(null, '', '/Home');
       toast.error("You are already logged in!")
     }
   }

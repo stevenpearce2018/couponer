@@ -139,14 +139,26 @@ class Search extends Component {
   async handleSearch(e){
     e.preventDefault();
     let searchSubUrl;
-    if (this.state.city !== '') searchSubUrl = `&city=${this.state.city}`
-    if (this.state.category !== '') searchSubUrl = `${searchSubUrl}&category=${this.state.category}`
-    if (this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
-    if (this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
-    if (this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
+    if (this.state.city && this.state.city !== '') searchSubUrl = `&city=${this.state.city}`
+    if (this.state.category && this.state.category !== '') searchSubUrl = `${searchSubUrl}&category=${this.state.category}`
+    if (this.state.zip && this.state.zip !== '') searchSubUrl = `${searchSubUrl}&zip=${this.state.zip}`
+    if (this.state.keywords && this.state.keywords !== '') searchSubUrl = `${searchSubUrl}&keywords=${this.state.keywords}`
+    if (this.state.category && this.state.category !== '' || this.state.zip !== '' || this.state.city !== '' || this.state.keywords) {
       searchSubUrl = searchSubUrl.replace("undefined", "").replace("undefined", "")
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-      window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
+      // window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
+      window.history.pushState(null, '', `/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
+      const response = await fetch(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+      })
+      const couponsData = await response.json();
+      this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), pageNumber : Number(this.state.pageNumber)})
     }
   }                
   render() {

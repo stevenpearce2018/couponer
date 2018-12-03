@@ -41,7 +41,6 @@ class AccountSettings extends Component {
     const email = sessionStorage.getItem('UnlimitedCouponerEmail');
     if (!loggedInKey || loggedInKey.substr(-1) !== "b" && loggedInKey.substr(-1) !== "c") {
       this.props.setMainHome()
-      window.history.pushState(null, '', '/Home');
       toast.error('You are not logged in!')
     }
     else {
