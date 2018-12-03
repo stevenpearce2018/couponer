@@ -40,7 +40,6 @@ class MyCoupons extends Component {
     const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
     if (!loggedInKey || loggedInKey.slice(-1) !== "b" && loggedInKey.slice(-1) !== "c") {
       this.props.setMainHome()
-      window.history.pushState(null, '', '/Home');
       return toast.error('You are not logged in!')
     }
     loggedInKey.slice(-1) === "b" ? this.setState({isBusinessOwner: true}) : this.setState({isBusinessOwner: false})
