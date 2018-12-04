@@ -17,7 +17,6 @@ class Login extends Component {
         recoverEmailSent: false,
         recoveryCode: '',
         newPassword: ''
-        // phoneNumber: '',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.togglePopup = this.togglePopup.bind(this);

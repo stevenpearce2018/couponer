@@ -24,7 +24,7 @@ class Home extends Component {
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
     const couponcity = sessionStorage.getItem("couponcity")
-    if (!couponcity && navigator.geolocation) getPosition(gotPosition)
+    if (!couponcity && navigator.geolocation) getPosition(gotPosition);
     else {
       this.setState({latitude: couponlatitude, longitude: couponlongitude})
       const url = '/api/getSponseredCoupons/'+couponcity+'/'+this.state.pageNumber
