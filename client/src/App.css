@@ -22,7 +22,9 @@ nav ul li div i{padding-right:10px; color:#002e5b; transition: all 0.5s ease 0s;
 .red{color:red}
 .green{color:green}
 section{max-width:95%;}
-
+#logo:hover{
+    cursor: pointer;
+}
 
 header{padding:20px 0px;}
 #logo{padding:0px;}
