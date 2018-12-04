@@ -160,8 +160,6 @@ class App extends Component {
       email: this.state.email,
     }
     const json = await postRequest(`/api/uploadCoupons`, data)
-    //!todo, check json
-    console.log({json})
     if(json && json.response === "Coupon Not Created" ) return toast.success(json.response)
     else return toast.error(json.response);
     // alert(JSON.stringify(json), "json")

@@ -68,9 +68,6 @@ const transporter = nodemailer.createTransport({
 // Get the payment token ID submitted by the form:
 // const token = request.body.stripeToken; // Using Express
 
-
-//!todo, get production mongodb account and login string. Use .env for connection string
-
 try {
   mongoose.connect(process.env.DB).then(console.log('Connected to mongoDB'));
 } catch (error) {
@@ -247,7 +244,6 @@ app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
   }
 }))
 app.post('/api/updateAccount', handleAsync(async (req, res) => {
-  //!todo, flush out updateAccount api
   const email = req.body.email;
   const loggedInKey = req.body.loggedInKey;
   const ip = getIP(req)
@@ -723,6 +719,61 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
           } else res.json({response: "These coupons are no longer available. Please try another coupon."});
         // } else res.json({response: "You have too many coupons! Please use or discard one of your current coupons."});
       } else res.json({response: "Your membership has expired! Please renew it under the account settings option."});
+    }
+  else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+  }
+}))
+
+app.post(`/api/discardCoupon`, handleAsync(async(req, res) => {
+  const loggedInKey = req.body.loggedInKey;
+  if (!loggedInKey) res.json({response: "You need to be logged in to discard coupons!"});
+  else {
+    const _id = req.body._id;
+    const ip = getIP(req)
+    const outcome = await AccountInfo.find({'email':req.body.email, 'ip': ip, loggedInKey: loggedInKey }).limit(1)
+    if (outcome) {
+      if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
+        // if (outcome[0].couponsCurrentlyClaimed < 5) {
+          const coupon = await Coupon.find({'_id':_id }).limit(1);
+          const arrIds = filtherID(outcome[0].couponIds, _id);
+          const filtherID = (IDS, ID) => {
+            let i = 0;
+            let iMax = IDS.length;
+            let cleanedIDS = []
+            for (; i < iMax; i++) if (IDS[i] !== ID) cleanedIDS.push(IDS[i]);
+            return cleanedIDS;
+          }
+          const filtherCouponCodes = (couponCodes, ID) => {
+            let i = 0;
+            let iMax = couponCodes.length;
+            let cleanedIDS = []
+            for (; i < iMax; i++) if (couponCodes[i]._id !== ID) cleanedIDS.push(couponCodes[i]);
+            return cleanedIDS;
+          }
+          // const arrCouponCodes = [...outcome[0].couponCodes, {_id: _id, couponCode: couponCode}]
+          const arrCouponCodes = filtherCouponCodes(outcome[0].couponCodes, _id)
+          res.json({response: "Coupon Removed!"});
+          await AccountInfo.updateOne(
+            { "_id" : outcome[0]._id }, 
+            { "$set" : { 
+              "couponIds": arrIds}, //
+              "couponsCurrentlyClaimed": outcome[0].couponsCurrentlyClaimed - 1 ,
+              "couponCodes": arrCouponCodes
+            }, 
+            { "upsert" : false } 
+          );
+          // unclaim the code in outcome[0].couponCodes
+          // !todo
+          const updatedCodes = unclaimCode(coupon[0].couponCodes)
+          await Coupon.updateOne(
+            { "_id" : req.body._id },
+            { "$set" : { 
+              "couponCodes": updatedCodes},
+              "amountCoupons": (coupon[0].amountCoupons + 1),
+              "couponStillValid": true
+            }, 
+            { "upsert" : false } 
+          );
     }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
