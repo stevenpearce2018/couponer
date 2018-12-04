@@ -53,8 +53,8 @@ class Search extends Component {
     this.changePage = this.changePage.bind(this);
   }
   async componentDidMount() {
-    const couponlatitude = sessionStorage.setItem('couponlatitude');
-    const couponlongitude = sessionStorage.setItem('couponlongitude');
+    const couponlatitude = sessionStorage.getItem('couponlatitude');
+    const couponlongitude = sessionStorage.getItem('couponlongitude');
     if (!couponlatitude && !couponlongitude && navigator.geolocation) getPosition(gotPosition);
     else this.setState({latitude: couponlongitude, longitude: couponlongitude})
     const that = this;
