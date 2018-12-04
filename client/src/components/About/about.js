@@ -16,7 +16,7 @@ class About extends Component {
         <br/>
         <br/>
         <h2 className="textHeader">Contact us</h2>
-        <p className="text">Found a bug, have a general question, want to make a sugguestion? If you fix a bug I'll even pay you for it! Feel free to email us at !todo@doesnt.exist.com.</p>
+        <p className="text">Found a bug, have a general question, want to make a sugguestion? Email us at UnlimitedCouponer@gmail.com.</p>
         </section>
         <br/>
       </div>
