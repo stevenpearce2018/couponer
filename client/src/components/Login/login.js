@@ -5,6 +5,7 @@ import InputField from '../SubComponents/InputField/inputField'
 import validateEmail from '../../validateEmail';
 import postRequest from '../../postReqest';
 import { toast } from 'react-toastify';
+import checkPasswordStrength from '../../checkPasswordStrength';
 
 class Login extends Component {
   constructor(props, context) {
@@ -16,7 +17,8 @@ class Login extends Component {
         recoveryEmail: '',
         recoverEmailSent: false,
         recoveryCode: '',
-        newPassword: ''
+        newPassword: '',
+        validPassword: <span className="icon red">&#x2718;</span>
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
@@ -72,9 +74,12 @@ class Login extends Component {
   }
     
   async validateCode(){
+    if (checkPasswordStrength(this.state.newPassword)) this.setState({validPassword: <span className="green icon">&#10003;</span>})
+    else return toast.warn("Your password is not valid!");
     const data = {
       recoveryEmail: this.state.recoveryEmail,
       newPassword: this.state.newPassword,
+      randomNumber: this.state.recoveryCode
     }
     const json = await postRequest(`/api/recoverAccountWithCode`, data)
     json.success ? toast.success("Successful account recover!") : toast.error("Failed to recover account.")
@@ -119,7 +124,9 @@ class Login extends Component {
                   onChange={this.handleChange}
                   required
                 />
-                {this.state.recoverEmailSent === false ? <div></div>: 
+                {this.state.recoverEmailSent === false ? <div></div> :
+                <div>
+                  <p className="text"><strong>Your new password will require 1 uppercase letter, 1 lowercase letter, 8 total characters, 1 number, and one special character.</strong> </p>
                   <InputField
                     htmlFor="New Password"
                     type="password"
@@ -129,6 +136,7 @@ class Login extends Component {
                     onChange={this.handleChange}
                     required
                   />
+                </div>
                 }
                 {/* <PhoneInput
                   placeholder="Enter phone number"
@@ -136,15 +144,9 @@ class Login extends Component {
                   onChange={ phoneNumber => this.setState({ recoveryEmail: undefined, phoneNumber: phoneNumber}) } 
                 /> */}
               <div className="popupbtn">
-              <button className='signupbtn signupbtnn' value="send" 
-                onClick = {
-                    this.state.recoverEmailSent === false ? this.sendRecovery : this.validateCode
-                  }
-              >
+              <button className='signupbtn signupbtnn' value="send" onClick = {this.state.recoverEmailSent === false ? this.sendRecovery : this.validateCode}>
                 <strong>
-                  {
-                    this.state.recoverEmailSent === false ? "Send Recovery Email" : "Validate Code"
-                  }
+                  {this.state.recoverEmailSent === false ? "Send Recovery Email" : "Validate Code"}
                 </strong>
               </button>
               </div>

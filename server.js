@@ -29,6 +29,7 @@ const validateCouponForm = require("./lib/validateCouponForm");
 const ObjectId = require('mongodb').ObjectId; 
 const useCode = require("./lib/useCode");
 const moment = require("moment");
+const checkPasswordStrength = require('./lib/checkPasswordStrength');
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
@@ -115,23 +116,16 @@ app.post('/api/recoverAccount', handleAsync(async(req, res) => {
   }
 }));
 
-app.post('/redistest', handleAsync(async(req, res) => {
-  redisHelper.set("r", "test")
-  redisHelper.get("r", test)
-  function test(data) {
-    console.log(data)
-  } 
-}))
-
 app.post('/api/recoverAccountWithCode', handleAsync(async(req, res) => {
   const email = req.body.recoveryEmail;
   const randomNumber = req.body.randomNumber;
+  const newPassword = req.body.newPassword;
   redisHelper.get("r:"+email, confirmRandomNumber)
   async function confirmRandomNumber(randomNumberFromRedis) {
-    if (randomNumberFromRedis === randomNumber) { 
+    if (randomNumberFromRedis === randomNumber && checkPasswordStrength(newPassword)) { 
       res.json({success:true})
       const result = await AccountInfo.findOne({ 'email': email }) 
-      const hashedPass = await bcrypt.hashSync(req.body.newPassword, 10);
+      const hashedPass = await bcrypt.hashSync(newPassword, 10);
       await AccountInfo.updateOne(
         { "_id" : result._id }, 
         { "$set" : { password: hashedPass } }, 
@@ -167,14 +161,16 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
     if (randomNumber === req.body.randomNumber) {
-      const yourPick = req.body.yourPick
+      const yourPick = req.body.yourPick;
+      const password = req.body.password;
+      const phoneNumber = req.bod.phoneNumber;
       const ip = getIP(req)
       const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
       const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
-          if (validateEmail(req.body.email) && req.body.email && req.body.password && req.body.phoneNumber && yourPick && ip) {
+          if (validateEmail(req.body.email) && req.body.city && req.body.email && password && checkPasswordStrength(password) && phoneNumber && yourPick && ip) {
             if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
-              const hashedPass = await bcrypt.hashSync(req.body.password, 10);
+              const hashedPass = await bcrypt.hashSync(password, 10);
               const email = req.body.email;
               let today = new Date();
               let dd = today.getDate();
@@ -187,7 +183,6 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
               // console.log(req.body.numberOfMonths)
               const finalDate = req.body.numberOfMonths && req.body.numberOfMonths > 0 ? moment(today).add(req.body.numberOfMonths, 'months') : "N/A";
               const membershipExperationDate = yourPick === ' Buisness Owner' ? "N/A" : JSON.stringify(finalDate).substring(1, 11);
-              console.log(membershipExperationDate)
               const registerUser = async() => {
                 const accountInfo = new AccountInfo({
                   _id: new mongoose.Types.ObjectId(),
@@ -195,7 +190,7 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
                   buisnessName: req.body.buisnessName,
                   password: hashedPass,
                   city: req.body.city,
-                  phoneNumber: req.body.phoneNumber,
+                  phoneNumber: phoneNumber,
                   yourPick: yourPick,
                   loggedInKey: loggedInKey,
                   couponIds: [],
@@ -330,6 +325,7 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
   if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
   else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     if(validateCouponForm(req.body) && req.body.currentPrice > req.body.discountedPrice) {
       const chargeData = {
@@ -338,7 +334,7 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
         currency: req.body.currency,
         amount: req.body.amount
       }
-      const charge = await stripe.charges.create(chargeData);
+      const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
       if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
         res.json({response: 'Coupon Created'})
         const amountCoupons = req.body.amountCoupons;

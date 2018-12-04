@@ -26,6 +26,9 @@
 .signupCountry{
   padding-top:55px;
 }
+.float{
+  margin-left:-1px;
+}
 #some-id{
   /* margin-top: 55px; */
   width: 100% !important;
@@ -269,4 +272,16 @@ color: blue;
 }
 .trueHidden{
   display: hidden;
+}
+.overRight{
+  float:right;
+  margin-right:25px;
+  margin-top:-0px;
+}
+@media only screen and (max-width: 959px) {
+  .overRight{
+    float:right;
+    margin-right:0px;
+    margin-top:0px;
+  }
 }

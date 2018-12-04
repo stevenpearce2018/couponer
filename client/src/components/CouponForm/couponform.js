@@ -12,17 +12,20 @@ import getPosition from '../../getPosition';
 const validateCouponForm = state => {
   if (state.latitude === '' || state.longitude === '') return toast.error('Invalid Address, please check address!')
   else if (state.title === 'Rent your very own kitten today!') return toast.error('You must have a unique title!');
+  else if (state.title.length < 4) return toast.error('You must have a longer title!');
   else if (state.address === '123 Cuddle Street, Kittentown, MA. 0 Miles Away.') return toast.error('You must have an address!');
   else if (state.imagePreviewUrl === 'http://www.petsworld.in/blog/wp-content/uploads/2014/09/cute-kittens.jpg') return toast.error('You must upload an image!!!!!')
   else if (state.textarea === 'Ever want to have a kitten without the responsibility of actually owning it? Want to sneak a kitten into your apartment for a week without your pesky landlord knowing? Now you can! Call 1-8000-RENT-CAT now to rent your very own kitten today.') return toast.error('You must upload a custom description!');
+  else if (state.textarea.length < 49) return toast.error("You're description must be over 50 characters!");
   else if (state.city === '') return toast.error('You must have a city!')
   else if (state.category === '') return toast.error('You must have a category!')
-  else if (state.discountedPrice === '') return toast.error('You must have a category!')
+  else if (state.discountedPrice === '') return toast.error('You must have a discounted price!')
+  else if (Number(state.discountedPrice) >= 10000) return toast.error('Your discounted price is way too high!')
   else if (state.price === '') return toast.error('You must have a Current Price!')
+  else if (Number(state.price) >= 10000) return toast.error('Your current price is way too high!')
   // !todo, fix this check
   // else if (state.currentPrice <= state.discountedPrice) return alert('Your discounted price must be lower than your current price!')
-  else if (state.city === '') return toast.error('You must have a city!')
-  else if (state.zip === '' || state.zip.length < 3) return toast.error('You must have a zipcode!')
+  else if (state.zip === '' || state.zip.length < 3) return toast.error('You must have a full zipcode!')
   else return true;
 }
 

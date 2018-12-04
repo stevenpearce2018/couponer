@@ -17,7 +17,6 @@ class Input extends Component {
             name={this.props.name}
             max={this.props.max || ''}
             min={this.props.min || ''}
-            name={this.props.name || ''}
             placeholder={this.props.placeholder || ''}
             required={this.props.required || ''}
             step={this.props.step || ''}

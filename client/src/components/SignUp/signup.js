@@ -9,7 +9,7 @@ import Checkout from '../Checkout/checkout';
 import validateEmail from '../../validateEmail';
 import postRequest from '../../postReqest';
 import { toast } from 'react-toastify';
-
+import checkPasswordStrength from '../../checkPasswordStrength';
 
 // Checkout button is clicked
 // Check if info inputted is valid                 // if failed break
@@ -42,6 +42,7 @@ class SignUp extends Component {
       popupClass: 'hiddenOverlay',
       boolValidPhoneNumber: false,
       validPhoneNumber: <span className="icon red">&#x2718;</span>,
+      validPassword: <span className="icon red">&#x2718;</span>,
       showOrHidePhoneValidationButton:'signupbtn',
       checkout: "hidden"
     }
@@ -62,6 +63,7 @@ class SignUp extends Component {
   handleChange = event => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
+    if (this.state.password === this.state.passwordConfirm && checkPasswordStrength(this.state.password)) this.setState({validPassword: <span className="green icon">&#10003;</span>})
   }
   async validatePhoneNumber(){
     const data = {
@@ -110,6 +112,7 @@ class SignUp extends Component {
       phoneNumber: this.state.country + this.state.phoneNumber,
       randomNumber: Number(this.state.fiveDigitCode)
     }
+    if (!checkPasswordStrength(this.state.password)) return toast.error("Your password is not valid!")
     if (validateEmail(this.state.email) && this.validState(this.state)){
       const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
@@ -133,7 +136,8 @@ class SignUp extends Component {
       currency: dataFromStripe.currency,
       amount: dataFromStripe.amount,
     }
-    if (validateEmail(this.state.email) && this.validState(this.state)){
+    if (!checkPasswordStrength(this.state.password)) return toast.error("Your password is not valid!")
+    if (validateEmail(this.state.email) && this.validState(this.state) ){
       const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
         this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
@@ -173,7 +177,7 @@ class SignUp extends Component {
       <div className="container text-center">
         <section id="portfolio" className="content">
           <h2 className="textHeader">Sign up</h2>
-          <p className="text">First, validate your phone number. UnlimitedCouponer needs your phone number in order to text you claimed coupons and to allow easy verification of coupons. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee.  </p>
+          <p className="text">First, validate your phone number. UnlimitedCouponer needs your phone number in order to text you claimed coupons and to allow easy verification of coupons. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee. <strong>Your password will require 1 uppercase letter, 1 lowercase letter, 8 total characters, 1 number, and one special character.</strong> </p>
         </section>
         <div className="row">
           <hr />
@@ -195,10 +199,13 @@ class SignUp extends Component {
             type="password"
             name="password"
             labelHTML="Password"
-            placeholder="Your Password Here"
+            placeholder="Example123!"
             onChange={this.handleChange}
             required
           />
+          <div className="phoneIcon overRight">
+          {this.state.validPassword}
+          </div>
           <InputField
             htmlFor="Password"
             type="password"
@@ -250,6 +257,7 @@ class SignUp extends Component {
           optionClassName='some option class name'
       />
       </div>
+      <div className="float">
       <InputField
         htmlFor="Phone Number"
         type="number"
@@ -258,6 +266,7 @@ class SignUp extends Component {
         placeholder="123-456-7189"
         onChange={this.handleChange}
       /> 
+      </div>
       {/* </div> */}
       <div className="phoneIcon">
           {this.state.validPhoneNumber}
