@@ -21,8 +21,9 @@ body {
   width:90%;
 }
 .couponPay{
-  margin-top: -25px;
+  margin-top: -28px;
   float: right;
+  margin-right: 20px;
 }
 fieldset {
   padding: 0;
@@ -175,10 +176,8 @@ textarea {
   text-align:center;
   font-weight: bold
 }
-
-.icon-question {
+.fa-question {
   display:inline;
-  float:right;
   margin-right:0%;
   background-color:#3fc1c9;
   color:black;
@@ -188,12 +187,16 @@ textarea {
   padding-bottom:3px;
   border-radius: 80px;
 }
-.icon-question:hover {
+.fa-question:hover {
   background-color:cyan;
   cursor:pointer;
   text-decoration: none;
 }
-
+.questionHolder{
+  margin-left: 90%;
+  margin-bottom: -35px;
+  float: right;
+}
 body {
   font-family: Arial, sans-serif;
   background-size: cover;
@@ -270,8 +273,11 @@ body {
     width: 70%;
   }
 }
-
-.icon-question {
+.formHeaderText{
+  padding-top:20px;
+  padding-bottom:20px;
+}
+.fa-question {
   text-decoration: none;
 }
 

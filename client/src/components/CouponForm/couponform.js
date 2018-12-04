@@ -67,14 +67,14 @@ class CouponForm extends Component {
   }
   componentDidMount() {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
-    if (!loggedInKey) {
-      this.props.setMainHome()
-      return toast.error('You are not logged in!')
-    }
-    else if(loggedInKey.slice(-1) !== "b") {
-      this.props.setMainHome()
-      return toast.error('Only buiness owners can access this page!')
-    }
+    // if (!loggedInKey) {
+    //   this.props.setMainHome()
+    //   return toast.error('You are not logged in!')
+    // }
+    // else if(loggedInKey.slice(-1) !== "b") {
+    //   this.props.setMainHome()
+    //   return toast.error('Only buiness owners can access this page!')
+    // }
     this.setState({loggedInKey:loggedInKey})
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
@@ -239,10 +239,10 @@ class CouponForm extends Component {
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet"></link>
         <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"></link>
         <div className='couponHeader'>
-          <h1 className='formHeaderText'> Example Coupon</h1>
+          <h2 className='formHeaderText'> Example Coupon</h2>
         </div>
         <div className='formHeader'>
-          <h1 className='formHeaderText'> Coupon details</h1>
+          <h2 className='formHeaderText'> Coupon details</h2>
         </div>
         <div className="flextape">
         <Coupon
@@ -361,9 +361,11 @@ class CouponForm extends Component {
         />
         <br/>
         <div className='box'>
-          <a className="icon-button" onClick={this.togglePopup}>
-            <i className="icon-question"></i>
+          <div className="questionHolder">
+          <a className="fa fa-button" onClick={this.togglePopup}>
+            <i className="fa fa-question"></i>
           </a>
+          </div>
           <div className={this.state.popupClass}>
             <div className="popup">
               <h2 className="popupheader">What are Super Coupons?</h2>
