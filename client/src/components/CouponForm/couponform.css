@@ -20,7 +20,10 @@ body {
   margin-left: auto;
   width:90%;
 }
-
+.couponPay{
+  margin-top: -25px;
+  float: right;
+}
 fieldset {
   padding: 0;
   margin: 0;

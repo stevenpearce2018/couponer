@@ -50,7 +50,7 @@ class CouponForm extends Component {
       validAddress: <span className="icon red">&#x2718;</span>,
     };
     this.togglePopup = this.togglePopup.bind(this);
-    this.uploadFile = this.uploadFile.bind(this);
+    // this.uploadFile = this.uploadFile.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleAddressChange = this.handleAddressChange.bind(this);
     this.handleDiscountedPriceChange = this.handleDiscountedPriceChange.bind(this);
@@ -396,13 +396,15 @@ class CouponForm extends Component {
           Upload Coupons
           </button> */}
       </form>
-      <Checkout
+      <div className="couponPay">
+        <Checkout
           parentMethod={this.payForCoupons}
           name={'UnlimitedCouponer Coupons'}
           description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
           amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
           panelLabel="Upload coupons"
         />
+      </div>
       </div>
       </div>
       </div>
