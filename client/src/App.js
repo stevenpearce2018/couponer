@@ -160,8 +160,8 @@ class App extends Component {
       email: this.state.email,
     }
     const json = await postRequest(`/api/uploadCoupons`, data)
-    if(json && json.response === "Coupon Not Created" ) return toast.success(json.response)
-    else return toast.error(json.response);
+    if(json && json.response === "Coupon Not Created" ) return toast.error(json.response);
+    else return toast.success(json.response);
     // alert(JSON.stringify(json), "json")
   }
   async updateAccountSettings(data){

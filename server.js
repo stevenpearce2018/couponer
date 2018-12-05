@@ -160,7 +160,7 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
     if (randomNumber === req.body.randomNumber) {
       const yourPick = req.body.yourPick;
       const password = req.body.password;
-      const phoneNumber = req.bod.phoneNumber;
+      const phoneNumber = req.body.phoneNumber;
       const ip = getIP(req)
       const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
       const result = await AccountInfo.find({ 'email': req.body.email })
