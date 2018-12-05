@@ -320,7 +320,8 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip }).limit(1)
-  if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
+  if (outcome && outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
   else if(outcome && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     // if(validateCouponForm(req.body) && Number(req.body.currentPrice) > Number(req.body.discountedPrice)) {
       const chargeData = {
