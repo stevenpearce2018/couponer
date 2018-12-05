@@ -143,7 +143,10 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
       return (
       <div className='center'>
       <br/>
-      <h2>Unable to automatically search for coupons. Try searching manually.</h2>
+      {(window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.lastIndexOf('/')+7).toLowerCase() === "search" ) ?
+        <h2>Didn't find any coupons with these parameters.</h2> :
+        <h2>Unable to automatically search for coupons. Try searching manually.</h2>
+      }
       </div>
       )
     }
