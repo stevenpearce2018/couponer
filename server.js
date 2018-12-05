@@ -317,23 +317,13 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
 }))
 
 app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
-  const ip = getIP(req)
+  // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey }).limit(1)
-  console.log({outcome})
-  console.log(1)
-  if (outcome.length === 0 || outcome[0].yourPick !== ' Buisness Owner') {
-    console.log(2)
-    res.json({response: "Only Buisness Owners can create coupons!"});
-  }
-  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") {
-    console.log(3)
-    res.json({response: "Please choose your coupon type!"});
-  }
-  else if(outcome && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
-    console.log(4)
+  if (outcome.length === 0 || outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
+  else if(outcome && outcome[0].loggedInKey === loggedInKey) {
     if(validateCouponForm(req.body) && Number(req.body.currentPrice) > Number(req.body.discountedPrice)) {
-      console.log(5)
       const chargeData = {
         description: req.body.description,
         source: req.body.source,
@@ -342,14 +332,12 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
       }
       const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
       if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
-        console.log(6)
         res.json({response: 'Coupon Created'})
         const amountCoupons = req.body.amountCoupons;
         let couponCodes = [];
         let i = 0
         for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
         const saveCoupon = async () => {
-          console.log(7)
           const mongodbID = new mongoose.Types.ObjectId();
           const coupon = new Coupon({
             _id: mongodbID,
