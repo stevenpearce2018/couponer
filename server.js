@@ -323,7 +323,7 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
   else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
   else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
-    if(validateCouponForm(req.body) && req.body.currentPrice > req.body.discountedPrice) {
+    if(validateCouponForm(req.body) && Number(req.body.currentPrice) > Number(req.body.discountedPrice)) {
       const chargeData = {
         description: req.body.description,
         source: req.body.source,
@@ -370,7 +370,7 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
         }
         saveCoupon();
       } else res.json({response: 'Coupon Not Created'})
-    }
+    } else res.json({response: 'Coupon Not Created'})
   } else res.json({response: "You are not logged in!"});
 }))
 
