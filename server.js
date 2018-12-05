@@ -316,128 +316,140 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
   } else res.json({response:"Logout Failed"})
 }))
 
-// app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
-//   const ip = getIP(req)
-//   const loggedInKey = req.body.loggedInKey;
-//   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip }).limit(1)
-//   if (outcome && outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-//   else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
-//   else if(outcome && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
-//     // if(validateCouponForm(req.body) && Number(req.body.currentPrice) > Number(req.body.discountedPrice)) {
-//       const chargeData = {
-//         description: req.body.description,
-//         source: req.body.source,
-//         currency: req.body.currency,
-//         amount: req.body.amount
-//       }
-//       const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
-//       if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
-//         res.json({response: 'Coupon Created'})
-//         const amountCoupons = req.body.amountCoupons;
-//         let couponCodes = [];
-//         let i = 0
-//         for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-//         const saveCoupon = async () => {
-//           const mongodbID = new mongoose.Types.ObjectId();
-//           const coupon = new Coupon({
-//             _id: mongodbID,
-//             title: req.body.title,
-//             address: req.body.address,
-//             city: req.body.city.toLowerCase(),
-//             amountCoupons: amountCoupons,
-//             currentPrice: req.body.currentPrice,
-//             discountedPrice: req.body.discountedPrice,
-//             category: req.body.category,
-//             textarea: req.body.textarea,
-//             base64image: req.body.imagePreviewUrl,
-//             superCoupon: req.body.superCoupon,
-//             couponCodes: couponCodes,
-//             couponStillValid: true,
-//             latitude: req.body.latitude,
-//             longitude: req.body.longitude
-//           })
-          
-//           // pushing the value seemed to a new array seemed to not work so I had to do this hack.
-//           const arr = [...outcome[0].couponIds, mongodbID]
-//           await AccountInfo.updateOne(
-//             { "_id" : outcome[0]._id }, 
-//             { "$set" : {"couponIds": arr}}, 
-//             { "upsert" : false } 
-//           );
-//           await coupon.save()
-//             .catch(err => console.log(err))
-//             // console.log({chargeData})
-//         }
-//         saveCoupon();
-//       } else res.json({response: 'Coupon Not Created'})
-//     // } else res.json({response: 'Coupon Not Created'})
-//   } else res.json({response: "You are not logged in!"});
-// }))
-
-app.post('/api/uploadCoupons', checkUserAuth, chargeUser, sendJSON);
-
-async function checkUserAuth(req, res, next) {
+app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
-  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip }).limit(1);
-  if (outcome && outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
-  else if(outcome && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) return next();
-  return res.json({response: "Failed to upload coupons!"})
-}
-
-async function chargeUser(req, res, next) {
-  const chargeData = {
-    description: req.body.description,
-    source: req.body.source,
-    currency: req.body.currency,
-    amount: req.body.amount
+  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip }).limit(1)
+  console.log({outcome})
+  console.log(1)
+  if (outcome.length === 0 || outcome[0].yourPick !== ' Buisness Owner') {
+    console.log(2)
+    res.json({response: "Only Buisness Owners can create coupons!"});
   }
-  const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
-  if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") return next();
-  else res.json({response: "Failed to upload coupons!"});
-}
+  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") {
+    console.log(3)
+    res.json({response: "Please choose your coupon type!"});
+  }
+  else if(outcome && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+    console.log(4)
+    if(validateCouponForm(req.body) && Number(req.body.currentPrice) > Number(req.body.discountedPrice)) {
+      console.log(5)
+      const chargeData = {
+        description: req.body.description,
+        source: req.body.source,
+        currency: req.body.currency,
+        amount: req.body.amount
+      }
+      const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
+      if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
+        console.log(6)
+        res.json({response: 'Coupon Created'})
+        const amountCoupons = req.body.amountCoupons;
+        let couponCodes = [];
+        let i = 0
+        for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+        const saveCoupon = async () => {
+          console.log(7)
+          const mongodbID = new mongoose.Types.ObjectId();
+          const coupon = new Coupon({
+            _id: mongodbID,
+            title: req.body.title,
+            address: req.body.address,
+            city: req.body.city.toLowerCase(),
+            amountCoupons: amountCoupons,
+            currentPrice: req.body.currentPrice,
+            discountedPrice: req.body.discountedPrice,
+            category: req.body.category,
+            textarea: req.body.textarea,
+            base64image: req.body.imagePreviewUrl,
+            superCoupon: req.body.superCoupon,
+            couponCodes: couponCodes,
+            couponStillValid: true,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude
+          })
+          
+          // pushing the value seemed to a new array seemed to not work so I had to do this hack.
+          const arr = [...outcome[0].couponIds, mongodbID]
+          await AccountInfo.updateOne(
+            { "_id" : outcome[0]._id }, 
+            { "$set" : {"couponIds": arr}}, 
+            { "upsert" : false } 
+          );
+          await coupon.save()
+            .catch(err => console.log(err))
+            // console.log({chargeData})
+        }
+        saveCoupon();
+      } else res.json({response: 'Coupon Not Created'})
+    } else res.json({response: 'Coupon Not Created'})
+  } else res.json({response: "You are not logged in!"});
+}))
 
-async function sendJSON(req, res, next) {
-  const ip = getIP(req)
-  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": req.body.loggedInKey, "ip": ip }).limit(1);
-  const amountCoupons = req.body.amountCoupons;
-  let couponCodes = [];
-  let i = 0
-  for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
-  const saveCoupon = async () => {
-    const mongodbID = new mongoose.Types.ObjectId();
-    const coupon = new Coupon({
-      _id: mongodbID,
-      title: req.body.title,
-      address: req.body.address,
-      city: req.body.city.toLowerCase(),
-      amountCoupons: amountCoupons,
-      currentPrice: req.body.currentPrice,
-      discountedPrice: req.body.discountedPrice,
-      category: req.body.category,
-      textarea: req.body.textarea,
-      base64image: req.body.imagePreviewUrl,
-      superCoupon: req.body.superCoupon,
-      couponCodes: couponCodes,
-      couponStillValid: true,
-      latitude: req.body.latitude,
-      longitude: req.body.longitude
-    })
+// app.post('/api/uploadCoupons', checkUserAuth, chargeUser, sendJSON);
+
+// async function checkUserAuth(req, res, next) {
+//   const ip = getIP(req)
+//   const loggedInKey = req.body.loggedInKey;
+//   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip }).limit(1);
+//   if (outcome && outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
+//   else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
+//   else if(outcome && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) return next();
+//   return res.json({response: "Failed to upload coupons!"})
+// }
+
+// async function chargeUser(req, res, next) {
+//   const chargeData = {
+//     description: req.body.description,
+//     source: req.body.source,
+//     currency: req.body.currency,
+//     amount: req.body.amount
+//   }
+//   const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
+//   if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") return next();
+//   else res.json({response: "Failed to upload coupons!"});
+// }
+
+// async function sendJSON(req, res, next) {
+//   const ip = getIP(req)
+//   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": req.body.loggedInKey, "ip": ip }).limit(1);
+//   const amountCoupons = req.body.amountCoupons;
+//   let couponCodes = [];
+//   let i = 0
+//   for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+//   const saveCoupon = async () => {
+//     const mongodbID = new mongoose.Types.ObjectId();
+//     const coupon = new Coupon({
+//       _id: mongodbID,
+//       title: req.body.title,
+//       address: req.body.address,
+//       city: req.body.city.toLowerCase(),
+//       amountCoupons: amountCoupons,
+//       currentPrice: req.body.currentPrice,
+//       discountedPrice: req.body.discountedPrice,
+//       category: req.body.category,
+//       textarea: req.body.textarea,
+//       base64image: req.body.imagePreviewUrl,
+//       superCoupon: req.body.superCoupon,
+//       couponCodes: couponCodes,
+//       couponStillValid: true,
+//       latitude: req.body.latitude,
+//       longitude: req.body.longitude
+//     })
       
-    // pushing the value seemed to a new array seemed to not work so I had to do this hack.
-    const arr = [...outcome[0].couponIds, mongodbID]
-    await AccountInfo.updateOne(
-      { "_id" : outcome[0]._id }, 
-      { "$set" : {"couponIds": arr}}, 
-      { "upsert" : false } 
-    );
-    await coupon.save()
-      .catch(err => console.log(err))
-      // console.log({chargeData})
-  }
-  saveCoupon();
-}
+//     // pushing the value seemed to a new array seemed to not work so I had to do this hack.
+//     const arr = [...outcome[0].couponIds, mongodbID]
+//     await AccountInfo.updateOne(
+//       { "_id" : outcome[0]._id }, 
+//       { "$set" : {"couponIds": arr}}, 
+//       { "upsert" : false } 
+//     );
+//     await coupon.save()
+//       .catch(err => console.log(err))
+//       // console.log({chargeData})
+//   }
+//   saveCoupon();
+// }
 
 app.get('/api/getSponseredCoupons/:city/:pageNumber', handleAsync(async (req, res) => {
   let coupons;
