@@ -285,3 +285,7 @@ color: blue;
     margin-top:0px;
   }
 }
+
+.red{
+  color: red !important;
+}
