@@ -333,7 +333,6 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
       const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
       if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
         res.json({response: 'Coupon Created'})
-        console.log(6)
         const amountCoupons = req.body.amountCoupons;
         let couponCodes = [];
         let i = 0
