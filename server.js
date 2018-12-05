@@ -374,7 +374,7 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
 //   } else res.json({response: "You are not logged in!"});
 // }))
 
-app.get('/api/uploadCoupons', checkUserAuth, chargeUser, sendJSON);
+app.post('/api/uploadCoupons', checkUserAuth, chargeUser, sendJSON);
 
 async function checkUserAuth(req, res, next) {
   const ip = getIP(req)
