@@ -319,7 +319,7 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
 app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
-  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip }).limit(1)
+  const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey }).limit(1)
   console.log({outcome})
   console.log(1)
   if (outcome.length === 0 || outcome[0].yourPick !== ' Buisness Owner') {
