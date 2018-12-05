@@ -142,6 +142,7 @@ class SignUp extends Component {
       if (json && json.loggedInKey) {
         this.props.parentMethod(json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
+        toast.success("Welcome " + this.state.email + "!")
       }
     } else toast.error("Your email is not valid!")
   }
