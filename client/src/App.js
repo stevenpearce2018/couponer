@@ -129,7 +129,7 @@ class App extends Component {
       email: this.state.email
     }
     await postRequest(`/api/signout`, data)
-    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden", couponsCurrentlyClaimed: ''})
+    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden", couponsCurrentlyClaimed: '', membershipExperationDate: ""})
     toast.success("Successful Logout!")
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
@@ -226,8 +226,8 @@ class App extends Component {
           </h1>
           { (this.state.loggedInKey !== "") ? <p>loggedInKey: {this.state.loggedInKey}</p> : <p></p> }
           { (this.state.email !== "") ? <strong><p>Logged in as: {this.state.email}.</p></strong> : <strong><p>Welcome, Guest!</p></strong> }
-          { (this.state.membershipExperationDate !== "") ? <strong><p>Membership Expires On: {this.state.membershipExperationDate}.</p></strong> : <p></p> }      
-          { (this.state.couponsCurrentlyClaimed !== "") ? <p>{this.state.couponsCurrentlyClaimed}/5 Coupons Claimed</p> : <p></p> }
+          { (this.state.membershipExperationDate !== "") ? <strong><p>Membership Expires On: {this.state.membershipExperationDate}</p></strong> : <p></p> }      
+          { (this.state.couponsCurrentlyClaimed !== "") ? <strong><p>{this.state.couponsCurrentlyClaimed}/5 Coupons Claimed!</p></strong> : <p></p> }
           {/* {
             (this.state.couponsCurrentlyClaimed !== "" && this.state.membershipExperationDate !== "" ) ?
             <strong><p>Currently Claimed Coupons: {(this.state.couponsCurrentlyClaimed !== "undefined" && this.state.couponsCurrentlyClaimed !== "NaN" && this.state.couponsCurrentlyClaimed !=='N/A') ? this.state.couponsCurrentlyClaimed + '/5' : 0 + '/5'}</p>
