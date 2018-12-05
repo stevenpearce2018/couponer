@@ -63,7 +63,7 @@ class Login extends Component {
     }
     const json = await postRequest(`/api/signin`, data)
     if (json && json.loggedInKey){
-      this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate);
+      this.props.parentMethod( json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate);
       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       json.loggedInKey.substr(-1) === "b" ? sessionStorage.setItem('buisnessOwner', true) : sessionStorage.setItem('buisnessOwner', false)
       // if(json.loggedInKey.substr(-1) === "c") {

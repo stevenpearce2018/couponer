@@ -140,7 +140,7 @@ class SignUp extends Component {
     if (validateEmail(this.state.email) && this.validState(this.state) ){
       const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
-        this.props.parentMethod(json && json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
+        this.props.parentMethod(json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
       }
     } else toast.error("Your email is not valid!")
