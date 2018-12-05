@@ -472,12 +472,12 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', handleAsync(async (req, re
 }));
 
 app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
-  const ip = getIP(req)
+  // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
   let coupons;
-  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
-  if(outcome[0] && outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
+  const outcome = await AccountInfo.find({'email':email,"loggedInKey": loggedInKey}).limit(1);
+  if(outcome[0] && outcome[0].loggedInKey === loggedInKey) {
     const searchIDS = searchableMongoIDs(outcome[0].couponIds)
     coupons = await Coupon.find({'_id': { $in: searchIDS}})
     coupons.length === 0 ? coupons = "No coupons found." : coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
@@ -488,7 +488,7 @@ app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
 }));
 
 app.post('/api/addMonths', handleAsync(async (req, res) => {
-  const ip = getIP(req)
+  // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
   const numberOfMonths = req.body.numberOfMonths;
@@ -498,7 +498,7 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
     currency: req.body.currency,
     amount: req.body.amount
   }
-  const outcome = await AccountInfo.find({'email':email, "ip": ip, "loggedInKey": loggedInKey}).limit(1);
+  const outcome = await AccountInfo.find({'email':email, "loggedInKey": loggedInKey}).limit(1);
   if(outcome[0].length !== 0 && req.body.numberOfMonths >= 1) {
     const charge = (chargeData.amount / 499 === numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
     if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
