@@ -321,7 +321,7 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email, "loggedInKey": loggedInKey, "ip": ip })
   if (outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") return res.json({response: "Please choose your coupon type!"});
+  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
   else if(outcome[0].loggedInKey === loggedInKey && outcome[0].ip === ip) {
     if(validateCouponForm(req.body) && req.body.currentPrice > req.body.discountedPrice) {
       const chargeData = {
@@ -333,6 +333,7 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
       const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
       if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
         res.json({response: 'Coupon Created'})
+        console.log(6)
         const amountCoupons = req.body.amountCoupons;
         let couponCodes = [];
         let i = 0
