@@ -475,16 +475,22 @@ app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
   // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
-  let coupons;
-  const outcome = await AccountInfo.find({'email':email,"loggedInKey": loggedInKey}).limit(1);
-  if(outcome[0] && outcome[0].loggedInKey === loggedInKey) {
-    const searchIDS = searchableMongoIDs(outcome[0].couponIds)
-    coupons = await Coupon.find({'_id': { $in: searchIDS}})
-    coupons.length === 0 ? coupons = "No coupons found." : coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
-    res.json({ coupons: coupons });
+  redisHelper.get("gyc" + email, gotData)
+  async function gotData (data) {
+    if(!data) {
+      const outcome = await AccountInfo.find({'email':email,"loggedInKey": loggedInKey}).limit(1);
+      if(outcome[0] && outcome[0].loggedInKey === loggedInKey) {
+        const searchIDS = searchableMongoIDs(outcome[0].couponIds)
+        let coupons;
+        coupons = await Coupon.find({'_id': { $in: searchIDS}})
+        coupons.length === 0 ? coupons = "No coupons found." : coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
+        res.json({ coupons: coupons });
+        redisHelper.set("gyc" + email, coupons)
+      }
+      else if (outcome[0] && outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
+      else res.json({response: "No coupons found."});
+    } else res.json({coupons: data});
   }
-  else if (outcome[0] && outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
-  else res.json({response: "No coupons found."});
 }));
 
 app.post('/api/addMonths', handleAsync(async (req, res) => {
@@ -551,7 +557,6 @@ app.post('/api/validateCode', handleAsync(async (req, res) => {
     isValidCouponCode && codeLinkedToEmail ? res.json({response: "Coupon is valid!"}) : res.json({response: "Coupon is not valid."});
     if (isValidCouponCode && codeLinkedToEmail) {
       const arrCouponCodes = useCode(couponCode, account[0].couponCodes)
-      // console.log({arrCouponCodes})
       const couponsCurrentlyClaimed = account[0].couponsCurrentlyClaimed >= 0 ? Number(account[0].couponsCurrentlyClaimed) - 1 : 0;
       await AccountInfo.updateOne(
         { "_id" : account[0]._id }, 
@@ -746,42 +751,53 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
       else if(checkMembershipDate(outcome[0].membershipExperationDate)) {
         // if (outcome[0].couponsCurrentlyClaimed < 5) {
-          const coupon = await Coupon.find({'_id':_id }).limit(1);
-          let couponCode;
-          let couponStillValid = true;
-          let i = 0;
-          const iMax = coupon[0].couponCodes.length;
-          for (;i < iMax; i++) {
-            if(coupon[0].couponCodes[i].substr(-1) === "a") {
-              couponCode = coupon[0].couponCodes[i].substring(0, coupon[0].couponCodes[i].length - 1) + "c";
-              break;
-            }
+          const isClaimed = (ids, id) => {
+            let i = 0;
+            const iMax = ids.length;
+            for (; i < iMax; i++) if(ids[i] === id) return true;
+            return false;
           }
-          if (coupon[0].amountCoupons - 1 <= 0) couponStillValid = false;
-          const arrIds = [...outcome[0].couponIds, _id];
-          const arrCouponCodes = [...outcome[0].couponCodes, {_id: _id, couponCode: couponCode}]
-          if(couponCode) {
-            res.json({response: "Coupon Claimed!"});
-            await AccountInfo.updateOne(
-              { "_id" : outcome[0]._id }, 
-              { "$set" : { 
-                "couponIds": arrIds}, //
-                "couponsCurrentlyClaimed": outcome[0].couponsCurrentlyClaimed + 1 ,
-                "couponCodes": arrCouponCodes
-              }, 
-              { "upsert" : false } 
-            );
-            const updatedCodes = claimCode(coupon[0].couponCodes)
-            await Coupon.updateOne(
-              { "_id" : req.body._id },
-              { "$set" : { 
-                "couponCodes": updatedCodes},
-                "amountCoupons": (coupon[0].amountCoupons - 1),
-                "couponStillValid": couponStillValid
-              }, 
-              { "upsert" : false } 
-            );
-          } else res.json({response: "These coupons are no longer available. Please try another coupon."});
+          const claimedAlready = isClaimed(outcome[0].couponIds, _id);
+          if (claimedAlready) res.json({response: "Coupon Already Claimed!"});
+          else {
+            const coupon = await Coupon.find({'_id':_id }).limit(1);
+            let couponCode;
+            let couponStillValid = true;
+            let i = 0;
+            const iMax = coupon[0].couponCodes.length;
+            for (;i < iMax; i++) {
+              if(coupon[0].couponCodes[i].substr(-1) === "a") {
+                couponCode = coupon[0].couponCodes[i].substring(0, coupon[0].couponCodes[i].length - 1) + "c";
+                break;
+              }
+            }
+            if (coupon[0].amountCoupons - 1 <= 0) couponStillValid = false;
+            const arrIds = [...outcome[0].couponIds, _id];
+            const arrCouponCodes = [...outcome[0].couponCodes, {_id: _id, couponCode: couponCode}]
+            if(couponCode) {
+              redisHelper.set("gyc" + req.body.email, null)
+              res.json({response: "Coupon Claimed!"});
+              await AccountInfo.updateOne(
+                { "_id" : outcome[0]._id }, 
+                { "$set" : { 
+                  "couponIds": arrIds}, //
+                  "couponsCurrentlyClaimed": outcome[0].couponsCurrentlyClaimed + 1 ,
+                  "couponCodes": arrCouponCodes
+                }, 
+                { "upsert" : false } 
+              );
+              const updatedCodes = claimCode(coupon[0].couponCodes)
+              await Coupon.updateOne(
+                { "_id" : req.body._id },
+                { "$set" : { 
+                  "couponCodes": updatedCodes},
+                  "amountCoupons": (coupon[0].amountCoupons - 1),
+                  "couponStillValid": couponStillValid
+                }, 
+                { "upsert" : false } 
+              );
+            } else res.json({response: "These coupons are no longer available. Please try another coupon."});
+          }
         // } else res.json({response: "You have too many coupons! Please use or discard one of your current coupons."});
       } else res.json({response: "Your membership has expired! Please renew it under the account settings option."});
     }
@@ -800,23 +816,29 @@ app.post(`/api/discardCoupon`, handleAsync(async(req, res) => {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Something went wrong!"});
       // if (outcome[0].couponsCurrentlyClaimed === 0) {
           const coupon = await Coupon.find({'_id':_id }).limit(1);
-          const arrIds = filtherID(outcome[0].couponIds, _id);
           const filtherID = (IDS, ID) => {
             let i = 0;
-            let iMax = IDS.length;
+            const iMax = IDS.length;
             let cleanedIDS = []
             for (; i < iMax; i++) if (IDS[i] !== ID) cleanedIDS.push(IDS[i]);
             return cleanedIDS;
           }
+          const arrIds = filtherID(outcome[0].couponIds, _id);
           const filtherCouponCodes = (couponCodes, ID) => {
             let i = 0;
-            let iMax = couponCodes.length;
+            const iMax = couponCodes.length;
             let cleanedIDS = []
             for (; i < iMax; i++) if (couponCodes[i]._id !== ID) cleanedIDS.push(couponCodes[i]);
             return cleanedIDS;
           }
-          // const arrCouponCodes = [...outcome[0].couponCodes, {_id: _id, couponCode: couponCode}]
-          const arrCouponCodes = filtherCouponCodes(outcome[0].couponCodes, _id)
+          const filtherCouponCode = (couponCodes, ID) => {
+            let i = 0;
+            const iMax = couponCodes.length;
+            for (; i < iMax; i++) if (couponCodes[i]._id === ID) return couponCodes[i].couponCode;
+          }
+          const arrCouponCodes = filtherCouponCodes(outcome[0].couponCodes, _id);
+          const couponCode = filtherCouponCode(outcome[0].couponCodes, _id);
+          redisHelper.set("gyc" + req.body.email, null)
           res.json({response: "Coupon Removed!"});
           await AccountInfo.updateOne(
             { "_id" : outcome[0]._id }, 
@@ -827,9 +849,17 @@ app.post(`/api/discardCoupon`, handleAsync(async(req, res) => {
             }, 
             { "upsert" : false } 
           );
-          // unclaim the code in outcome[0].couponCodes
-          // !todo
-          const updatedCodes = unclaimCode(coupon[0].couponCodes)
+          const unclaimCode = (codes, code) => {
+            let i = 0;
+            const iMax = codes.length;
+            let couponCodes = codes;
+            for (; i< iMax ; i++) if(couponCodes[i] === code) {
+              couponCodes[i] = couponCodes[i].substring(0, couponCodes[i].length - 1) + "a";
+              break;
+            }
+            return couponCodes;
+          }
+          const updatedCodes = unclaimCode(coupon[0].couponCodes, couponCode)
           await Coupon.updateOne(
             { "_id" : req.body._id },
             { "$set" : { 
@@ -839,7 +869,7 @@ app.post(`/api/discardCoupon`, handleAsync(async(req, res) => {
             }, 
             { "upsert" : false } 
           );
-    }else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+    } else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
 }))
 

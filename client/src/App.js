@@ -196,7 +196,7 @@ class App extends Component {
 
   setMainToAbout = () => this.setState({mainContent: <About/>})
 
-  setMainToMyCoupons = () => this.setState({mainContent: <MyCoupons setMainHome={this.setMainHome}/>})
+  setMainToMyCoupons = () => this.setState({mainContent: <MyCoupons updateCouponsClaimed={this.updateCouponsClaimed} setMainHome={this.setMainHome}/>})
   
   setStateLoggedIn = (key, email, couponsCurrentlyClaimed, membershipExperationDate) => {
     sessionStorage.setItem('UnlimitedCouponerKey', key)

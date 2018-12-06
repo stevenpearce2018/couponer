@@ -70,7 +70,7 @@ const getOrDiscardCoupons = async (_id, updateCouponsClaimed, flag) => {
       loggedInKey: loggedInKey,
       email: email
     }
-    const response = await postRequest(`/api/getCoupon`, data)
+    const response = await postRequest(flag === "discard" ? `/api/discardCoupon` : `/api/getCoupon`, data)
     if (response.response === "Coupon Claimed!" || response.response === "Coupon Removed!") {
       toast.success(response.response)
       const couponsCurrentlyClaimed = flag === "discard" ? Number(sessionStorage.getItem('couponsCurrentlyClaimed')) - 1 : Number(sessionStorage.getItem('couponsCurrentlyClaimed')) + 1; 
@@ -119,15 +119,15 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
         <br/>
         {
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c") ?
-          <button className="getCoupon red" onClick={ () => getOrDiscardCoupons(coupons._id, updateCouponsClaimed, "discard")}> Discard Coupon </button> :
+          <button className="getCoupon red" onClick={ () => getOrDiscardCoupons(coupons._id, updateCouponsClaimed, "discard")}><strong> Discard Coupon </strong></button> :
           <div></div>
         }
         {
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "b") ?
-            <button className="getCoupon" onClick={ () => validateCode(coupons._id, showPopup, coupons.title)}> Validate Customer Codes </button> :
+            <button className="getCoupon" onClick={ () => validateCode(coupons._id, showPopup, coupons.title)}><strong> Validate Customer Codes </strong></button> :
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c") ? 
-            <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0], showPopup, coupons.title)}> Show Your Coupon Code </button> :
-            <button className="getCoupon" onClick={ () => getOrDiscardCoupons(coupons._id, updateCouponsClaimed, "get")}> Get Coupon </button>
+            <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0], showPopup, coupons.title)}><strong> Show Your Coupon Code </strong></button> :
+            <button className="getCoupon" onClick={ () => getOrDiscardCoupons(coupons._id, updateCouponsClaimed, "get")}><strong> Get Coupon </strong></button>
         }
       </div>
       <br/>

@@ -50,7 +50,7 @@ class AccountSettings extends Component {
       email: email
     }
     const json = await postRequest(`/api/getYourCoupons`, data)
-    this.setState({coupons: CouponsMaker(json && json.coupons)})
+    this.setState({coupons: CouponsMaker(json.coupons, this.props.updateCouponsClaimed)})
   }
   handleChange = event => {
     const { target: { name, value } } = event

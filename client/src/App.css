@@ -19,7 +19,6 @@ nav ul li div i{padding-right:10px; color:#002e5b; transition: all 0.5s ease 0s;
 .toggle-menu ul{display:table; width:25px;}
 .toggle-menu ul li{width:100%; height:3px; background-color:#002e5b; margin-bottom:4px;}
 .toggle-menu ul li:last-child{margin-bottom:0px;}
-.red{color:red}
 .green{color:green}
 section{max-width:95%;}
 #logo:hover{

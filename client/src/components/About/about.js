@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './about.css';
-// import CouponsMaker from '../../couponsMaker';
 
 class About extends Component {
   render() {

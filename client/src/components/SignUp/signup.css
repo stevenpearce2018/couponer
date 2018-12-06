@@ -287,5 +287,6 @@ color: blue;
 }
 
 .red{
-  color: red !important;
+  background-color: red !important;
+  color:ghostwhite !important;
 }
