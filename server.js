@@ -35,7 +35,6 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
 
-
 app.post('/api/generateQR', handleAsync(async(req, res) => {
   try {
     client.messages
@@ -284,20 +283,38 @@ app.post('/api/updateAccount', handleAsync(async (req, res) => {
   } else res.json({response: "Failed to update"})
 }));
 
+// Stored failed logins by ip address
+let failures = {};
+const MINS10 = 600000, MINS30 = 3 * MINS10;
+setInterval(() => {
+  for (var ip in failures) if (Date.now() - failures[ip].nextTry > MINS10) delete failures[ip];
+}, MINS30);
+
 app.post('/api/signin', handleAsync(async (req, res) => {
+  const remoteIp = getIP(req)
+  const onLoginFail = () => {
+    let f = failures[remoteIp] = failures[remoteIp] || {count: 0, nextTry: new Date()};
+    ++f.count;
+    f.nextTry.setTime(Date.now() + 2000 * f.count); // Wait another two seconds for every failed attempt
+  }
+  const onLoginSuccess = () => delete failures[remoteIp];
   const email = req.body.email;
   const outcome = await AccountInfo.find({'email' : email}).limit(1)
   if(outcome[0] && bcrypt.compareSync(req.body.password, outcome[0].password)) {
     const loginStringBase = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const loggedInKey = outcome[0].yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b";
-    const hashedKey = await bcrypt.hashSync(loggedInKey, 10);
     outcome[0].yourPick === " Customer" ? res.json({loggedInKey: loggedInKey, membershipExperationDate: outcome[0].membershipExperationDate, couponsCurrentlyClaimed: outcome[0].couponsCurrentlyClaimed}) : res.json({loggedInKey: loggedInKey});
+    onLoginSuccess()
+    const hashedKey = await bcrypt.hashSync(loggedInKey, 10);
     await AccountInfo.updateOne(
       { "_id" : outcome[0]._id }, 
       { "$set" : { "ip" : req.connection.remoteAddress.replace('::ffff:', '')}, loggedInKey:hashedKey }, 
       { "upsert" : false } 
     );
-  } else res.json({response: "Invalid login"});
+  } else {
+    onLoginFail()
+    res.json({response: "Invalid login"});
+  }
 }));
 
 app.post(`/api/signout`, handleAsync(async(req, res) => {
