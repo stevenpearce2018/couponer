@@ -17,7 +17,7 @@ class AccountSettings extends Component {
       latitude: '',
       longitude: '',
       numberOfMonths: '',
-      membershipExperationDate: '',
+      membershipExperationDate: ''
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this)
