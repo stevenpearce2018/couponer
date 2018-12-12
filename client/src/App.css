@@ -24,7 +24,15 @@ section{max-width:95%;}
 #logo:hover{
     cursor: pointer;
 }
-
+.redBackground{
+    background-color: red !important;
+}
+.loginInfo{
+    margin-left: 10px;
+}
+.Toastify__toast {
+    font-weight:bold !important;
+}
 header{padding:20px 0px;}
 #logo{padding:0px;}
 .toggle-menu {float:right; padding:8px 0px; display:inline-block; cursor:pointer; }

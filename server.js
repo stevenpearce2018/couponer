@@ -156,7 +156,7 @@ app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
 app.post('/api/signupCustomer', handleAsync(async(req, res) => {
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
-    if (randomNumber === req.body.randomNumber) {
+    if (randomNumber && randomNumber === req.body.randomNumber) {
       const yourPick = req.body.yourPick;
       const password = req.body.password;
       const phoneNumber = req.body.phoneNumber;
@@ -225,7 +225,7 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
 
 app.post('/api/phoneTest', handleAsync(async (req, res) => {
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
-  redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
+  redisHelper.set(req.body.phoneNumber, randomNumber, 60*15) // 15 minutes
   try {
     client.messages
     .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})
@@ -324,6 +324,7 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
   const outcome = await AccountInfo.find({'email' : email}).limit(1)
   if (outcome.length === 1 && bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
     res.json({response:"Logout Successful"})
+    const loginStringBase = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const dummyKey = outcome[0].yourPick === " Customer" ? loginStringBase + ":c" : loginStringBase + ":b";
     const hashedDummyKey = await bcrypt.hashSync(dummyKey, 10);
     await AccountInfo.updateOne(
@@ -792,36 +793,38 @@ app.post(`/api/discardCoupon`, handleAsync(async(req, res) => {
           const arrCouponCodes = filtherCouponCodes(outcome[0].couponCodes, _id);
           const couponCode = filtherCouponCode(outcome[0].couponCodes, _id);
           redisHelper.set("gyc" + req.body.email, null)
-          res.json({response: "Coupon Removed!"});
-          await AccountInfo.updateOne(
-            { "_id" : outcome[0]._id }, 
-            { "$set" : { 
-              "couponIds": arrIds}, //
-              "couponsCurrentlyClaimed": outcome[0].couponsCurrentlyClaimed - 1 ,
-              "couponCodes": arrCouponCodes
-            }, 
-            { "upsert" : false } 
-          );
-          const unclaimCode = (codes, code) => {
-            let i = 0;
-            const iMax = codes.length;
-            let couponCodes = codes;
-            for (; i< iMax ; i++) if(couponCodes[i] === code) {
-              couponCodes[i] = couponCodes[i].substring(0, couponCodes[i].length - 1) + "a";
-              break;
+          if (arrCouponCodes.length === outcome[0].couponCodes.length) {
+            res.json({response: "Coupon Already Removed!"})
+            await AccountInfo.updateOne(
+              { "_id" : outcome[0]._id }, 
+              { "$set" : { 
+                "couponIds": arrIds}, //
+                "couponsCurrentlyClaimed": outcome[0].couponsCurrentlyClaimed - 1 ,
+                "couponCodes": arrCouponCodes
+              }, 
+              { "upsert" : false } 
+            );
+            const unclaimCode = (codes, code) => {
+              let i = 0;
+              const iMax = codes.length;
+              let couponCodes = codes;
+              for (; i< iMax ; i++) if(couponCodes[i] === code) {
+                couponCodes[i] = couponCodes[i].substring(0, couponCodes[i].length - 1) + "a";
+                break;
+              }
+              return couponCodes;
             }
-            return couponCodes;
-          }
-          const updatedCodes = unclaimCode(coupon[0].couponCodes, couponCode)
-          await Coupon.updateOne(
-            { "_id" : req.body._id },
-            { "$set" : { 
-              "couponCodes": updatedCodes},
-              "amountCoupons": (coupon[0].amountCoupons + 1),
-              "couponStillValid": true
-            }, 
-            { "upsert" : false } 
-          );
+            const updatedCodes = unclaimCode(coupon[0].couponCodes, couponCode)
+            await Coupon.updateOne(
+              { "_id" : req.body._id },
+              { "$set" : { 
+                "couponCodes": updatedCodes},
+                "amountCoupons": (coupon[0].amountCoupons + 1),
+                "couponStillValid": true
+              }, 
+              { "upsert" : false } 
+            );
+          } else res.json({response: "Coupon Removed!"})
     } else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
 }))

@@ -137,14 +137,14 @@ class SignUp extends Component {
       amount: dataFromStripe.amount,
     }
     if (!checkPasswordStrength(this.state.password)) return toast.error("Your password is not valid!")
-    if (validateEmail(this.state.email) && this.validState(this.state) ){
+    if (validateEmail(this.state.email) && this.validState(this.state)){
       const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
         this.props.parentMethod(json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
         toast.success("Welcome " + this.state.email + "!")
-      }
-    } else toast.error("Your email is not valid!")
+      } else toast.error(json.response)
+    } else toast.error("Invalid Email Address.")
   }
 
   togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})

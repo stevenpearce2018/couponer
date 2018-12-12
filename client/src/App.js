@@ -224,16 +224,10 @@ class App extends Component {
               Save money, grow your business, try something new.
             </span>
           </h1>
-          { (this.state.loggedInKey !== "") ? <p>loggedInKey: {this.state.loggedInKey}</p> : <p></p> }
-          { (this.state.email !== "") ? <strong><p>Logged in as: {this.state.email}.</p></strong> : <strong><p>Welcome, Guest!</p></strong> }
-          { (this.state.membershipExperationDate !== "") ? <strong><p>Membership Expires On: {this.state.membershipExperationDate}</p></strong> : <p></p> }      
-          { (this.state.couponsCurrentlyClaimed !== "") ? <strong><p>{this.state.couponsCurrentlyClaimed}/5 Coupons Claimed!</p></strong> : <p></p> }
-          {/* {
-            (this.state.couponsCurrentlyClaimed !== "" && this.state.membershipExperationDate !== "" ) ?
-            <strong><p>Currently Claimed Coupons: {(this.state.couponsCurrentlyClaimed !== "undefined" && this.state.couponsCurrentlyClaimed !== "NaN" && this.state.couponsCurrentlyClaimed !=='N/A') ? this.state.couponsCurrentlyClaimed + '/5' : 0 + '/5'}</p>
-            <p>Membership Experation Date: {this.state.membershipExperationDate}</p></strong> :
-            <p></p>
-          } */}
+          { (this.state.loggedInKey !== "") ? <p className="loginInfo">loggedInKey: {this.state.loggedInKey}</p> : <p></p> }
+          { (this.state.email !== "") ? <strong><p className="loginInfo">Logged in as: {this.state.email}.</p></strong> : <strong><p>Welcome, Guest!</p></strong> }
+          { (this.state.membershipExperationDate !== "") ? <strong><p className="loginInfo">Membership Expires On: {this.state.membershipExperationDate}</p></strong> : <p></p> }      
+          { (this.state.couponsCurrentlyClaimed !== "") ? <strong><p className="loginInfo">{this.state.couponsCurrentlyClaimed}/5 Coupons Claimed!</p></strong> : <p></p> }
         <header className='homeHeader'>
           <section>
             <a onClick={this.setMainHome} id="logo">

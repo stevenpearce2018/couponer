@@ -10,7 +10,7 @@ client.on('connect', () => console.log('Connected to redis'))
 // Convert object to string if value is an object
 // if a time to live is defined then give the data a time to expire
 const set = (key, value, ttl) => {
-    const valueToInsert = typeof value == 'string' ? valueToInsert = value : valueToInsert = JSON.stringify(value);
+    const valueToInsert = typeof value == 'string' ? value : JSON.stringify(value);
     !ttl ? client.set(key, valueToInsert) : client.set(key, valueToInsert, 'EX', ttl);
 }
 const get = (key, callback) => {

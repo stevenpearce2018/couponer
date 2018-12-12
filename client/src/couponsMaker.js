@@ -119,7 +119,7 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
         <br/>
         {
           (window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length).toLowerCase() === "mycoupons" && sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c") ?
-          <button className="getCoupon red" onClick={ () => getOrDiscardCoupons(coupons._id, updateCouponsClaimed, "discard")}><strong> Discard Coupon </strong></button> :
+          <button className="getCoupon redBackground" onClick={ () => getOrDiscardCoupons(coupons._id, updateCouponsClaimed, "discard")}><strong> Discard Coupon </strong></button> :
           <div></div>
         }
         {

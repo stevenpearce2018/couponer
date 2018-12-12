@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import './accountsettings.css';
 import InputField from '../SubComponents/InputField/inputField';
 import postRequest from '../../postReqest';
-import CouponsMaker from '../../couponsMaker';
 import Checkout from '../Checkout/checkout';
 import { toast } from 'react-toastify';
-import getPosition from "../../getPosition";
 
 class AccountSettings extends Component {
   constructor(props) {
@@ -20,7 +18,6 @@ class AccountSettings extends Component {
       longitude: '',
       numberOfMonths: '',
       membershipExperationDate: '',
-      coupons: <div className="loaderContainer"><div className="loader"></div></div>,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this)
@@ -33,24 +30,6 @@ class AccountSettings extends Component {
       this.props.setMainHome()
       return toast.error('You are not logged in!')
     }
-    const couponlatitude = sessionStorage.getItem('couponlatitude');
-    const couponlongitude = sessionStorage.getItem('couponlongitude');
-    if (!couponlatitude && !couponlongitude && navigator.geolocation) getPosition(gotPosition);
-    else this.setState({latitude: couponlatitude, longitude: couponlongitude})
-    const that = this;
-    function gotPosition(position) {
-      that.setState({
-        latitude: position.latitude,
-        longitude: position.longitude,
-      })
-    }
-    const email = sessionStorage.getItem('UnlimitedCouponerEmail');
-    const data = {
-      loggedInKey: loggedInKey,
-      email: email
-    }
-    const json = await postRequest(`/api/getYourCoupons`, data)
-    this.setState({coupons: CouponsMaker(json.coupons, this.props.updateCouponsClaimed)})
   }
   handleChange = event => {
     const { target: { name, value } } = event
@@ -174,11 +153,6 @@ class AccountSettings extends Component {
       <br/>
       <br/>
     </div>
-      <div className="center">
-        <br/>
-        <h2>Your Coupons</h2>
-        {this.state.coupons}
-      </div>
     </div>
     )
   }
