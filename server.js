@@ -21,7 +21,6 @@ const generateQR = require("./lib/generateQR");
 const validateEmail = require('./lib/validateEmail');
 const associateCouponCodeByID = require('./lib/associateCouponCodeByID');
 const cleanCoupons = require("./lib/cleanCoupons");
-const handleAsync = require('async-error-handler');
 const getIP = require('./lib/getIP');
 const path = require("path")
 const checkMembershipDate = require("./lib/checkMembershipDate");
@@ -35,7 +34,7 @@ app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
 
-app.post('/api/generateQR', handleAsync(async(req, res) => {
+app.post('/api/generateQR', async(req, res) => {
   try {
     client.messages
     .create({from: '+13124108678', mediaUrl: await generateQR("Hello world"), to: "+15614807156"})
@@ -44,7 +43,7 @@ app.post('/api/generateQR', handleAsync(async(req, res) => {
   } catch (error) {
     res.json({success:false})
   }
-}));
+});
 
 
 const transporter = nodemailer.createTransport({
@@ -86,10 +85,11 @@ const postStripeCharge = res => (stripeErr, stripeRes) => {
 //   })
 // }
 
-app.post('/api/charge', handleAsync(async(req, res) => {
+app.post('/api/charge', async(req, res) => {
   stripe.charges.create(req.body, postStripeCharge(res));
-}));
-app.post('/api/recoverAccount', handleAsync(async(req, res) => {
+});
+
+app.post('/api/recoverAccount', async(req, res) => {
   const email = req.body.recoveryEmail;
   // const phoneNumber = req.body.phoneNumber;
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
@@ -110,9 +110,9 @@ app.post('/api/recoverAccount', handleAsync(async(req, res) => {
     });
     res.json({success:true})
   }
-}));
+});
 
-app.post('/api/recoverAccountWithCode', handleAsync(async(req, res) => {
+app.post('/api/recoverAccountWithCode', async(req, res) => {
   const email = req.body.recoveryEmail.toLowerCase();
   const randomNumber = req.body.randomNumber;
   const newPassword = req.body.newPassword;
@@ -130,9 +130,9 @@ app.post('/api/recoverAccountWithCode', handleAsync(async(req, res) => {
     }
     else res.json({success:false})
   }
-}));
+});
 
-app.post('/api/phoneTest', handleAsync(async (req, res) => {
+app.post('/api/phoneTest', async (req, res) => {
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
   redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
   try {
@@ -143,17 +143,17 @@ app.post('/api/phoneTest', handleAsync(async (req, res) => {
   } catch (error) {
     res.json({success:false})
   }
-}))
-app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
+})
+
+app.post('/api/phoneTestValidateNumber', async (req, res) => {
   redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
   function compareRandomNumber(randomNumber){
     if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
     else res.json({success:false})
   }
-}))
+})
 
-
-app.post('/api/signupCustomer', handleAsync(async(req, res) => {
+app.post('/api/signupCustomer', async(req, res) => {
   redisHelper.get(req.body.phoneNumber, compareRandomNumber)
   async function compareRandomNumber(randomNumber){
     if (randomNumber && randomNumber === req.body.randomNumber) {
@@ -219,9 +219,9 @@ app.post('/api/signupCustomer', handleAsync(async(req, res) => {
       } else res.json({resp:'Email address is taken!'});
     } else res.json({resp:'Wrong number, please try again!'});
   }
-}));
+});
 
-app.post('/api/phoneTest', handleAsync(async (req, res) => {
+app.post('/api/phoneTest', async (req, res) => {
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
   redisHelper.set(req.body.phoneNumber, randomNumber, 60*15) // 15 minutes
   try {
@@ -232,15 +232,17 @@ app.post('/api/phoneTest', handleAsync(async (req, res) => {
   } catch (error) {
     res.json({success:false})
   }
-}))
-app.post('/api/phoneTestValidateNumber', handleAsync(async (req, res) => {
+})
+
+app.post('/api/phoneTestValidateNumber', async (req, res) => {
   redisHelper.get(req.body.phoneNumber, compareRandomNumber) // 3 minutes
   function compareRandomNumber(randomNumber){
     if (randomNumber === Number(req.body.randomNumber)) res.json({success:true})
     else res.json({success:false})
   }
-}))
-app.post('/api/updateAccount', handleAsync(async (req, res) => {
+})
+
+app.post('/api/updateAccount', async (req, res) => {
   const email = req.body.email.toLowerCase();
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email' : email}).limit(1)
@@ -278,7 +280,7 @@ app.post('/api/updateAccount', handleAsync(async (req, res) => {
       } else res.json({response: "Failed To Update Password"}) 
     }
   } else res.json({response: "Failed to update"})
-}));
+});
 
 // Stored failed logins by ip address
 let failures = {};
@@ -287,7 +289,7 @@ setInterval(() => {
   for (var ip in failures) if (Date.now() - failures[ip].nextTry > MINS10) delete failures[ip];
 }, MINS30);
 
-app.post('/api/signin', handleAsync(async (req, res) => {
+app.post('/api/signin', async (req, res) => {
   const remoteIp = getIP(req)
   const onLoginFail = () => {
     let f = failures[remoteIp] = failures[remoteIp] || {count: 0, nextTry: new Date()};
@@ -312,9 +314,9 @@ app.post('/api/signin', handleAsync(async (req, res) => {
     onLoginFail()
     res.json({response: "Invalid login"});
   }
-}));
+});
 
-app.post(`/api/signout`, handleAsync(async(req, res) => {
+app.post(`/api/signout`, async(req, res) => {
   const email = req.body.email.toLowerCase();
   const loggedInKey = req.body.loggedInKey;
   // const ip = getIP(req)
@@ -330,9 +332,9 @@ app.post(`/api/signout`, handleAsync(async(req, res) => {
       { "upsert" : false } 
     );
   } else res.json({response:"Logout Failed"})
-}))
+})
 
-app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
+app.post(`/api/uploadCoupons`, async(req, res) => {
   // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email }).limit(1)
@@ -388,9 +390,9 @@ app.post(`/api/uploadCoupons`, handleAsync(async(req, res) => {
       } else res.json({response: 'Coupon Not Created'})
     } else res.json({response: 'Coupon Not Created'})
   } else res.json({response: "You are not logged in!"});
-}))
+})
 
-app.get('/api/getSponseredCoupons/:city/:pageNumber', handleAsync(async (req, res) => {
+app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
   let coupons;
   const cityUserIsIn = req.params.city.toLowerCase().replace(/\"/g,"");
   const pageNumber = req.params.pageNumber;
@@ -420,9 +422,9 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', handleAsync(async (req, re
     } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
     else res.json({ coupons: data });
   }
-}));
+});
 
-app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
+app.post('/api/getYourCoupons', async (req, res) => {
   // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
@@ -442,9 +444,9 @@ app.post('/api/getYourCoupons', handleAsync(async (req, res) => {
       else res.json({response: "No coupons found."});
     } else res.json({coupons: data});
   }
-}));
+});
 
-app.post('/api/addMonths', handleAsync(async (req, res) => {
+app.post('/api/addMonths', async (req, res) => {
   // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const email = req.body.email;
@@ -479,9 +481,9 @@ app.post('/api/addMonths', handleAsync(async (req, res) => {
       );
     }
   } else res.json({response: "Failed to add months."})
-}))
+})
 
-app.post('/api/validateCode', handleAsync(async (req, res) => {
+app.post('/api/validateCode', async (req, res) => {
   const couponCode = req.body.couponCode;
   const couponID = new ObjectId(req.body.id);
   const coupon = await Coupon.find({'_id': couponID}).limit(1);
@@ -519,9 +521,9 @@ app.post('/api/validateCode', handleAsync(async (req, res) => {
       );
     }
   }
-}))
+})
 
-app.get('/search', handleAsync(async (req, res) => {
+app.get('/search', async (req, res) => {
   // Goodluck!
   let coupons;
   const city = (req.query.city) ? req.query.city.toLowerCase() : null;
@@ -689,9 +691,9 @@ app.get('/search', handleAsync(async (req, res) => {
       else return res.json({coupons: data});
     }
   }
-}));
+});
 
-app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
+app.post(`/api/getCoupon`, async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
   if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   else {
@@ -754,9 +756,9 @@ app.post(`/api/getCoupon`, handleAsync(async(req, res) => {
     }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
-}))
+})
 
-app.post(`/api/discardCoupon`, handleAsync(async(req, res) => {
+app.post(`/api/discardCoupon`, async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
   if (!loggedInKey) res.json({response: "You need to be logged in to discard coupons!"});
   else {
@@ -824,10 +826,10 @@ app.post(`/api/discardCoupon`, handleAsync(async(req, res) => {
           } else res.json({response: "Coupon Already Removed!"})
     } else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }
-}))
+})
 
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "build", "index.html")));
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8081;
 
 app.listen(port, () => `Server running on port ${port}`);

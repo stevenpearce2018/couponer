@@ -14,7 +14,6 @@
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {
-    "async-error-handler": "^1.0.7",
     "bcrypt": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
