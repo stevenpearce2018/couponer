@@ -29,6 +29,9 @@ const ObjectId = require('mongodb').ObjectId;
 const useCode = require("./lib/useCode");
 const moment = require("moment");
 const checkPasswordStrength = require('./lib/checkPasswordStrength');
+const favicon = require('serve-favicon');
+
+app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
@@ -830,6 +833,6 @@ app.post(`/api/discardCoupon`, async(req, res) => {
 
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "build", "index.html")));
 
-const port = process.env.PORT || 8081;
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => `Server running on port ${port}`);
