@@ -96,7 +96,7 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
         </div>
         <br/>
         <div className='newPrice'>
-            Now: {(coupons.discountedPrice - 0).toFixed(2)}$
+            Now: {(coupons.discountedPrice - 0).toFixed(2) === "0.00" ? "FREE" : (coupons.discountedPrice - 0).toFixed(2) + "$"}
         </div>
         <div className='savings'>
             Save: {(coupons.currentPrice - coupons.discountedPrice).toFixed(2)}$

@@ -30,7 +30,7 @@ class SignUp extends Component {
       passwordConfirm: '',
       city: '',
       buisnessName: '',
-      yourPick: '',
+      yourPick: ' Customer',
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
       showSignUp: 'hideBuissnessIfCustomer',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
@@ -48,11 +48,11 @@ class SignUp extends Component {
     }
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
-    this.handleRadio = this.handleRadio.bind(this);
     this.validatePhone = this.validatePhone.bind(this);
     this.handleCustomerSignup = this.handleCustomerSignup.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
   }
   componentWillMount() {
     if(sessionStorage.getItem('UnlimitedCouponerEmail') && sessionStorage.getItem('UnlimitedCouponerKey')) {
@@ -149,31 +149,28 @@ class SignUp extends Component {
 
   togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})
 
+  handleToggle = value => {
+    if (value === ' Customer') {
+      if(this.state.boolValidPhoneNumber === true) this.setState({checkout:"showBuissnessIfCustomer"})
+      this.setState({
+        yourPick: value,
+        showOrHideBuisInput: 'hideBuissnessIfCustomer',
+        showOrHideAccountMem: 'showBuissnessIfCustomer',
+        showSignUp:'hideBuissnessIfCustomer'
+      })
+    }
+    else if(value === ' Buisness Owner') {
+      if (this.state.boolValidPhoneNumber) this.setState({showSignUp:'showBuissnessIfCustomer'})
+      this.setState({
+        yourPick: value,
+        showOrHideBuisInput: 'showBuissnessIfCustomer',
+        showOrHideAccountMem: 'hideBuissnessIfCustomer',
+        checkout: "hidden"
+      })
+    }
+  }
+
   render() {
-    const options = this.state.customerOrBuisness.map((loan, key) => {
-      const isCurrent = this.state.yourPick === loan
-      return (
-        <div className='center_radio' id={key}>
-            <label id={key}
-              className={
-                isCurrent ? 
-                  'radioPad__wrapper radioPad__wrapper--selected' :
-                  'radioPad__wrapper'
-                }
-            >
-              <input
-                className="radioPad__radio"
-                type="radio" 
-                name="customerOrBuisness" 
-                id={loan} 
-                value={loan}
-                onChange={this.handleRadio}
-              />
-              <strong className='radioHTML'>{loan}</strong>
-            </label>
-            </div>
-      )
-    })
     return (
       <div className="container text-center">
         <section id="portfolio" className="content">
@@ -183,7 +180,10 @@ class SignUp extends Component {
         <div className="row">
           <hr />
           <br/>
-          {options}
+          <div className='signinForm'>
+            <button className={ this.state.yourPick === " Customer" ? "signupbtn toggle" : "signupbtn toggle notselected"} onClick={() => this.handleToggle(" Customer")}><strong>Customer</strong></button>
+            <button className={ this.state.yourPick === " Buisness Owner" ?  "signupbtn toggle" :  "signupbtn toggle notselected" } onClick={() => this.handleToggle(" Buisness Owner")}><strong>Buisness Owner</strong></button>
+          </div>
         </div>
           <form className='signinForm'>
           <InputField
@@ -321,26 +321,6 @@ class SignUp extends Component {
     </div>
     </div>
     )
-  }
-  handleRadio(e) {
-    if (e.target.value === ' Customer') {
-      if(this.state.boolValidPhoneNumber === true) this.setState({checkout:"showBuissnessIfCustomer"})
-      this.setState({
-        yourPick: e.target.value,
-        showOrHideBuisInput: 'hideBuissnessIfCustomer',
-        showOrHideAccountMem: 'showBuissnessIfCustomer',
-        showSignUp:'hideBuissnessIfCustomer'
-      })
-    }
-    else if(e.target.value === ' Buisness Owner') {
-      if (this.state.boolValidPhoneNumber) this.setState({showSignUp:'showBuissnessIfCustomer'})
-      this.setState({
-        yourPick: e.target.value,
-        showOrHideBuisInput: 'showBuissnessIfCustomer',
-        showOrHideAccountMem: 'hideBuissnessIfCustomer',
-        checkout: "hidden"
-      })
-    }
   }
 }
 

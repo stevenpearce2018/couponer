@@ -289,3 +289,12 @@ color: blue;
 .red{
   color: red !important;
 }
+
+.toggle{
+  margin-bottom: 0px !important;
+  margin-left:0px;
+}
+
+.notselected{
+  background-color: ghostwhite !important;
+}

@@ -1,39 +1,38 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class Coupon extends Component {
-  render() {
+const Coupon = props => {
     return (
         <div className="coupon">
-          <h1 className = "exampleTitle">{this.props.title}</h1>
-          <div className = "exampleImage" ><img className = "exampleImage" src={this.props.imagePreviewUrl} alt={this.props.textarea}/></div>
+          <h1 className = "exampleTitle">{props.title}</h1>
+          <div className = "exampleImage" ><img className = "exampleImage" src={props.imagePreviewUrl} alt={props.textarea}/></div>
           <div className="pricing">
             <div className='oldPrice'>
-                Was: {(this.props.currentPrice - 0).toFixed(2)}$
+                Was: {(props.currentPrice - 0).toFixed(2)}$
             </div>
             <div className='percentOff'>
-                {(((this.props.currentPrice - this.props.discountedPrice)/this.props.currentPrice)*100).toFixed(2)}% Percent Off!
+                {(((props.currentPrice - props.discountedPrice)/props.currentPrice)*100).toFixed(2)}% Percent Off!
             </div>
             <br/>
             <div className='newPrice'>
-                Now: {(this.props.discountedPrice - 0).toFixed(2)}$
+                Now: {(props.discountedPrice - 0).toFixed(2) === "0.00" ? "FREE" : (props.discountedPrice - 0).toFixed(2) + "$"}
             </div>
             <div className='savings'>
-                Save: {(this.props.currentPrice - this.props.discountedPrice).toFixed(2)}$
+                Save: {(props.currentPrice - props.discountedPrice).toFixed(2)}$
             </div>
             <br/>
             <hr/>
             <div className="amountLeft">
-                Only {this.props.amountCoupons} Coupons Left!
+                Only {props.amountCoupons} Coupons Left!
             </div>
           <hr/>
           <div className="description">
           <br/>
-            <p>{this.props.textarea}</p>
+            <p>{props.textarea}</p>
             <br/>
             <hr/>
-            <p>{this.props.address}</p>
+            <p>{props.address}</p>
             <br/>
-            <p>{this.props.distance}</p>
+            <p>{props.distance}</p>
             <hr/>
             <br/>
           <button className="getCoupon"><strong>Get Coupon</strong></button>
@@ -42,7 +41,6 @@ class Coupon extends Component {
         </div>
       </div>
     )
-  }
 }
 
 

@@ -257,7 +257,7 @@ class CouponForm extends Component {
           distance = {HaversineInMiles(this.state.mylatitude, this.state.mylongitude, this.state.latitude, this.state.longitude)}
         />
         <div className='formHeaderMobile'>
-          <h1>Coupon details</h1>
+          <h2>Coupon details</h2>
         </div>
         <div className='uploadCouponForm'>
         <form

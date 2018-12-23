@@ -344,7 +344,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
   if (outcome.length === 0 || outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
   else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
   else if(bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
-    if(validateCouponForm(req.body) && Number(req.body.currentPrice) > Number(req.body.discountedPrice)) {
+    if(validateCouponForm(req.body)) {
       const chargeData = {
         description: req.body.description,
         source: req.body.source,
@@ -390,8 +390,8 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
             // console.log({chargeData})
         }
         saveCoupon();
-      } else res.json({response: 'Coupon Not Created'})
-    } else res.json({response: 'Coupon Not Created'})
+      } else res.json({response: 'Failed to charge the card provided, coupon was not created'})
+    } else res.json({response: 'You used invalid information'})
   } else res.json({response: "You are not logged in!"});
 })
 
@@ -706,7 +706,7 @@ app.post(`/api/getCoupon`, async(req, res) => {
     if (outcome) {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
       else if(checkMembershipDate(outcome[0].membershipExperationDate) && bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
-        // if (outcome[0].couponsCurrentlyClaimed < 5) {
+        if (outcome[0].couponsCurrentlyClaimed < 5) {
           const isClaimed = (ids, id) => {
             let i = 0;
             const iMax = ids.length;
@@ -754,7 +754,7 @@ app.post(`/api/getCoupon`, async(req, res) => {
               );
             } else res.json({response: "These coupons are no longer available. Please try another coupon."});
           }
-        // } else res.json({response: "You have too many coupons! Please use or discard one of your current coupons."});
+        } else res.json({response: "You have too many coupons! Please use or discard one of your current coupons."});
       } else res.json({response: "Your membership has expired! Please renew it under the account settings option."});
     }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
@@ -833,6 +833,6 @@ app.post(`/api/discardCoupon`, async(req, res) => {
 
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "build", "index.html")));
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => `Server running on port ${port}`);
