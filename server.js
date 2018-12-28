@@ -30,8 +30,6 @@ const useCode = require("./lib/useCode");
 const moment = require("moment");
 const checkPasswordStrength = require('./lib/checkPasswordStrength');
 const favicon = require('serve-favicon');
-const fs = require('fs');
-const https = require('https');
 
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
@@ -837,8 +835,5 @@ app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "build", 
 
 const port = process.env.PORT || 8080;
 
-https.createServer({
-  key: fs.readFileSync('server.key'),
-  cert: fs.readFileSync('combined.crt')
-}, app).listen(port, () => console.log(`App listening on port ${port}! Go to https://localhost:${port}`))
+app.listen(port, () => console.log(`App listening on port ${port}! Go to https://localhost:${port}`))
 
