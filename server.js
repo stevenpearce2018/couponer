@@ -30,12 +30,14 @@ const useCode = require("./lib/useCode");
 const moment = require("moment");
 const checkPasswordStrength = require('./lib/checkPasswordStrength');
 const favicon = require('serve-favicon');
+const forceSsl = require('force-ssl-heroku');
 
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
+app.use(forceSsl);
 
 app.post('/api/generateQR', async(req, res) => {
   try {
