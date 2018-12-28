@@ -94,7 +94,6 @@ class App extends Component {
               this.setMainToMyCoupons();
               break;
           default:
-              window.location.pathname = '/Home';
               this.setMainHome();
               break;
         }
