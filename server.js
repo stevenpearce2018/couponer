@@ -840,9 +840,4 @@ const port = process.env.PORT || 8080;
 https.createServer({
   key: fs.readFileSync('server.key'),
   cert: fs.readFileSync('combined.crt')
-<<<<<<< HEAD
 }, app).listen(port, () => console.log(`App listening on port ${port}! Go to https://localhost:${port}`))
-=======
-}, app).listen(port, () => console.log(`App listening on port ${port}! Go to https://localhost:${port}`))
-
->>>>>>> 8205c4f6b90cd28c0dd3a093e9366f00d58dacd2
