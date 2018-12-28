@@ -85,7 +85,7 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
     try {
       const content = props.map((coupons) =>
       <div className="coupon" id={coupons._id}>
-      <h1 className = "exampleTitle">{capitalizeCase(coupons.title)}</h1>
+      <h2 className = "exampleTitle">{capitalizeCase(coupons.title)}</h2>
       <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
       <div className="pricing">
         <div className='oldPrice'>
