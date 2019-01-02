@@ -4,53 +4,6 @@ import { toast } from 'react-toastify';
 
 
 const CURRENCY = 'USD';
-
-// const fromEuroToCent = amount => amount * 100;
-
-// const successPayment = data => {
-//   alert('Payment Successful');
-//   console.log(data);
-// };
-
-// const errorPayment = data => {
-//   alert('Payment Error');
-//   console.log(data);
-// };
-
-// const onToken = (amount, description) => (token) => {
-//   const data = {
-//     description,
-//     source: token.id,
-//     currency: CURRENCY,
-//     amount: fromEuroToCent(amount)
-//   }
-//   const url = '/api/charge'
-//   fetch(url, {
-//   method: "POST", // *GET, POST, PUT, DELETE, etc.
-//   mode: "cors", // no-cors, cors, *same-origin
-//   cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-//   credentials: "same-origin", // include, same-origin, *omit
-//   headers: {
-//     "Content-Type": "application/json; charset=utf-8",
-//     // "Content-Type": "application/x-www-form-urlencoded",
-//   },
-//   body: JSON.stringify(data),
-//   }).then(successPayment)
-//   .catch(errorPayment);
-// }
-
-
-// const Checkout = ({ name, description, amount }) =>
-//   <StripeCheckout
-//     name={name}
-//     description={description}
-//     amount={fromEuroToCent(amount)}
-//     token={onToken(amount, description)}
-//     currency={CURRENCY}
-//     stripeKey={"pk_test_1grvOEC6DvjC9afFJN2OxhWI"}
-//   />
-
-
   class Checkout extends Component {
     constructor(props) {
       super(props);
@@ -61,17 +14,11 @@ const CURRENCY = 'USD';
 
     fromEuroToCent = amount => amount * 100;
 
-    successPayment = data => {
-      toast.success('Payment Successful');
-      console.log(data);
-    };
+    successPayment = data => toast.success('Payment Successful');
 
-    errorPayment = data => {
-      toast.error('Payment Error');
-      console.log(data);
-    };
+    errorPayment = data => toast.error('Payment Error');
 
-    onToken = (amount, description) => (token) => {
+    onToken = (amount, description) => token => {
         const data = {
           description,
           source: token.id,
@@ -79,21 +26,6 @@ const CURRENCY = 'USD';
           amount: this.fromEuroToCent(amount)
         }
         this.props.parentMethod(data)
-        // const url = '/api/charge'
-        // postRequest(url, data)
-        // .then(this.successPayment)
-        // .catch(this.errorPayment);
-        // fetch(url, {
-        // method: "POST", // *GET, POST, PUT, DELETE, etc.
-        // mode: "cors", // no-cors, cors, *same-origin
-        // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        // credentials: "same-origin", // include, same-origin, *omit
-        // headers: {
-        //   "Content-Type": "application/json; charset=utf-8",
-        //   // "Content-Type": "application/x-www-form-urlencoded",
-        // },
-        // body: JSON.stringify(data),
-        // })
     }
     render() {
       return (
@@ -104,7 +36,7 @@ const CURRENCY = 'USD';
         amount={this.fromEuroToCent(this.props.amount)}
         token={this.onToken(this.props.amount, this.props.description)}
         currency={this.props.CURRENCY}
-        stripeKey={"pk_test_1grvOEC6DvjC9afFJN2OxhWI"}
+        stripeKey={"pk_live_BL9smKhY7sQofwy88ZNH9q2D"}
         panelLabel={this.props.panelLabel}
         alipay
         bitcoin

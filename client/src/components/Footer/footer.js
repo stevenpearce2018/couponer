@@ -12,12 +12,10 @@ class Footer extends Component {
       <div>
         <footer>
             <ul className="social">
-                <li><a href="https://twitter.com/mayursuthar2693"><i className="fa fa-twitter"></i> <span className="sr-only">Visit our twitter</span></a></li>
-                <li><a href="https://www.facebook.com/mayursuthar2693"><i className="fa fa-facebook"></i><span className="sr-only">Visit our facebook</span></a></li>
-                <li><a href="https://www.linkedin.com/in/sutharmayur"><i className="fa fa-linkedin"></i><span className="sr-only">Visit our linkedin</span></a></li>
-                <li><a href="https://www.pinterest.com/MayurSuthar2693/"><i className="fa fa-pinterest"></i><span className="sr-only">Visit our pinterest</span></a></li>
-                <li><a href="https://plus.google.com/109916819421919014146/posts"><i className="fa fa-google-plus"></i><span className="sr-only">Visit our Google plus</span></a></li>
-                <li><a href="https://www.instagram.com/mayursuthar2693/"><i className="fa fa-instagram"></i><span className="sr-only">Visit our instagram</span></a></li>
+                <li><a href="https://twitter.com/unlimitedcoupo1"><i className="fa fa-twitter"></i> <span className="sr-only">Visit our twitter</span></a></li>
+                <li><a href="https://www.facebook.com/steven.pearce.102"><i className="fa fa-facebook"></i><span className="sr-only">Visit our facebook</span></a></li>
+                <li><a href="https://www.linkedin.com/in/steven-pearce-1760a2178"><i className="fa fa-linkedin"></i><span className="sr-only">Visit our linkedin</span></a></li>
+                <li><a href="https://www.instagram.com/unlimitedcouponer/"><i className="fa fa-instagram"></i><span className="sr-only">Visit our instagram</span></a></li>
             </ul>
         </footer>
       </div>

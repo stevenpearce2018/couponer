@@ -7,6 +7,7 @@
 
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
+import { toast } from 'react-toastify';
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
@@ -56,19 +57,19 @@ const registerValidSW = swUrl => {
               // the fresh content will have been added to the cache.
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
-              console.log('New content is available; please refresh.');
+              toast.error('New content is available; please refresh.');
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
-              console.log('Content is cached for offline use.');
+              toast.success('Content is cached for offline use.');
             }
           }
         };
       };
     })
     .catch(error => {
-      console.error('Error during service worker registration:', error);
+      // console.error('Error during service worker registration:', error);
     });
 }
 
@@ -93,7 +94,7 @@ const checkValidServiceWorker = swUrl => {
       }
     })
     .catch(() => {
-      console.log(
+      toast.error(
         'No internet connection found. App is running in offline mode.'
       );
     });
