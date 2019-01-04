@@ -219,9 +219,7 @@ class App extends Component {
         <div className="home" onClick={this.hideNav}>
         <ToastContainer />
           <h1 className='homeMainTitle'>
-            <span>
               Save money, grow your business, try something new.
-            </span>
           </h1>
           { (this.state.loggedInKey) ? <p className="loginInfo">loggedInKey: {this.state.loggedInKey}</p> : <p></p> }
           { (this.state.email) ? <strong><p className="loginInfo">Logged in as: {this.state.email}.</p></strong> : <strong><p>Welcome, Guest!</p></strong> }
