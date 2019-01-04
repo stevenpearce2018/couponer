@@ -16,7 +16,11 @@ const couponSchema = mongoose.Schema({
     couponCodes: { type : Array , "default" : [] },
     couponStillValid: Boolean,
     longitude: Number,
-    latitude: Number
+    latitude: Number,
+    location: {
+        x: String,
+        y: String
+    }
 })
 
 module.exports = mongoose.model('Coupon', couponSchema)

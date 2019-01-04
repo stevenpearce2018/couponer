@@ -369,6 +369,10 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
         const saveCoupon = async () => {
           const mongodbID = new mongoose.Types.ObjectId();
+          // const location = {
+          //   x: req.body.longitude,
+          //   y: req.body.latitude
+          // }
           const coupon = new Coupon({
             _id: mongodbID,
             title: req.body.title,
@@ -384,7 +388,8 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
             couponCodes: couponCodes,
             couponStillValid: true,
             latitude: req.body.latitude,
-            longitude: req.body.longitude
+            longitude: req.body.longitude,
+            // location: location
           })
           
           // pushing the value seemed to a new array seemed to not work so I had to do this hack.
@@ -402,6 +407,9 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
       } else res.json({response: 'Failed to charge the card provided, coupon was not created'})
     } else res.json({response: 'You used invalid information'})
   } else res.json({response: "You are not logged in!"});
+})
+
+app.get('/api/:lat/:long/:city/:pageNumber', async (req, res) => {
 })
 
 app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {

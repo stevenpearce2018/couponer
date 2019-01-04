@@ -49,6 +49,8 @@ class Home extends Component {
       that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
     }
     function gotPosition(position) {
+      alert("latitude:" + position.latitude)
+      alert("longitude:" + position.longitude)
       that.setState({
         geolocation: position.latitude + " " + position.longitude,
         latitude: position.latitude,

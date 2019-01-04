@@ -63,7 +63,8 @@ class SignUp extends Component {
   handleChange = event => {
     const { target: { name, value } } = event
     this.setState({ [name]: value })
-    if (this.state.password === this.state.passwordConfirm && checkPasswordStrength(this.state.password)) this.setState({validPassword: <span className="green icon">&#10003;</span>})
+    if(name === "passwordConfirm" && value === this.state.password && checkPasswordStrength(value)) this.setState({validPassword: <span className="green icon">&#10003;</span>})
+    else if(name === "password" && value === this.state.passwordConfirm && checkPasswordStrength(value)) this.setState({validPassword: <span className="green icon">&#10003;</span>})
   }
   async validatePhoneNumber(){
     const data = {
