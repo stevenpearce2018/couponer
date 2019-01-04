@@ -8,6 +8,7 @@ import Footer from './components/Footer/footer';
 import Login from './components/Login/login';
 import Search from './components/Search/search';
 import About from './components/About/about';
+import Notfound from "./components/Notfound/notfound";
 import history from './history';
 import MyCoupons from './components/MyCoupons/myCoupons';
 import postRequest from './postReqest';
@@ -94,7 +95,7 @@ class App extends Component {
               this.setMainToMyCoupons();
               break;
           default:
-              this.setMainHome();
+              this.setMainTo404();
               break;
         }
       }
@@ -194,6 +195,8 @@ class App extends Component {
   setMainSearch = () => this.setState({mainContent: <Search updateCouponsClaimed={this.updateCouponsClaimed}/>})
 
   setMainToAbout = () => this.setState({mainContent: <About/>})
+
+  setMainTo404 = () => this.setState({mainContent: <Notfound/>})
 
   setMainToMyCoupons = () => this.setState({mainContent: <MyCoupons updateCouponsClaimed={this.updateCouponsClaimed} setMainHome={this.setMainHome}/>})
   
