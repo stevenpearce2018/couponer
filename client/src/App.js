@@ -73,6 +73,9 @@ class App extends Component {
       if(currentURL.toLowerCase().substring(0, 6) === "search") this.setMainSearch();
       else {
         switch (currentURL.toLowerCase()) {
+          case '':
+            this.setMainHome();
+            break;
           case 'home':
               this.setMainHome();
               break;
