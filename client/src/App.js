@@ -8,6 +8,7 @@ import Footer from './components/Footer/footer';
 import Login from './components/Login/login';
 import Search from './components/Search/search';
 import About from './components/About/about';
+import Notfound from "./components/Notfound/notfound";
 import history from './history';
 import MyCoupons from './components/MyCoupons/myCoupons';
 import postRequest from './postReqest';
@@ -72,6 +73,9 @@ class App extends Component {
       if(currentURL.toLowerCase().substring(0, 6) === "search") this.setMainSearch();
       else {
         switch (currentURL.toLowerCase()) {
+          case '':
+            this.setMainHome();
+            break;
           case 'home':
               this.setMainHome();
               break;
@@ -94,7 +98,7 @@ class App extends Component {
               this.setMainToMyCoupons();
               break;
           default:
-              this.setMainHome();
+              this.setMainTo404();
               break;
         }
       }
@@ -195,6 +199,8 @@ class App extends Component {
 
   setMainToAbout = () => this.setState({mainContent: <About/>})
 
+  setMainTo404 = () => this.setState({mainContent: <Notfound/>})
+
   setMainToMyCoupons = () => this.setState({mainContent: <MyCoupons updateCouponsClaimed={this.updateCouponsClaimed} setMainHome={this.setMainHome}/>})
   
   setStateLoggedIn = (key, email, couponsCurrentlyClaimed, membershipExperationDate) => {
@@ -219,9 +225,7 @@ class App extends Component {
         <div className="home" onClick={this.hideNav}>
         <ToastContainer />
           <h1 className='homeMainTitle'>
-            <span>
               Save money, grow your business, try something new.
-            </span>
           </h1>
           { (this.state.loggedInKey) ? <p className="loginInfo">loggedInKey: {this.state.loggedInKey}</p> : <p></p> }
           { (this.state.email) ? <strong><p className="loginInfo">Logged in as: {this.state.email}.</p></strong> : <strong><p>Welcome, Guest!</p></strong> }

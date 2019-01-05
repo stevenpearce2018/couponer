@@ -21,6 +21,7 @@
     "dist": "^0.1.2",
     "dotenv": "^6.1.0",
     "express": "^4.16.2",
+    "force-ssl-heroku": "^1.0.2",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
     "moment": "^2.22.2",

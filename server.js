@@ -30,9 +30,16 @@ const useCode = require("./lib/useCode");
 const moment = require("moment");
 const checkPasswordStrength = require('./lib/checkPasswordStrength');
 const favicon = require('serve-favicon');
-const fs = require('fs');
-const https = require('https');
 
+const requireHTTPS = (req, res, next) => {
+  // The 'x-forwarded-proto' check is for Heroku
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+  next();
+}
+
+app.use(requireHTTPS);
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
@@ -362,6 +369,10 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
         const saveCoupon = async () => {
           const mongodbID = new mongoose.Types.ObjectId();
+          // const location = {
+          //   x: req.body.longitude,
+          //   y: req.body.latitude
+          // }
           const coupon = new Coupon({
             _id: mongodbID,
             title: req.body.title,
@@ -377,7 +388,8 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
             couponCodes: couponCodes,
             couponStillValid: true,
             latitude: req.body.latitude,
-            longitude: req.body.longitude
+            longitude: req.body.longitude,
+            // location: location
           })
           
           // pushing the value seemed to a new array seemed to not work so I had to do this hack.
@@ -395,6 +407,9 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
       } else res.json({response: 'Failed to charge the card provided, coupon was not created'})
     } else res.json({response: 'You used invalid information'})
   } else res.json({response: "You are not logged in!"});
+})
+
+app.get('/api/:lat/:long/:city/:pageNumber', async (req, res) => {
 })
 
 app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
@@ -837,7 +852,4 @@ app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "build", 
 
 const port = process.env.PORT || 8080;
 
-https.createServer({
-  key: fs.readFileSync('server.key'),
-  cert: fs.readFileSync('combined.crt')
-}, app).listen(port, () => console.log(`App listening on port ${port}! Go to https://localhost:${port}`))
+app.listen(port, () => console.log(`App listening on port ${port}! Go to https://localhost:${port}`))

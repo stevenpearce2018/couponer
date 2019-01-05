@@ -83,10 +83,10 @@ const getOrDiscardCoupons = async (_id, updateCouponsClaimed, flag) => {
 
 const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
     try {
-      const content = props.map((coupons) =>
+      const content = props.map(coupons =>
       <div className="coupon" id={coupons._id}>
       <h2 className = "exampleTitle">{capitalizeCase(coupons.title)}</h2>
-      <img  className = "exampleImage" src={coupons.base64image} alt="Example showing how your custom upload will appear on the coupon"/>
+      <img  className = "exampleImage" src={coupons.base64image} alt={coupons.title}/>
       <div className="pricing">
         <div className='oldPrice'>
             Was: {(coupons.currentPrice - 0).toFixed(2)}$
