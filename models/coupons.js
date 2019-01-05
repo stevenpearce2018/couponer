@@ -17,10 +17,14 @@ const couponSchema = mongoose.Schema({
     couponStillValid: Boolean,
     longitude: Number,
     latitude: Number,
-    location: {
-        x: String,
-        y: String
+    loc: {
+        type: { type: String },
+        coordinates: [Number]
     }
 })
+// couponSchema.ensureIndex({ "loc": "2dsphere" });
+// couponSchema.index({ "loc": "2dsphere" });
+// couponSchema.dropIndexes();
+// couponSchema.createIndex({ loc: '2dsphere' });
 
 module.exports = mongoose.model('Coupon', couponSchema)

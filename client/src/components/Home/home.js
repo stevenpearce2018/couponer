@@ -11,7 +11,6 @@ class Home extends Component {
       geolocation: '',
       latitude: '',
       longitude: '',
-      city: '',
       pageNumber: 1,
       coupons: <div className="loaderContainer"><div className="loader"></div></div>,
       incrementPageClass: "hidden"
@@ -23,11 +22,15 @@ class Home extends Component {
   async componentDidMount() {
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
-    const couponcity = sessionStorage.getItem("couponcity")
-    if (!couponcity && navigator.geolocation) getPosition(gotPosition);
+    const that = this;
+    if (!couponlongitude && !couponlatitude && navigator.geolocation) getPosition(gotPosition);
     else {
-      this.setState({latitude: couponlatitude, longitude: couponlongitude})
-      const url = '/api/getSponseredCoupons/'+couponcity+'/'+this.state.pageNumber
+      that.setState({
+        geolocation: couponlatitude + " " + couponlongitude,
+        latitude: couponlatitude,
+        longitude: couponlongitude,
+      })
+      const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/1`;
       const response = await fetch(url, {
         method: "GET", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, cors, *same-origin
@@ -38,62 +41,50 @@ class Home extends Component {
         }
       })
       const data = await response.json();
-      if (data.coupons !== "No coupons were found near you. Try searching manually") this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center"})
-      else this.setState({coupons:<div className="center"><br/><h2>No coupons found near you, try searching manually.</h2></div>})
+      if(data.coupons && data.coupons.length > 0) that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed), incrementPageClass: "center"})
+      else that.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
     }
-    const that = this;
-    const google = window.google
-    // eslint-disable-next-line
-    const geocoder = new google.maps.Geocoder;
-    async function cityNotFound () {
-      that.setState({coupons: <h2>We were unable to get your location. Try searching manually.</h2>})     
-    }
-    function gotPosition(position) {
+    async function gotPosition(position) {
       that.setState({
         geolocation: position.latitude + " " + position.longitude,
         latitude: position.latitude,
         longitude: position.longitude,
       })
-      const latlng = {lat: parseFloat(that.state.latitude), lng: parseFloat(that.state.longitude)};
-      try {
-        geocoder.geocode({location: latlng}, async (results, status) => {
-          if (status === 'OK') {
-            if (results[0]) {
-              let city = results[0].address_components.filter((addr) => (addr.types[0] === 'locality')?1:(addr.types[0] === 'administrative_area_level_1')?1:0);
-              if(city[0]) city = JSON.stringify(city[0].long_name).toLowerCase()
-              if (city.length > 0 || city.length > 1) {
-                that.setState({city: city})
-                // const data = sessionStorage.getItem('couponsDataPage'+that.state.pageNumber, data.coupons);
-                sessionStorage.setItem("couponcity", city)
-                const url = '/api/getSponseredCoupons/'+city+'/'+that.state.pageNumber
-                const response = await fetch(url, {
-                  method: "GET", // *GET, POST, PUT, DELETE, etc.
-                  mode: "cors", // no-cors, cors, *same-origin
-                  cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-                  credentials: "same-origin", // include, same-origin, *omit
-                  headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                  }
-                })
-                const data = await response.json();
-                if (data.coupons !== "No coupons were found near you. Try searching manually") that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed), incrementPageClass: "center"})
-                else that.setState({coupons:<div className="center"><br/><h2>No coupons found near you, try searching manually.</h2></div>})
-              } else cityNotFound();
-            } else cityNotFound();
-          } else cityNotFound();
-        });
-      } catch (error) {
-        that.setState({coupons: <h2>No Coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
-      }
+      const url = `/api/geoCoupons/${position.longitude}/${position.latitude}/1`;
+      const response = await fetch(url, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        }
+      })
+      const data = await response.json();
+      if(data.coupons && data.coupons > 0 ) that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed), incrementPageClass: "center"})
+      else that.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
+      sessionStorage.setItem("couponlatitude", position.latitude)
+      sessionStorage.setItem("couponlongitude", position.longitude)
     }
   }
   async changePage(number){
     const pageNumber = Number(this.state.pageNumber) + number;
+    const couponlatitude = sessionStorage.getItem('couponlatitude');
+    const couponlongitude = sessionStorage.getItem('couponlongitude');
     if (pageNumber >= 1) {
-      const url = '/api/getSponseredCoupons/'+this.state.city+'/'+(pageNumber)
-      const response = await fetch(url);
+      const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/${pageNumber}`;
+      const response = await fetch(url, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        }
+      })
       const data = await response.json();
-      this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber: pageNumber})
+      if (data.coupons && data.coupons.length > 0) this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber: pageNumber})
+      else this.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>, pageNumber: pageNumber})
     }
     else toast.error("You cannot go lower than page one!") 
   }

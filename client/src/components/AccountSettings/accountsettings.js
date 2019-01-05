@@ -12,7 +12,7 @@ class AccountSettings extends Component {
       oldPassword: '',
       newPassword:'',
       city: '',
-      buisnessName: '',
+      businessName: '',
       phoneNumber:'',
       latitude: '',
       longitude: '',
@@ -43,7 +43,7 @@ class AccountSettings extends Component {
   async handleSubmit(e){
     e.preventDefault();
     const data = {
-      buisnessName: this.state.buisnessName,
+      businessName: this.state.businessName,
       phoneNumber: this.state.phoneNumber,
       city: this.state.city,
       oldPassword: this.state.oldPassword,
@@ -113,11 +113,11 @@ class AccountSettings extends Component {
         onChange={this.handleChange}
       />
       <InputField
-        htmlFor="Buisness Name"
+        htmlFor="business Name"
         type="text"
-        labelHTML="Buisness Name"
-        name="buisnessName"
-        placeholder="Buisness Name"
+        labelHTML="business Name"
+        name="businessName"
+        placeholder="business Name"
         onChange={this.handleChange}
       />
       {sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c" ?

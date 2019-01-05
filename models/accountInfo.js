@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const accountInfo = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     email: String,
-    buisnessName: String,
+    businessName: String,
     password: String, 
     phoneNumber: String,
     yourPick: String,

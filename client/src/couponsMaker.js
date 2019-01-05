@@ -83,8 +83,8 @@ const getOrDiscardCoupons = async (_id, updateCouponsClaimed, flag) => {
 
 const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
     try {
-      const content = props.map(coupons =>
-      <div className="coupon" id={coupons._id}>
+      const content = props.map((coupons, key) =>
+      <div key={key} className="coupon" id={coupons._id}>
       <h2 className = "exampleTitle">{capitalizeCase(coupons.title)}</h2>
       <img  className = "exampleImage" src={coupons.base64image} alt={coupons.title}/>
       <div className="pricing">

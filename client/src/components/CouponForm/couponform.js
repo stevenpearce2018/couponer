@@ -112,23 +112,6 @@ class CouponForm extends Component {
     }
   }
 
-  // uploadFile = e => {
-  //   e.preventDefault();
-  //   let that = this;
-  //   const google = window.google
-  //   const geocoder = new google.maps.Geocoder();
-  //   geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
-  //     if (google.maps.GeocoderStatus.OK === 'OK') {
-  //       if (results[0] && that.state.address.length > 5) {
-  //         that.setState({
-  //           latitude:results[0].geometry.location.lat(),
-  //           longitude: results[0].geometry.location.lng()
-  //         })
-  //         if (validateCouponForm(this.state) === true) this.props.uploadCoupons(this.state)
-  //       }
-  //     } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
-  //   });
-  // }
   handleTitleChange = e => {
     if (e.target.value === '') this.setState({ title: 'Rent your very own kitten today!'})
     else this.setState({ title: e.target.value })
@@ -137,10 +120,10 @@ class CouponForm extends Component {
     let that = this;
     if (e.target.value === '') this.setState({ address: '123 Cuddle Street, KittenTown MA. 0 Miles Away.'})
     else this.setState({address: e.target.value})
-    
+    const address = e.target.value;
     const google = window.google
     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'address': this.state.address}, async (results, status) => {
+    geocoder.geocode({ 'address': address}, async (results, status) => {
       try {
           if (results[0] && that.state.address.length > 5) {
             that.setState({
@@ -282,12 +265,15 @@ class CouponForm extends Component {
           hasLabel='true'
           htmlFor='textInput'
           label='Full Address'
-          icon={this.state.validAddress.props.src}
+          // icon={this.state.validAddress.props.src}
           required={true}
           type='text'
           value={this.state.address}
           onChange={this.handleAddressChange}
         />
+        <div className="iconvalid">
+          {this.state.validAddress}
+        </div>
         <br/>
         <Input
           hasLabel='true'
@@ -371,7 +357,7 @@ class CouponForm extends Component {
               <h2 className="popupheader">What are Super Coupons?</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
-                Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons are also the only coupons that can appear on the home page. Super Coupons cost 1.00$ per coupon instead of the standard 0.50$.
+                Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons are also the only coupons that can appear on the home page. Super Coupons cost 0.25$ per coupon instead of the standard 0.10$.
               </div>
             </div>
           </div> 

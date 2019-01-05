@@ -38,7 +38,6 @@ const requireHTTPS = (req, res, next) => {
   }
   next();
 }
-
 app.use(requireHTTPS);
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
@@ -96,7 +95,6 @@ const postStripeCharge = res => (stripeErr, stripeRes) => {
 //     else return true;
 //   })
 // }
-
 app.post('/api/charge', async(req, res) => {
   stripe.charges.create(req.body, postStripeCharge(res));
 });
@@ -173,11 +171,11 @@ app.post('/api/signupCustomer', async(req, res) => {
       const password = req.body.password;
       const phoneNumber = req.body.phoneNumber;
       const ip = getIP(req)
-      const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
+      const loggedInKey = req.body.businessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
       const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
           if (validateEmail(req.body.email) && req.body.email && password && checkPasswordStrength(password) && phoneNumber && yourPick && ip) {
-            if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
+            if (yourPick === ' Business Owner' && req.body.businessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
               const hashedPass = await bcrypt.hashSync(password, 10);
               const email = req.body.email.toLowerCase();
               let today = new Date();
@@ -188,12 +186,12 @@ app.post('/api/signupCustomer', async(req, res) => {
               if(mm<10) mm = '0'+mm
               today = yyyy + '-' + mm + '-' + dd;
               const finalDate = req.body.numberOfMonths && req.body.numberOfMonths > 0 ? moment(today).add(req.body.numberOfMonths, 'months') : "N/A";
-              const membershipExperationDate = yourPick === ' Buisness Owner' ? "N/A" : JSON.stringify(finalDate).substring(1, 11);
+              const membershipExperationDate = yourPick === ' Business Owner' ? "N/A" : JSON.stringify(finalDate).substring(1, 11);
               const registerUser = async() => {
                 const accountInfo = new AccountInfo({
                   _id: new mongoose.Types.ObjectId(),
                   email: email,
-                  buisnessName: req.body.buisnessName,
+                  businessName: req.body.businessName,
                   password: hashedPass,
                   phoneNumber: phoneNumber,
                   yourPick: yourPick,
@@ -223,9 +221,9 @@ app.post('/api/signupCustomer', async(req, res) => {
                 if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") registerUser()
                 else res.json({resp:'Failed to charge card!'});
               } 
-              else if(yourPick === ' Buisness Owner') registerUser()
-              else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
-            } else res.json({resp:'You need to select if you are a buisness owner or a customer!'});
+              else if(yourPick === ' Business Owner') registerUser()
+              else res.json({resp:'You need to select if you are a Business Owner or a customer!'});
+            } else res.json({resp:'You need to select if you are a Business Owner or a customer!'});
         } else res.json({resp:'You need to fill out all fields!'});
       } else res.json({resp:'Email address is taken!'});
     } else res.json({resp:'Wrong number, please try again!'});
@@ -265,10 +263,10 @@ app.post('/api/updateAccount', async (req, res) => {
         { "upsert" : false } 
       );
     }
-    if (req.body.buisnessName) {
+    if (req.body.businessName) {
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
-        { "$set" : { buisnessName: req.body.buisnessName } }, 
+        { "$set" : { businessName: req.body.businessName } }, 
         { "upsert" : false } 
       );
     }
@@ -342,17 +340,19 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
   // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email }).limit(1)
-  if (outcome.length === 0 || outcome[0].yourPick !== ' Buisness Owner') res.json({response: "Only Buisness Owners can create coupons!"});
-  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks." && req.body.superCoupon !== " No thanks.") res.json({response: "Please choose your coupon type!"});
+  if (outcome.length === 0 || outcome[0].yourPick !== ' Business Owner') res.json({response: "Only Business Owners can create coupons!"});
+  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks") res.json({response: "Please choose your coupon type!"});
   else if(bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
-    if(validateCouponForm(req.body)) {
+    if(validateCouponForm(req.body).valid !== false) {
       const chargeData = {
         description: req.body.description,
         source: req.body.source,
         currency: req.body.currency,
         amount: req.body.amount
       }
-      const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 25 === req.body.amountCoupons || chargeData.amount / 10 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
+      let charge;
+      if (req.body.superCoupon === "Let's go super" && chargeData.amount.toFixed(0) / 25 === req.body.amountCoupons || chargeData.amount.toFixed(0) / 10 === req.body.amountCoupons) charge = await stripe.charges.create(chargeData);
+      else charge = false;
       if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
         res.json({response: 'Coupon Created'})
         const amountCoupons = req.body.amountCoupons;
@@ -361,10 +361,6 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
         const saveCoupon = async () => {
           const mongodbID = new mongoose.Types.ObjectId();
-          // const location = {
-          //   x: req.body.longitude,
-          //   y: req.body.latitude
-          // }
           const coupon = new Coupon({
             _id: mongodbID,
             title: req.body.title,
@@ -381,10 +377,11 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
             couponStillValid: true,
             latitude: req.body.latitude,
             longitude: req.body.longitude,
-            // location: location
+            loc: { 
+              type: "Point",
+              coordinates: [req.body.longitude, req.body.latitude]
+            }
           })
-          
-          // pushing the value seemed to a new array seemed to not work so I had to do this hack.
           const arr = [...outcome[0].couponIds, mongodbID]
           await AccountInfo.updateOne(
             { "_id" : outcome[0]._id }, 
@@ -393,25 +390,70 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
           );
           await coupon.save()
             .catch(err => console.log(err))
-            // console.log({chargeData})
         }
         saveCoupon();
-      } else res.json({response: 'Failed to charge the card provided, coupon was not created'})
-    } else res.json({response: 'You used invalid information'})
+      } else res.json({response: 'Failed to charge the card provided, coupon was not created.'})
+    } else res.json({response: validateCouponForm(req.body).errorMessage})
   } else res.json({response: "You are not logged in!"});
 })
-
-app.get('/api/:lat/:long/:city/:pageNumber', async (req, res) => {
+app.get('/api/geoCoupons/:long/:lat/:pageNumber', async (req, res) => {
+  const long = (req && req.params && req.params.long) ? req.params.long.toLowerCase().replace(/\"/g,"") : res.json({ coupons: data });
+  const lat = (req && req.params && req.params.lat) ? req.params.lat.toLowerCase().replace(/\"/g,"") : res.json({ coupons: "Could Not Find your locaton" });
+  const pageNumber = req.params.pageNumber;
+  const coupons = await Coupon.find({
+    superCoupon: "Let's go super",
+    couponStillValid: true,
+    'loc.coordinates': {
+      $geoWithin: {
+        $center: [[long, lat], 10000]
+      },
+    },
+  }).skip((pageNumber-1)*20).limit(20)
+  res.json({ coupons: cleanCoupons(coupons) });
 })
 
-app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
+// Not supported anymore
+// app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
+//   let coupons;
+//   const cityUserIsIn = req.params.city.toLowerCase().replace(/\"/g,"");
+//   const pageNumber = req.params.pageNumber;
+//   redisHelper.get(`${cityUserIsIn}/${pageNumber}`, getCachedCoupons)
+//   async function getCachedCoupons (data) {
+//     if(!data) {
+//       if(cityUserIsIn) {
+//         coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+//         if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+//         else {
+//           coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+//           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+//           else res.json({ coupons: 'No coupons were found near you. Try searching manually' }); 
+//         }
+//         redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+//       }
+//       else {
+//         coupons = await Coupon.find({superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+//         if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+//         else {
+//           coupons = await Coupon.find({superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+//           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+//           else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+//         }
+//         redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+//       }
+//     } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+//     else res.json({ coupons: data });
+//   }
+// });
+
+app.get('/api/getGeoCoupons/:long/:lat/:pageNumber', async (req, res) => {
   let coupons;
-  const cityUserIsIn = req.params.city.toLowerCase().replace(/\"/g,"");
+  const long = (req && req.params && req.params.long) ? req.params.long.toLowerCase().replace(/\"/g,"") : res.json({ coupons: data });
+  const lat = (req && req.params && req.params.lat) ? req.params.lat.toLowerCase().replace(/\"/g,"") : res.json({ coupons: "Could Not Find your locaton" });
   const pageNumber = req.params.pageNumber;
-  redisHelper.get(`${cityUserIsIn}/${pageNumber}`, getCachedCoupons)
+  redisHelper.get(`${long}/${lat}/${pageNumber}`, getCachedCoupons)
   async function getCachedCoupons (data) {
     if(!data) {
-      if(cityUserIsIn) {
+      if(long && lat && pageNumber) {
         coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
         else {
@@ -450,7 +492,7 @@ app.post('/api/getYourCoupons', async (req, res) => {
         coupons = await Coupon.find({'_id': { $in: searchIDS}})
         coupons.length === 0 ? coupons = "No coupons found." : coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
         res.json({ coupons: coupons });
-        redisHelper.set("gyc" + email, coupons)
+        redisHelper.set("gyc" + email, coupons, 60*5)
       }
       else if (outcome[0] && outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
       else res.json({response: "No coupons found."});

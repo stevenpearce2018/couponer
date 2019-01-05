@@ -15,14 +15,14 @@ class SignUp extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      customerOrBuisness: [
+      customerOrbusiness: [
         ' Customer',
-        ' Buisness Owner',
+        ' Business Owner',
       ],
       email: '',
       password: '',
       passwordConfirm: '',
-      buisnessName: '',
+      businessName: '',
       yourPick: ' Customer',
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
       showSignUp: 'hideBuissnessIfCustomer',
@@ -68,7 +68,7 @@ class SignUp extends Component {
     if (json && json.success) {
       toast.success("Phone number is valid, woohoo!")
       this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
-      if (this.state.yourPick === " Buisness Owner") this.setState({showSignUp:"showBuissnessIfCustomer", checkout: "hidden"})
+      if (this.state.yourPick === " Business Owner") this.setState({showSignUp:"showBuissnessIfCustomer", checkout: "hidden"})
       this.togglePopup();
     }
     else toast.error("The number you have entered is incorrect")
@@ -98,7 +98,7 @@ class SignUp extends Component {
     if(this.state.boolValidPhoneNumber === false) return toast.error("You must validate your phone number!")
     e.preventDefault();
     const data = {
-      buisnessName: this.state.buisnessName,
+      businessName: this.state.businessName,
       email: this.state.email,
       yourPick: this.state.yourPick,
       password: this.state.password,
@@ -151,7 +151,7 @@ class SignUp extends Component {
         showSignUp:'hideBuissnessIfCustomer'
       })
     }
-    else if(value === ' Buisness Owner') {
+    else if(value === ' Business Owner') {
       if (this.state.boolValidPhoneNumber) this.setState({showSignUp:'showBuissnessIfCustomer'})
       this.setState({
         yourPick: value,
@@ -167,14 +167,14 @@ class SignUp extends Component {
       <div className="container text-center">
         <section id="portfolio" className="content">
           <h2 className="textHeader">Sign up</h2>
-          <p className="text">First, validate your phone number. UnlimitedCouponer needs your phone number in order to text you claimed coupons and to allow easy verification of coupons. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business owners cannot claim coupons but do not have a membership fee. <strong>Your password will require 1 uppercase letter, 1 lowercase letter, 8 total characters, 1 number, and one special character.</strong> </p>
+          <p className="text">First, validate your phone number. UnlimitedCouponer needs your phone number in order to text you claimed coupons and to allow easy verification of coupons. Then if you are a customer, choose your membership plan. Membership will be needed to claim coupons and you can claim unlimited coupons so long as you actually use them! Business Owners cannot claim coupons but do not have a membership fee. <strong>Your password will require 1 uppercase letter, 1 lowercase letter, 8 total characters, 1 number, and one special character.</strong> </p>
         </section>
         <div className="row">
           <hr />
           <br/>
           <div className='signinForm'>
             <button className={ this.state.yourPick === " Customer" ? "signupbtn toggle" : "signupbtn toggle notselected"} onClick={() => this.handleToggle(" Customer")}><strong>Customer</strong></button>
-            <button className={ this.state.yourPick === " Buisness Owner" ?  "signupbtn toggle" :  "signupbtn toggle notselected" } onClick={() => this.handleToggle(" Buisness Owner")}><strong>Buisness Owner</strong></button>
+            <button className={ this.state.yourPick === " Business Owner" ?  "signupbtn toggle" :  "signupbtn toggle notselected" } onClick={() => this.handleToggle(" Business Owner")}><strong>Business Owner</strong></button>
           </div>
         </div>
           <form className='signinForm'>
@@ -210,10 +210,10 @@ class SignUp extends Component {
           />
       <div className={this.state.showOrHideBuisInput}>
       <InputField
-        htmlFor="Buisness Name"
+        htmlFor="business Name"
         type="text"
-        name="buisnessName"
-        labelHTML="Buisness Name"
+        name="businessName"
+        labelHTML="business Name"
         placeholder="Bob's Kitten Rentals"
         onChange={this.handleChange}
       /> 

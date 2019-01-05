@@ -46,7 +46,7 @@ class App extends Component {
         couponsCurrentlyClaimed: "",
         membershipExperationDate: '',
         showOrHideNav: 'hidden',
-        loggedInBuisness: 'hidden',
+        loggedInbusiness: 'hidden',
         ignoreClick: true, // handles navbar closing when open and clicking outside it.
         couponData: <div className="loaderContainer"><div className="loader"></div></div>,
     };
@@ -116,7 +116,7 @@ class App extends Component {
     const couponsCurrentlyClaimed = sessionStorage.getItem('couponsCurrentlyClaimed')
     const membershipExperationDate = sessionStorage.getItem('membershipExperationDate')
     if (loggedInKey) this.setState({loginButton: 'hidden', logoutButton: 'notHidden', loggedInKey: sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', ''), email:sessionStorage.getItem('UnlimitedCouponerEmail'), membershipExperationDate: membershipExperationDate, couponsCurrentlyClaimed: couponsCurrentlyClaimed })
-    if (loggedInKey && loggedInKey.substr(-1) === "b") this.setState({loggedInBuisness: 'notHidden'})
+    if (loggedInKey && loggedInKey.substr(-1) === "b") this.setState({loggedInbusiness: 'notHidden'})
   }
 
   showOrHideNav = () => {
@@ -132,11 +132,11 @@ class App extends Component {
       email: this.state.email
     }
     await postRequest(`/api/signout`, data)
-    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInBuisness:"hidden", couponsCurrentlyClaimed: '', membershipExperationDate: ""})
+    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInbusiness:"hidden", couponsCurrentlyClaimed: '', membershipExperationDate: ""})
     toast.success("Successful Logout!")
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
-    sessionStorage.removeItem('buisnessOwner');
+    sessionStorage.removeItem('businessOwner');
     sessionStorage.removeItem('couponsCurrentlyClaimed')
     sessionStorage.removeItem('membershipExperationDate')
   }
@@ -163,8 +163,8 @@ class App extends Component {
       email: this.state.email,
     }
     const json = await postRequest(`/api/uploadCoupons`, data)
-    if(json && json.response === "Coupon Not Created" ) return toast.error(json.response);
-    else return toast.success(json.response);
+    if(json && json.response === "Coupon Created" ) return toast.success("Coupon Created!");
+    else return toast.error(json.response);
     // alert(JSON.stringify(json), "json")
   }
   async updateAccountSettings(data){
@@ -213,7 +213,7 @@ class App extends Component {
       window.history.pushState(null, '', '/Home');
     }
     else if(key.substr(-1) === "b") {
-      this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInBuisness: 'notHidden'})
+      this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInbusiness: 'notHidden'})
       window.history.pushState(null, '', '/Home');
     }
   }
@@ -227,7 +227,6 @@ class App extends Component {
           <h1 className='homeMainTitle'>
               Save money, grow your business, try something new.
           </h1>
-          { (this.state.loggedInKey) ? <p className="loginInfo">loggedInKey: {this.state.loggedInKey}</p> : <p></p> }
           { (this.state.email) ? <strong><p className="loginInfo">Logged in as: {this.state.email}.</p></strong> : <strong><p>Welcome, Guest!</p></strong> }
           { (this.state.membershipExperationDate) ? <strong><p className="loginInfo">Membership Expires On: {this.state.membershipExperationDate}</p></strong> : <p></p> }      
           { (this.state.couponsCurrentlyClaimed) ? <strong><p className="loginInfo">{this.state.couponsCurrentlyClaimed}/5 Coupons Claimed!</p></strong> : <p></p> }
@@ -255,7 +254,7 @@ class App extends Component {
               <div className={this.state.logoutButton}><Link href = '/Home'><li onClick={this.logout}><div><i className="fa fa-user"></i>Logout</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/MyCoupons'><li onClick={this.setMainToMyCoupons}><div><i className="fa fa-money"></i>My Coupons</div></li></Link></div>
               <div className={this.state.logoutButton}><Link href = '/AccountSettings'><li onClick={this.setMainAccountSettings}><div><i className="fa fa-gear"></i>Account Settings</div></li></Link></div>
-              <div className={this.state.loggedInBuisness}><Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="fa fa-money"></i>Upload Coupons</div></li></Link></div>
+              <div className={this.state.loggedInbusiness}><Link href = '/UploadCoupon'><li onClick={this.setMainUploadCoupon}><div><i className="fa fa-money"></i>Upload Coupons</div></li></Link></div>
               <Link href = '/Search'><li onClick={this.setMainSearch}><div><i className="fa fa-search"></i>Search Coupons</div></li></Link>
             </ul>
           </nav>

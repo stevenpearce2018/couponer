@@ -3,7 +3,10 @@ import React from 'react';
 const Coupon = props => {
     return (
         <div className="coupon">
+        <br/>
           <h2 className = "exampleTitle">{props.title}</h2>
+          <br/>
+          <br/>
           <div className = "exampleImage" ><img className = "exampleImage" src={props.imagePreviewUrl} alt={props.textarea}/></div>
           <div className="pricing">
             <div className='oldPrice'>
