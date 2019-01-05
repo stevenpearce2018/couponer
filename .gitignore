@@ -3,3 +3,4 @@ node_modules
 cert.cert
 gd_bundle.cert
 server.pass.key
+server.crt
