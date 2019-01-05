@@ -39,7 +39,7 @@ const requireHTTPS = (req, res, next) => {
   next();
 }
 
-app.use(requireHTTPS);
+// app.use(requireHTTPS);
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
@@ -149,7 +149,7 @@ app.post('/api/phoneTest', async (req, res) => {
   redisHelper.set(req.body.phoneNumber, randomNumber, 60*3) // 3 minutes
   try {
     client.messages
-    .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})
+    .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})//13124108678
     .then(message => res.json({success:true}))
     .done();
   } catch (error) {
@@ -176,7 +176,7 @@ app.post('/api/signupCustomer', async(req, res) => {
       const loggedInKey = req.body.buisnessName ? Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":b" : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + ":c";
       const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
-          if (validateEmail(req.body.email) && req.body.city && req.body.email && password && checkPasswordStrength(password) && phoneNumber && yourPick && ip) {
+          if (validateEmail(req.body.email) && req.body.email && password && checkPasswordStrength(password) && phoneNumber && yourPick && ip) {
             if (yourPick === ' Buisness Owner' && req.body.buisnessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
               const hashedPass = await bcrypt.hashSync(password, 10);
               const email = req.body.email.toLowerCase();
@@ -195,7 +195,6 @@ app.post('/api/signupCustomer', async(req, res) => {
                   email: email,
                   buisnessName: req.body.buisnessName,
                   password: hashedPass,
-                  city: req.body.city,
                   phoneNumber: phoneNumber,
                   yourPick: yourPick,
                   loggedInKey: loggedInKey,
@@ -220,7 +219,7 @@ app.post('/api/signupCustomer', async(req, res) => {
                   currency: req.body.currency,
                   amount: req.body.amount
                 }
-                const charge = (chargeData.amount / 499 === req.body.numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
+                const charge = (chargeData.amount / 99 === req.body.numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
                 if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") registerUser()
                 else res.json({resp:'Failed to charge card!'});
               } 
@@ -237,7 +236,7 @@ app.post('/api/phoneTest', async (req, res) => {
   const randomNumber = Math.floor(Math.random()*90000) + 10000;
   redisHelper.set(req.body.phoneNumber, randomNumber, 60*15) // 15 minutes
   try {
-    client.messages
+    client.messages//+13124108678
     .create({from: '+13124108678', body: 'Your Security code is: '+randomNumber, to: req.body.phoneNumber})
     .then(message => res.json({success:true}))
     .done();
@@ -270,13 +269,6 @@ app.post('/api/updateAccount', async (req, res) => {
       await AccountInfo.updateOne(
         { "_id" : outcome[0]._id }, 
         { "$set" : { buisnessName: req.body.buisnessName } }, 
-        { "upsert" : false } 
-      );
-    }
-    if (req.body.city) {
-      await AccountInfo.updateOne(
-        { "_id" : outcome[0]._id }, 
-        { "$set" : { city: req.body.city } }, 
         { "upsert" : false } 
       );
     }
@@ -360,7 +352,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         currency: req.body.currency,
         amount: req.body.amount
       }
-      const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 100 === req.body.amountCoupons || chargeData.amount / 50 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
+      const charge = (req.body.superCoupon === "Let's go super" && chargeData.amount / 25 === req.body.amountCoupons || chargeData.amount / 10 === req.body.amountCoupons) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
       if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
         res.json({response: 'Coupon Created'})
         const amountCoupons = req.body.amountCoupons;
@@ -479,7 +471,7 @@ app.post('/api/addMonths', async (req, res) => {
   }
   const outcome = await AccountInfo.find({'email':email}).limit(1);
   if(outcome[0].length === 1 && req.body.numberOfMonths >= 1 && bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
-    const charge = (chargeData.amount / 499 === numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
+    const charge = (chargeData.amount / 99 === numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
     if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
       let today = new Date();
       let dd = today.getDate();
@@ -852,4 +844,4 @@ app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "build", 
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => console.log(`App listening on port ${port}! Go to https://localhost:${port}`))
+app.listen(port, () => console.log(`App listening on port ${port}! Go to http://localhost:${port}`))

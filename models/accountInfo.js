@@ -6,7 +6,6 @@ const accountInfo = mongoose.Schema({
     buisnessName: String,
     password: String, 
     phoneNumber: String,
-    city: String,
     yourPick: String,
     loggedInKey: String,
     membershipExperationDate: Date | String,

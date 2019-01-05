@@ -11,12 +11,6 @@ import postRequest from '../../postReqest';
 import { toast } from 'react-toastify';
 import checkPasswordStrength from '../../checkPasswordStrength';
 
-// Checkout button is clicked
-// Check if info inputted is valid                 // if failed break
-// Check number by sending twilio sms 5 digit code // if Xed out then break. Allow retries
-// If number is valid save result unless number changes
-// Attempt credit card checkout
-
 class SignUp extends Component {
   constructor(props) {
     super(props)
@@ -28,7 +22,6 @@ class SignUp extends Component {
       email: '',
       password: '',
       passwordConfirm: '',
-      city: '',
       buisnessName: '',
       yourPick: ' Customer',
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
@@ -99,14 +92,13 @@ class SignUp extends Component {
     }
   }
 
-  validState = state => state.city && state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber ? true : false;
+  validState = state => state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber ? true : false;
 
   async handleSingup(e){
     if(this.state.boolValidPhoneNumber === false) return toast.error("You must validate your phone number!")
     e.preventDefault();
     const data = {
       buisnessName: this.state.buisnessName,
-      city: this.state.city,
       email: this.state.email,
       yourPick: this.state.yourPick,
       password: this.state.password,
@@ -124,7 +116,6 @@ class SignUp extends Component {
   }
   async handleCustomerSignup(dataFromStripe){
     const data = {
-      city: this.state.city,
       email: this.state.email,
       yourPick: this.state.yourPick,
       password: this.state.password,
@@ -144,7 +135,7 @@ class SignUp extends Component {
         this.props.parentMethod(json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
         toast.success("Welcome " + this.state.email + "!")
-      } else toast.error(json.response)
+      } else toast.error(json.resp)
     } else toast.error("Invalid Email Address.")
   }
 
@@ -152,7 +143,7 @@ class SignUp extends Component {
 
   handleToggle = value => {
     if (value === ' Customer') {
-      if(this.state.boolValidPhoneNumber === true) this.setState({checkout:"showBuissnessIfCustomer"})
+      if(this.state.boolValidPhoneNumber) this.setState({checkout:"showBuissnessIfCustomer"})
       this.setState({
         yourPick: value,
         showOrHideBuisInput: 'hideBuissnessIfCustomer',
@@ -217,15 +208,6 @@ class SignUp extends Component {
             onChange={this.handleChange}
             required
           />
-          <InputField
-            htmlFor="City"
-            type="text"
-            labelHTML="City"
-            name="city"
-            placeholder="Coupon Town"
-            onChange={this.handleChange}
-            required
-          />
       <div className={this.state.showOrHideBuisInput}>
       <InputField
         htmlFor="Buisness Name"
@@ -247,8 +229,8 @@ class SignUp extends Component {
         />
       </div>
       {/* <div className="phoneHolder"> */}
-      <div class="signupBox">
-      <label class="signupLabel" for="Country"><strong>Country</strong></label>
+      <div className="signupBox">
+      <label className="signupLabel" htmlFor="Country"><strong>Country</strong></label>
         <PhoneCode
           onSelect={code => this.setState({country: code})} // required
           showFirst={['US', 'UK', 'IN']}
@@ -259,7 +241,6 @@ class SignUp extends Component {
           optionClassName='some option class name'
       />
       </div>
-      <div className="float">
       <InputField
         htmlFor="Phone Number"
         type="number"
@@ -268,7 +249,6 @@ class SignUp extends Component {
         placeholder="123-456-7189"
         onChange={this.handleChange}
       /> 
-      </div>
       {/* </div> */}
       <div className="phoneIcon">
           {this.state.validPhoneNumber}
@@ -304,18 +284,20 @@ class SignUp extends Component {
             </div>
           </div>
     <div className={this.state.checkout}>
+      <br/>
+      <br/>
+    </div>
+    {this.state.boolValidPhoneNumber && this.state.yourPick === " Customer" ?
     <div className="center">
-      <Checkout
-        parentMethod = {this.handleCustomerSignup}
-        name={'UnlimitedCouponer Membership'}
-        description={this.state.numberOfMonths + ' Month(s) of Unlimted Coupons'}
-        amount={this.state.numberOfMonths * 4.99}
-        panelLabel="Get membership"
-      />
-    </div>
-      <br/>
-      <br/>
-    </div>
+          <Checkout
+          parentMethod = {this.handleCustomerSignup}
+          name={'UnlimitedCouponer Membership'}
+          description={this.state.numberOfMonths + ' Month(s) of Unlimted Coupons'}
+          amount={this.state.numberOfMonths * 0.99}
+          panelLabel="Get membership"
+        />
+    </div> : <div></div>}
+
     <div className={this.state.showSignUp}>
       <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>
     </div>

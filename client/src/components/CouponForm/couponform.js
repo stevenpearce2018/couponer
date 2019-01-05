@@ -394,19 +394,13 @@ class CouponForm extends Component {
               required={true}
               onChange={this.handleImageChange} />
             </label>
-          {/* <button className="submitButton" 
-            type="submit" 
-            onClick={this.uploadFile}
-            >
-          Upload Coupons
-          </button> */}
       </form>
       <div className="couponPay">
         <Checkout
           parentMethod={this.payForCoupons}
           name={'UnlimitedCouponer Coupons'}
           description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
-          amount={(this.state.superCoupon === "Let's go super") ? 1.00 * this.state.amountCoupons : this.state.amountCoupons * 0.50}
+          amount={(this.state.superCoupon === "Let's go super") ? 0.25 * this.state.amountCoupons : this.state.amountCoupons * 0.10}
           panelLabel="Upload coupons"
         />
       </div>
