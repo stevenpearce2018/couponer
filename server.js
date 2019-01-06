@@ -38,7 +38,7 @@ const requireHTTPS = (req, res, next) => {
   }
   next();
 }
-app.use(requireHTTPS);
+// app.use(requireHTTPS);
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
@@ -400,7 +400,7 @@ app.get('/api/geoCoupons/:long/:lat/:pageNumber', async (req, res) => {
   const long = (req && req.params && req.params.long) ? req.params.long.toLowerCase().replace(/\"/g,"") : res.json({ coupons: data });
   const lat = (req && req.params && req.params.lat) ? req.params.lat.toLowerCase().replace(/\"/g,"") : res.json({ coupons: "Could Not Find your locaton" });
   const pageNumber = req.params.pageNumber;
-  const coupons = await Coupon.find({
+  let coupons = await Coupon.find({
     superCoupon: "Let's go super",
     couponStillValid: true,
     'loc.coordinates': {
@@ -409,41 +409,63 @@ app.get('/api/geoCoupons/:long/:lat/:pageNumber', async (req, res) => {
       },
     },
   }).skip((pageNumber-1)*20).limit(20)
-  res.json({ coupons: cleanCoupons(coupons) });
+  if (coupons.length === 0 ) {
+    coupons = await Coupon.find({
+      superCoupon: "No thanks",
+      couponStillValid: true,
+      'loc.coordinates': {
+        $geoWithin: {
+          $center: [[long, lat], 10000]
+        },
+      },
+    }).skip((pageNumber-1)*20).limit(20)
+  } else if (coupons.length < 20 ) {
+    const extraCoupons = await Coupon.find({
+      superCoupon: "No thanks",
+      couponStillValid: true,
+      'loc.coordinates': {
+        $geoWithin: {
+          $center: [[long, lat], 10000]
+        },
+      },
+    }).skip((pageNumber-1)*20).limit(20 - coupons.length)
+    if (extraCoupons.length > 0) coupons = [...extraCoupons, ...coupons];
+  }
+  res.json({ coupons: cleanCoupons(coupons)});
 })
 
 // Not supported anymore
-// app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
-//   let coupons;
-//   const cityUserIsIn = req.params.city.toLowerCase().replace(/\"/g,"");
-//   const pageNumber = req.params.pageNumber;
-//   redisHelper.get(`${cityUserIsIn}/${pageNumber}`, getCachedCoupons)
-//   async function getCachedCoupons (data) {
-//     if(!data) {
-//       if(cityUserIsIn) {
-//         coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
-//         if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
-//         else {
-//           coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
-//           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
-//           else res.json({ coupons: 'No coupons were found near you. Try searching manually' }); 
-//         }
-//         redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
-//       }
-//       else {
-//         coupons = await Coupon.find({superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
-//         if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
-//         else {
-//           coupons = await Coupon.find({superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
-//           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
-//           else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
-//         }
-//         redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
-//       }
-//     } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
-//     else res.json({ coupons: data });
-//   }
-// });
+app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
+  let coupons;
+  const cityUserIsIn = req.params.city.toLowerCase().replace(/\"/g,"");
+  const pageNumber = req.params.pageNumber;
+  redisHelper.get(`${cityUserIsIn}/${pageNumber}`, getCachedCoupons)
+  async function getCachedCoupons (data) {
+    if(!data) {
+      if(cityUserIsIn) {
+        coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+        if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+        else {
+          coupons = await Coupon.find({city : cityUserIsIn, superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+          if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+          else res.json({ coupons: 'No coupons were found near you. Try searching manually' }); 
+        }
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+      }
+      else {
+        coupons = await Coupon.find({superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+        if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+        else {
+          coupons = await Coupon.find({superCoupon: "No Thanks", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
+          if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
+          else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+        }
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+      }
+    } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
+    else res.json({ coupons: data });
+  }
+});
 
 app.get('/api/getGeoCoupons/:long/:lat/:pageNumber', async (req, res) => {
   let coupons;
