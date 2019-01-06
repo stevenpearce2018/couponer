@@ -23,7 +23,7 @@ class Home extends Component {
     const couponlatitude = sessionStorage.getItem('couponlatitude');
     const couponlongitude = sessionStorage.getItem('couponlongitude');
     const that = this;
-    if (!couponlongitude && !couponlatitude && navigator.geolocation) getPosition(gotPosition);
+    if (!couponlongitude && !couponlatitude && navigator.geolocation) getPosition(gotPosition, noLocation);
     else {
       that.setState({
         geolocation: couponlatitude + " " + couponlongitude,
@@ -43,6 +43,11 @@ class Home extends Component {
       const data = await response.json();
       if(data.coupons && data.coupons.length > 0) that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed), incrementPageClass: "center"})
       else that.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
+    }
+    function noLocation()
+    {
+      toast.error('Could not find location, you will need to search manually :(');
+      that.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
     }
     async function gotPosition(position) {
       that.setState({

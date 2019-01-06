@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './accountsettings.css';
 import InputField from '../SubComponents/InputField/inputField';
-import postRequest from '../../postReqest';
-import Checkout from '../Checkout/checkout';
+// import postRequest from '../../postReqest';
+// import Checkout from '../Checkout/checkout';
 import { toast } from 'react-toastify';
 
 class AccountSettings extends Component {
@@ -16,12 +16,12 @@ class AccountSettings extends Component {
       phoneNumber:'',
       latitude: '',
       longitude: '',
-      numberOfMonths: '',
-      membershipExperationDate: ''
+      // numberOfMonths: '',
+      // membershipExperationDate: ''
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this)
-    this.addMonths = this.addMonths.bind(this);
+    // this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this)
+    // this.addMonths = this.addMonths.bind(this);
   }
   
   async componentDidMount() {
@@ -51,22 +51,22 @@ class AccountSettings extends Component {
     }
     this.props.updateAccountSettings(data)
   }
-  async addMonths(dataFromStripe){
-    const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
-    const email = sessionStorage.getItem('UnlimitedCouponerEmail');
-    const data = {
-      membershipExperationDate: this.state.membershipExperationDate,
-      description: dataFromStripe.description,
-      source: dataFromStripe.source,
-      currency: dataFromStripe.currency,
-      amount: dataFromStripe.amount,
-      loggedInKey: loggedInKey,
-      numberOfMonths: this.state.numberOfMonths,
-      email: email
-    }
-    const json = await postRequest(`/api/addMonths`, data)
-    json.cleanedDate ? (this.props.updateMembershipExperationDate(json.cleanedDate), toast.success(`You are now a member until ${json.cleanedDate}. WooHoo!`)) : toast.error("Failed to add months of membership!");
-  }
+  // async addMonths(dataFromStripe){
+  //   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
+  //   const email = sessionStorage.getItem('UnlimitedCouponerEmail');
+  //   const data = {
+  //     membershipExperationDate: this.state.membershipExperationDate,
+  //     description: dataFromStripe.description,
+  //     source: dataFromStripe.source,
+  //     currency: dataFromStripe.currency,
+  //     amount: dataFromStripe.amount,
+  //     loggedInKey: loggedInKey,
+  //     numberOfMonths: this.state.numberOfMonths,
+  //     email: email
+  //   }
+  //   const json = await postRequest(`/api/addMonths`, data)
+  //   json.cleanedDate ? (this.props.updateMembershipExperationDate(json.cleanedDate), toast.success(`You are now a member until ${json.cleanedDate}. WooHoo!`)) : toast.error("Failed to add months of membership!");
+  // }
 
   render() {
     return (
@@ -120,7 +120,7 @@ class AccountSettings extends Component {
         placeholder="business Name"
         onChange={this.handleChange}
       />
-      {sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c" ?
+      {/* {sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c" ?
         <div>
           <InputField
             htmlFor="Add more months to your subscription"
@@ -133,8 +133,8 @@ class AccountSettings extends Component {
         <br/>
         </div> : 
         <div></div>
-      }
-      {sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c" && this.state.numberOfMonths !== "" && this.state.numberOfMonths !== 0 ?
+      } */}
+      {/* {sessionStorage.getItem('UnlimitedCouponerKey').substr(-1) === "c" && this.state.numberOfMonths !== "" && this.state.numberOfMonths !== 0 ?
       <div className="checkout-account-settings">
         <Checkout
           parentMethod = {this.addMonths}
@@ -145,14 +145,14 @@ class AccountSettings extends Component {
         />
       </div> : 
       <div></div>
-      }
+      } */}
       <br/>
       <button value="send" className="updatebtn" onClick={this.handleSubmit}><strong>Update Info</strong></button>
       </div>
-      <div className={this.state.checkout}>
+      {/* <div className={this.state.checkout}>
       <br/>
       <br/>
-    </div>
+    </div> */}
     </div>
     )
   }

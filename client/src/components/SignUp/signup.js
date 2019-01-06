@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import './signup.css';
-// import ReactPhoneInput from 'react-phone-input-2'
 import PhoneCode from 'react-phone-code';
-// import 'react-flags-select/css/react-flags-select.css';
-// import 'react-phone-number-input/style.css'
 import InputField from '../SubComponents/InputField/inputField'
-import Checkout from '../Checkout/checkout';
+// import Checkout from '../Checkout/checkout';
 import validateEmail from '../../validateEmail';
 import postRequest from '../../postReqest';
 import { toast } from 'react-toastify';
@@ -27,7 +24,7 @@ class SignUp extends Component {
       showOrHideBuisInput: 'hideBuissnessIfCustomer',
       showSignUp: 'hideBuissnessIfCustomer',
       showOrHideAccountMem: 'showBuissnessIfCustomer',
-      membershipExperationDate: '',
+      // membershipExperationDate: '',
       numberOfMonths: 0,
       fiveDigitCode: '',
       country: "+1",
@@ -42,7 +39,7 @@ class SignUp extends Component {
     this.handleSingup = this.handleSingup.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
     this.validatePhone = this.validatePhone.bind(this);
-    this.handleCustomerSignup = this.handleCustomerSignup.bind(this);
+    // this.handleCustomerSignup = this.handleCustomerSignup.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
@@ -68,7 +65,7 @@ class SignUp extends Component {
     if (json && json.success) {
       toast.success("Phone number is valid, woohoo!")
       this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
-      if (this.state.yourPick === " Business Owner") this.setState({showSignUp:"showBuissnessIfCustomer", checkout: "hidden"})
+      this.setState({showSignUp:"showBuissnessIfCustomer", checkout: "hidden"})
       this.togglePopup();
     }
     else toast.error("The number you have entered is incorrect")
@@ -114,41 +111,40 @@ class SignUp extends Component {
       }
     } else toast.error("There was an error with your submission!")
   }
-  async handleCustomerSignup(dataFromStripe){
-    const data = {
-      email: this.state.email,
-      yourPick: this.state.yourPick,
-      password: this.state.password,
-      phoneNumber: this.state.country + this.state.phoneNumber,
-      membershipExperationDate: this.state.membershipExperationDate,
-      numberOfMonths: this.state.numberOfMonths,
-      description: dataFromStripe.description,
-      randomNumber: Number(this.state.fiveDigitCode),
-      source: dataFromStripe.source,
-      currency: dataFromStripe.currency,
-      amount: dataFromStripe.amount,
-    }
-    if (!checkPasswordStrength(this.state.password)) return toast.error("Your password is not valid!")
-    if (validateEmail(this.state.email) && this.validState(this.state)){
-      const json = await postRequest(`/api/signupCustomer`, data)
-      if (json && json.loggedInKey) {
-        this.props.parentMethod(json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
-        sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
-        toast.success("Welcome " + this.state.email + "!")
-      } else toast.error(json.resp)
-    } else toast.error("Invalid Email Address.")
-  }
+  // async handleCustomerSignup(dataFromStripe){
+  //   const data = {
+  //     email: this.state.email,
+  //     yourPick: this.state.yourPick,
+  //     password: this.state.password,
+  //     phoneNumber: this.state.country + this.state.phoneNumber,
+  //     membershipExperationDate: this.state.membershipExperationDate,
+  //     numberOfMonths: this.state.numberOfMonths,
+  //     description: dataFromStripe.description,
+  //     randomNumber: Number(this.state.fiveDigitCode),
+  //     source: dataFromStripe.source,
+  //     currency: dataFromStripe.currency,
+  //     amount: dataFromStripe.amount,
+  //   }
+  //   if (!checkPasswordStrength(this.state.password)) return toast.error("Your password is not valid!")
+  //   if (validateEmail(this.state.email) && this.validState(this.state)){
+  //     const json = await postRequest(`/api/signupCustomer`, data)
+  //     if (json && json.loggedInKey) {
+  //       this.props.parentMethod(json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
+  //       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
+  //       toast.success("Welcome " + this.state.email + "!")
+  //     } else toast.error(json.resp)
+  //   } else toast.error("Invalid Email Address.")
+  // }
 
   togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})
 
   handleToggle = value => {
     if (value === ' Customer') {
-      if(this.state.boolValidPhoneNumber) this.setState({checkout:"showBuissnessIfCustomer"})
+      if(this.state.boolValidPhoneNumber) this.setState({checkout:"showBuissnessIfCustomer", showSignUp:'showBuissnessIfCustomer'})
       this.setState({
         yourPick: value,
         showOrHideBuisInput: 'hideBuissnessIfCustomer',
         showOrHideAccountMem: 'showBuissnessIfCustomer',
-        showSignUp:'hideBuissnessIfCustomer'
       })
     }
     else if(value === ' Business Owner') {
@@ -218,7 +214,7 @@ class SignUp extends Component {
         onChange={this.handleChange}
       /> 
       </div>
-      <div className={this.state.showOrHideAccountMem}>
+      {/* <div className={this.state.showOrHideAccountMem}>
         <InputField
           htmlFor="Subscription Length"
           type="text"
@@ -227,7 +223,7 @@ class SignUp extends Component {
           placeholder="Subscription Length 4.99$ per month for unlimited coupons"
           onChange={this.updateMembershipExperationDate}
         />
-      </div>
+      </div> */}
       {/* <div className="phoneHolder"> */}
       <div className="signupBox">
       <label className="signupLabel" htmlFor="Country"><strong>Country</strong></label>
@@ -248,19 +244,9 @@ class SignUp extends Component {
         labelHTML="Phone Number"
         placeholder="123-456-7189"
         onChange={this.handleChange}
-      /> 
-      {/* </div> */}
-      <div className="phoneIcon">
-          {this.state.validPhoneNumber}
-        </div>
+      />
   </form>
 
-    {/* <ReactPhoneInput
-      placeholder="Enter phone number"
-      value={ this.state.phoneNumber }
-      defaultCountry={'us'}
-      onChange={ phoneNumber => this.setState({ phoneNumber: phoneNumber, validPhoneNumber: <span className="icon red">&#x2718;</span>, showOrHidePhoneValidationButton: "signupbtn"}) } 
-    /> */}
   <div className='buttonAndForgot'>
     <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.validatePhone}><strong>Validate Phone Number</strong></button>
     <div className={this.state.popupClass}>
@@ -287,7 +273,7 @@ class SignUp extends Component {
       <br/>
       <br/>
     </div>
-    {this.state.boolValidPhoneNumber && this.state.yourPick === " Customer" ?
+    {/* {this.state.boolValidPhoneNumber && this.state.yourPick === " Customer" ?
     <div className="center">
           <Checkout
           parentMethod = {this.handleCustomerSignup}
@@ -296,7 +282,7 @@ class SignUp extends Component {
           amount={this.state.numberOfMonths * 0.99}
           panelLabel="Get membership"
         />
-    </div> : <div></div>}
+    </div> : <div></div>} */}
 
     <div className={this.state.showSignUp}>
       <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>

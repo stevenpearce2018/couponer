@@ -63,7 +63,8 @@ class CouponForm extends Component {
     this.handleCurrentPriceChange = this.handleCurrentPriceChange.bind(this);
     this.handleAmountCouponsChange = this.handleAmountCouponsChange.bind(this);
     this.handleTextareaChange = this.handleTextareaChange.bind(this);
-    this.payForCoupons = this.payForCoupons.bind(this)
+    this.payForCoupons = this.payForCoupons.bind(this);
+    this.uploadCoupons = this.uploadCoupons.bind(this);
   }
   componentDidMount() {
     const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey');
@@ -181,7 +182,39 @@ class CouponForm extends Component {
     this.setState({superCoupon: superChoices[e.target.value]})
   }
 
-  payForCoupons = dataFromStripe => {
+  payForCoupons = () => {
+    const data = {
+      title: this.state.title,
+      address: this.state.address,
+      amountCoupons: Number(this.state.amountCoupons),
+      currentPrice: Number(this.state.currentPrice),
+      discountedPrice: Number(this.state.discountedPrice),
+      superCoupon: this.state.superCoupon,
+      textarea: this.state.textarea,
+      imagePreviewUrl: this.state.imagePreviewUrl,
+      category: this.state.category,
+      city: this.state.city,
+      zip: this.state.zip,
+      longitude: Number(this.state.longitude),
+      latitude: Number(this.state.latitude)
+    }
+    const google = window.google
+    const geocoder = new google.maps.Geocoder();
+    const that = this;
+    geocoder.geocode({ 'address': this.state.address}, async (results, status) => {
+      if (google.maps.GeocoderStatus.OK === 'OK') {
+        if (results[0] && that.state.address.length > 5) {
+          that.setState({
+            latitude:results[0].geometry.location.lat(),
+            longitude: results[0].geometry.location.lng()
+          })
+          if (validateCouponForm(this.state) === true) that.props.uploadCoupons(data)
+        }
+      } else toast.error('Your address appears to be incorrect. Please check your formatting and confirm it can be found on Google Maps.')
+    });
+  }
+
+  uploadCoupons = dataFromStripe => {
     const data = {
       description: dataFromStripe.description,
       source: dataFromStripe.source,
@@ -357,7 +390,7 @@ class CouponForm extends Component {
               <h2 className="popupheader">What are Super Coupons?</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
               <div className="popupcontent">
-                Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons are also the only coupons that can appear on the home page. Super Coupons cost 0.25$ per coupon instead of the standard 0.10$.
+                Super Coupons are coupons that have a higher likelyhood of appearing up in searches. Super Coupons will also appear first on the home page. Super Coupons cost 0.10$ per coupon instead of being free like standard coupons.
               </div>
             </div>
           </div> 
@@ -381,15 +414,28 @@ class CouponForm extends Component {
               onChange={this.handleImageChange} />
             </label>
       </form>
-      <div className="couponPay">
-        <Checkout
-          parentMethod={this.payForCoupons}
-          name={'UnlimitedCouponer Coupons'}
-          description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
-          amount={(this.state.superCoupon === "Let's go super") ? 0.25 * this.state.amountCoupons : this.state.amountCoupons * 0.10}
-          panelLabel="Upload coupons"
-        />
-      </div>
+      {this.state.superCoupon === "Let's go super" ? 
+            <div className="couponPay">
+            {/* <Checkout
+              parentMethod={this.payForCoupons}
+              name={'UnlimitedCouponer Coupons'}
+              description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
+              amount={(this.state.superCoupon === "Let's go super") ? 0.25 * this.state.amountCoupons : this.state.amountCoupons * 0.10}
+              panelLabel="Upload coupons"
+            /> */}
+            <Checkout
+              parentMethod={this.payForCoupons}
+              name={'UnlimitedCouponer Coupons'}
+              description={(this.state.superCoupon === "Let's go super") ? this.state.amountCoupons + " Super Coupons" : this.state.amountCoupons + " Coupons"}
+              amount={(this.state.superCoupon === "Let's go super") ? 0.10 * this.state.amountCoupons : this.state.amountCoupons * 0.10}
+              panelLabel="Upload coupons"
+            />
+          </div> :
+          <div>
+            <button type="submit" value="Submit" className="uploadbtn" onClick={this.uploadCoupons}><strong>Upload Coupons!</strong></button>
+          </div>
+      }
+
       </div>
       </div>
       </div>

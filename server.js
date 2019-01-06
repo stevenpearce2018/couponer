@@ -38,7 +38,7 @@ const requireHTTPS = (req, res, next) => {
   }
   next();
 }
-// app.use(requireHTTPS);
+app.use(requireHTTPS);
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
@@ -175,18 +175,18 @@ app.post('/api/signupCustomer', async(req, res) => {
       const result = await AccountInfo.find({ 'email': req.body.email })
         if (result.length === 0) {
           if (validateEmail(req.body.email) && req.body.email && password && checkPasswordStrength(password) && phoneNumber && yourPick && ip) {
-            if (yourPick === ' Business Owner' && req.body.businessName || yourPick === ' Customer' && req.body.membershipExperationDate ) {
+            if (yourPick === ' Business Owner' && req.body.businessName || yourPick === ' Customer' /* && req.body.membershipExperationDate */) {
               const hashedPass = await bcrypt.hashSync(password, 10);
               const email = req.body.email.toLowerCase();
-              let today = new Date();
-              let dd = today.getDate();
-              let mm = today.getMonth()+1; //January is 0!
-              const yyyy = today.getFullYear();
-              if(dd<10) dd = '0'+dd
-              if(mm<10) mm = '0'+mm
-              today = yyyy + '-' + mm + '-' + dd;
-              const finalDate = req.body.numberOfMonths && req.body.numberOfMonths > 0 ? moment(today).add(req.body.numberOfMonths, 'months') : "N/A";
-              const membershipExperationDate = yourPick === ' Business Owner' ? "N/A" : JSON.stringify(finalDate).substring(1, 11);
+              // let today = new Date();
+              // let dd = today.getDate();
+              // let mm = today.getMonth()+1; //January is 0!
+              // const yyyy = today.getFullYear();
+              // if(dd<10) dd = '0'+dd
+              // if(mm<10) mm = '0'+mm
+              // today = yyyy + '-' + mm + '-' + dd;
+              // const finalDate = req.body.numberOfMonths && req.body.numberOfMonths > 0 ? moment(today).add(req.body.numberOfMonths, 'months') : "N/A";
+              // const membershipExperationDate = yourPick === ' Business Owner' ? "N/A" : JSON.stringify(finalDate).substring(1, 11);
               const registerUser = async() => {
                 const accountInfo = new AccountInfo({
                   _id: new mongoose.Types.ObjectId(),
@@ -200,29 +200,32 @@ app.post('/api/signupCustomer', async(req, res) => {
                   couponsCurrentlyClaimed: 0,
                   usedCoupons:[],
                   couponCodes:[],
-                  membershipExperationDate: membershipExperationDate,
+                  membershipExperationDate: "01-01-2018",
+                  // membershipExperationDate: membershipExperationDate,
                   ip: ip
                 })
                 await accountInfo.save().catch(err => console.log(err))
                 res.json({
                   loggedInKey:loggedInKey,
-                  membershipExperationDate: membershipExperationDate,
+                  membershipExperationDate: "01-01-2018",
+                  // membershipExperationDate: membershipExperationDate,
                   couponsCurrentlyClaimed: 0
                 });
               }
-              if(yourPick === ' Customer') {
-                const chargeData = {
-                  description: req.body.description,
-                  source: req.body.source,
-                  currency: req.body.currency,
-                  amount: req.body.amount
-                }
-                const charge = (chargeData.amount / 99 === req.body.numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
-                if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") registerUser()
-                else res.json({resp:'Failed to charge card!'});
-              } 
-              else if(yourPick === ' Business Owner') registerUser()
-              else res.json({resp:'You need to select if you are a Business Owner or a customer!'});
+              // if(yourPick === ' Customer') {
+              //   const chargeData = {
+              //     description: req.body.description,
+              //     source: req.body.source,
+              //     currency: req.body.currency,
+              //     amount: req.body.amount
+              //   }
+              //   const charge = (chargeData.amount / 99 === req.body.numberOfMonths) ? await stripe.charges.create(chargeData) : res.json({resp:'Failed to charge card!'});
+              //   if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") registerUser()
+              //   else res.json({resp:'Failed to charge card!'});
+              // } 
+              // else if(yourPick === ' Business Owner') registerUser()
+              registerUser()
+              // else res.json({resp:'You need to select if you are a Business Owner or a customer!'});
             } else res.json({resp:'You need to select if you are a Business Owner or a customer!'});
         } else res.json({resp:'You need to fill out all fields!'});
       } else res.json({resp:'Email address is taken!'});
@@ -340,8 +343,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
   // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email }).limit(1)
-  if (outcome.length === 0 || outcome[0].yourPick !== ' Business Owner') res.json({response: "Only Business Owners can create coupons!"});
-  else if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks") res.json({response: "Please choose your coupon type!"});
+  if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks") res.json({response: "Please choose your coupon type!"});
   else if(bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
     if(validateCouponForm(req.body).valid !== false) {
       const chargeData = {
@@ -351,9 +353,9 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         amount: req.body.amount
       }
       let charge;
-      if (req.body.superCoupon === "Let's go super" && chargeData.amount.toFixed(0) / 25 === req.body.amountCoupons || chargeData.amount.toFixed(0) / 10 === req.body.amountCoupons) charge = await stripe.charges.create(chargeData);
-      else charge = false;
-      if(charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
+      // if (req.body.superCoupon === "Let's go super" && chargeData && chargeData.amount && chargeData.amount.toFixed(0) / 25 === req.body.amountCoupons || chargeData.amount.toFixed(0) / 10 === req.body.amountCoupons) charge = await stripe.charges.create(chargeData);
+      if (req.body.superCoupon === "Let's go super" && chargeData && chargeData.amount && chargeData.amount.toFixed(0) / 10 === req.body.amountCoupons) charge = await stripe.charges.create(chargeData);
+      if(req.body.superCoupon === "Let's go super" && charge && charge.outcome && charge.outcome.type === "authorized" &&  charge.outcome.network_status === "approved_by_network") {
         res.json({response: 'Coupon Created'})
         const amountCoupons = req.body.amountCoupons;
         let couponCodes = [];
@@ -392,7 +394,47 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
             .catch(err => console.log(err))
         }
         saveCoupon();
-      } else res.json({response: 'Failed to charge the card provided, coupon was not created.'})
+      } else if (req.body.superCoupon === "No thanks") {
+        res.json({response: 'Coupon Created'})
+        const amountCoupons = req.body.amountCoupons;
+        let couponCodes = [];
+        let i = 0
+        for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+        const saveCoupon = async () => {
+          const mongodbID = new mongoose.Types.ObjectId();
+          const coupon = new Coupon({
+            _id: mongodbID,
+            title: req.body.title,
+            address: req.body.address,
+            city: req.body.city.toLowerCase(),
+            amountCoupons: amountCoupons,
+            currentPrice: req.body.currentPrice,
+            discountedPrice: req.body.discountedPrice,
+            category: req.body.category,
+            textarea: req.body.textarea,
+            base64image: req.body.imagePreviewUrl,
+            superCoupon: req.body.superCoupon,
+            couponCodes: couponCodes,
+            couponStillValid: true,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
+            loc: { 
+              type: "Point",
+              coordinates: [req.body.longitude, req.body.latitude]
+            }
+          })
+          const arr = [...outcome[0].couponIds, mongodbID]
+          await AccountInfo.updateOne(
+            { "_id" : outcome[0]._id }, 
+            { "$set" : {"couponIds": arr}}, 
+            { "upsert" : false } 
+          );
+          await coupon.save()
+            .catch(err => console.log(err))
+        }
+        saveCoupon();
+      }
+      else res.json({response: 'Failed to charge the card provided, coupon was not created.'})
     } else res.json({response: validateCouponForm(req.body).errorMessage})
   } else res.json({response: "You are not logged in!"});
 })
@@ -450,7 +492,7 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
           else res.json({ coupons: 'No coupons were found near you. Try searching manually' }); 
         }
-        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*1)
       }
       else {
         coupons = await Coupon.find({superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
@@ -460,7 +502,7 @@ app.get('/api/getSponseredCoupons/:city/:pageNumber', async (req, res) => {
           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
           else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
         }
-        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*1)
       }
     } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
     else res.json({ coupons: data });
@@ -483,7 +525,7 @@ app.get('/api/getGeoCoupons/:long/:lat/:pageNumber', async (req, res) => {
           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
           else res.json({ coupons: 'No coupons were found near you. Try searching manually' }); 
         }
-        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*1)
       }
       else {
         coupons = await Coupon.find({superCoupon: "Let's go super", couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
@@ -493,7 +535,7 @@ app.get('/api/getGeoCoupons/:long/:lat/:pageNumber', async (req, res) => {
           if (coupons.length > 0 ) res.json({ coupons: cleanCoupons(coupons) });
           else res.json({ coupons: 'No coupons were found near you. Try searching manually' });
         }
-        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+        redisHelper.set(`${cityUserIsIn}/${pageNumber}`, cleanCoupons(coupons), 60*1)
       }
     } else if (data.length === 0) res.json({ coupons: 'No coupons were found near you. Try searching manually' });
     else res.json({ coupons: data });
@@ -514,7 +556,7 @@ app.post('/api/getYourCoupons', async (req, res) => {
         coupons = await Coupon.find({'_id': { $in: searchIDS}})
         coupons.length === 0 ? coupons = "No coupons found." : coupons = associateCouponCodeByID(outcome[0].couponCodes, coupons)
         res.json({ coupons: coupons });
-        redisHelper.set("gyc" + email, coupons, 60*5)
+        redisHelper.set("gyc" + email, coupons, 60*1)
       }
       else if (outcome[0] && outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
       else res.json({response: "No coupons found."});
@@ -617,7 +659,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'city' : city, 'category' : category, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = await Coupon.find({'city' : city, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${city}/${zip}/${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+        redisHelper.set(`${city}/${zip}/${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*1)
       }
       else return res.json({coupons: data});
     }
@@ -630,7 +672,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'city' : city, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${city}/${zip}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+        redisHelper.set(`${city}/${zip}/${pageNumber}`, cleanCoupons(coupons), 60*1)
       }
       else return res.json({coupons: data});
     }
@@ -644,7 +686,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${keyword}/${zip}/${pageNumber}`, cleanCoupons(coupons), 60*5)
+        redisHelper.set(`${keyword}/${zip}/${pageNumber}`, cleanCoupons(coupons), 60*1)
       }
       else return res.json({coupons: data});
     }
@@ -658,7 +700,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'category' : category, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${city}/${category}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`${city}/${category}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -672,7 +714,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${city}/${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`${city}/${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -686,7 +728,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'category' : category, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${category}/${zip}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`${category}/${zip}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -700,7 +742,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'textarea' : keyword, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${category}/${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`${category}/${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -714,7 +756,7 @@ app.get('/search', async (req, res) => {
         if (coupons.length === 0) coupons = await Coupon.find({'category' : category, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`${category}/${city}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`${category}/${city}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -726,7 +768,7 @@ app.get('/search', async (req, res) => {
         coupons = await Coupon.find({'category' : category, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`category:${category}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`category:${category}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -738,7 +780,7 @@ app.get('/search', async (req, res) => {
         coupons = await Coupon.find({'city' : city, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`city:${city}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`city:${city}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -750,7 +792,7 @@ app.get('/search', async (req, res) => {
         coupons = await Coupon.find({'zip' : zip, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`zip:${zip}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`zip:${zip}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -762,7 +804,7 @@ app.get('/search', async (req, res) => {
         coupons = await Coupon.find({'textarea' : regex, couponStillValid: true}).skip((pageNumber-1)*20).limit(20)
         if (coupons.length === 0) coupons = "No coupons found."
         res.json({ coupons: cleanCoupons(coupons) });
-        redisHelper.set(`keyword:${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*5);
+        redisHelper.set(`keyword:${keyword}/${pageNumber}`, cleanCoupons(coupons), 60*1);
       }
       else return res.json({coupons: data});
     }
@@ -771,14 +813,15 @@ app.get('/search', async (req, res) => {
 
 app.post(`/api/getCoupon`, async(req, res) => {
   const loggedInKey = req.body.loggedInKey;
-  if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+  // if (!loggedInKey) res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
+  if (!loggedInKey) res.json({response: "You need to be logged in order to claim coupons!"});
   else {
     const _id = req.body._id;
     // const ip = getIP(req)
     const outcome = await AccountInfo.find({'email':req.body.email }).limit(1)
     if (outcome) {
       if (outcome[0].yourPick !== ' Customer') res.json({response: "Only customers with a valid subscription can claim coupons!"});
-      else if(checkMembershipDate(outcome[0].membershipExperationDate) && bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
+      else if(/* checkMembershipDate(outcome[0].membershipExperationDate) && */ bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
         if (outcome[0].couponsCurrentlyClaimed < 5) {
           const isClaimed = (ids, id) => {
             let i = 0;
@@ -828,7 +871,8 @@ app.post(`/api/getCoupon`, async(req, res) => {
             } else res.json({response: "These coupons are no longer available. Please try another coupon."});
           }
         } else res.json({response: "You have too many coupons! Please use or discard one of your current coupons."});
-      } else res.json({response: "Your membership has expired! Please renew it under the account settings option."});
+      // } else res.json({response: "Your membership has expired! Please renew it under the account settings option."});
+    } else res.json({response: "Your login credentials appear to be incorrect, please try again."});
     }
   else res.json({response: "You need to be logged in and have a valid subscription in order to claim coupons!"});
   }

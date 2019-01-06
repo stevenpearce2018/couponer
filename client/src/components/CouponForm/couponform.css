@@ -20,6 +20,17 @@ body {
   margin-left: auto;
   width:90%;
 }
+.uploadbtn{
+  background-color: #3fc1c9;
+  color:ghostwhite;
+  font-size: 14px;
+  padding: 6px 56px;
+  margin-right: 5%;
+  margin-top: -4.25%;
+  border: none;
+  cursor: pointer;
+  float: right;
+}
 .couponPay{
   margin-top: -350px;
   float: right;
@@ -299,7 +310,6 @@ input[type="file"] {
     display: inline;
     padding: 6px 12px;
     cursor: pointer;
-    float:left;
 }
 .submitButton {
   float: right;
