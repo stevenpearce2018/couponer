@@ -210,10 +210,10 @@ class SignUp extends Component {
           />
       <div className={this.state.showOrHideBuisInput}>
       <InputField
-        htmlFor="business Name"
+        htmlFor="Business Name"
         type="text"
         name="businessName"
-        labelHTML="business Name"
+        labelHTML="Business Name"
         placeholder="Bob's Kitten Rentals"
         onChange={this.handleChange}
       /> 
