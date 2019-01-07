@@ -38,7 +38,7 @@ const requireHTTPS = (req, res, next) => {
   }
   next();
 }
-// app.use(requireHTTPS);
+app.use(requireHTTPS);
 app.use(favicon(__dirname + '/client/public/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
