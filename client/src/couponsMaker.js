@@ -85,8 +85,9 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup) => {
     try {
       const content = props.map((coupons, key) =>
       <div key={key} className="coupon" id={coupons._id}>
-      <h2 className = "exampleTitle">{capitalizeCase(coupons.title)}</h2>
-      <img  className = "exampleImage" src={coupons.base64image} alt={coupons.title}/>
+      <br/>
+      <h2 className = "exampleTitle marginTop">{capitalizeCase(coupons.title)}</h2>
+      <img className = "exampleImage" src={coupons.base64image} alt={coupons.title}/>
       <div className="pricing">
         <div className='oldPrice'>
             Was: {(coupons.currentPrice - 0).toFixed(2)}$

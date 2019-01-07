@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import Label from '../Label/label';
 
 // Create component for select input
-class Select extends Component {
-    render() {
+const Select = props => {
       // Get all options from option prop
-      const selectOptions = this.props.options.split(', ');
+      const selectOptions = props.options.split(', ');
   
       // Generate list of options
       const selectOptionsList = selectOptions.map((selectOption, index) => {
@@ -15,19 +14,19 @@ class Select extends Component {
       return (
         <fieldset>
           <Label
-            hasLabel={this.props.hasLabel}
-            htmlFor={this.props.htmlFor}
-            label={this.props.label}
-            className={this.props.className}
+            hasLabel={props.hasLabel}
+            htmlFor={props.htmlFor}
+            label={props.label}
+            className={props.className}
           />
           
           <select
             defaultValue=''
-            className={this.props.htmlFor}
-            name={this.props.name || ''}
-            required={this.props.required || ''}
-            value = {this.props.length}
-            onChange={this.props.onChange || ''}
+            className={props.htmlFor}
+            name={props.name || ''}
+            required={props.required || ''}
+            value = {props.length}
+            onChange={props.onChange || ''}
           >
             <option value='' disabled>Make Selection</option>
   
@@ -35,7 +34,6 @@ class Select extends Component {
           </select>
         </fieldset>
       );
-    }
   };
 
   export default Select;

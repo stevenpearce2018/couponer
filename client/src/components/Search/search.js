@@ -4,6 +4,7 @@ import Select from '../SubComponents/Select/select';
 import CouponsMaker from '../../couponsMaker';
 import { toast } from 'react-toastify';
 import getPosition from '../../getPosition';
+import getRequest from '../../getRequest';
 
 
 const getParameterByName = (name, url) => {
@@ -17,19 +18,17 @@ const getParameterByName = (name, url) => {
 }
 
 // Private component, keep scoped to search component
-class SearchField extends Component {
-  render() {
+const SearchField = props => {
     return (
       <div className="searchBox">
       <div className='searchLabel'>
-      <label className='signupLabel' htmlFor={this.props.htmlFor}>
-        <strong>{this.props.htmlFor}</strong>
+      <label className='signupLabel' htmlFor={props.htmlFor}>
+        <strong>{props.htmlFor}</strong>
       </label>
       </div>
-      <input className={this.props.className} id={this.props.htmlFor} type="text" name={this.props.name} placeholder={this.props.placeholder} onChange={this.props.onChange}/>
+      <input className={props.className} id={props.htmlFor} type="text" name={props.name} placeholder={props.placeholder} onChange={props.onChange}/>
     </div>
     )
-  }
 }
 
 class Search extends Component {
@@ -76,16 +75,7 @@ class Search extends Component {
     const keywords = getParameterByName('keywords', url)
     if (keywords) this.setState({keywords: keywords})
     if (keywords || category || city || zip) this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-    const response = await fetch(url, {
-      method: "GET", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, same-origin, *omit
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-    })
-    const couponsData = await response.json();
+    const couponsData = getRequest(url);
     this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber), keywords: "", category: "", city: "", zip: ""})
     // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
   }
@@ -109,16 +99,7 @@ class Search extends Component {
       const keywords = getParameterByName('keywords', url)
       if (keywords) this.setState({keywords: keywords})
       if (keywords || category || city || zip) this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-      const response = await fetch(url, {
-        method: "GET", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-      })
-      const couponsData = await response.json();
+      const couponsData = getRequest(url);
       this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), pageNumber : Number(this.state.pageNumber)})
       // window.location.href = decodeURIComponent(`/search?pageNumber=${pageNumber}${searchSubUrl}`);
     }
@@ -148,16 +129,7 @@ class Search extends Component {
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       // window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       window.history.pushState(null, '', `/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
-      const response = await fetch(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`, {
-        method: "GET", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
-        cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, same-origin, *omit
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-      })
-      const couponsData = await response.json();
+      const couponsData = getRequest(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), pageNumber : Number(this.state.pageNumber)})
     }
   }                

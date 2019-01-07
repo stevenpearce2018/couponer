@@ -144,6 +144,8 @@ textarea {
 
 .coupon {
   background-color: ghostwhite;
+  border: solid;
+  border-color: lightgray;
   border-radius: 5px;
   border-width: .5px;
   padding-bottom:10px;

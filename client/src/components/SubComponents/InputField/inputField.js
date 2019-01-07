@@ -1,19 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class InputField extends Component {
-    render() {
+const InputField = props => {
       return (
       <div className="signupBox">
       <div className='inputLabel'>
-      <label className='signupLabel' htmlFor={this.props.labelHTML}>
-        <strong>{this.props.labelHTML}</strong>
-        <div className="icon">{this.props.icon}</div>
+      <label className='signupLabel' htmlFor={props.labelHTML}>
+        <strong>{props.labelHTML}</strong>
+        <div className="icon">{props.icon}</div>
       </label>
-      <input className='signupInput' id={this.props.labelHTML} name={this.props.name} type={this.props.type} placeholder={this.props.placeholder} onChange={this.props.onChange}/>
+      <input className='signupInput' id={props.labelHTML} name={props.name} type={props.type} placeholder={props.placeholder} onChange={props.onChange}/>
       </div>
       </div>
       )
-    }
   }
 
   export default InputField;

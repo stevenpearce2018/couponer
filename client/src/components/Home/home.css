@@ -1,11 +1,8 @@
 .coupons{
-    width: 100%;
-    height: 500px;
     display: inline;
 }
 .couponsHolder{
     display: inline;
-    width: 100%;
 }
 .center{
     text-align: center;
@@ -17,6 +14,10 @@
   .paddingTop{
       margin-top: 30px;
       margin-bottom: -24px;
+  }
+  .marginTop{
+      margin-bottom: 20px;
+      margin-top: 20px;
   }
 .loader {
     border: 16px solid #f3f3f3;

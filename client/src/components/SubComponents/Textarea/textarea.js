@@ -1,32 +1,30 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Label from '../Label/label';
 
 // Create component for textarea
-class Textarea extends Component {
-    render() {
+const Textarea = props => {
       return (
         <fieldset>
           <Label
-            hasLabel={this.props.hasLabel}
-            htmlFor={this.props.htmlFor}
-            label={this.props.label}
-            className={this.props.className}
-            icon={this.props.icon}
+            hasLabel={props.hasLabel}
+            htmlFor={props.htmlFor}
+            label={props.label}
+            className={props.className}
+            icon={props.icon}
           />
   
           <textarea
-            cols={this.props.cols || ''}
-            name={this.props.name || ''}
-            required={this.props.required || ''}
-            rows={this.props.rows || ''}
-            value = {this.props.textarea}
-            onChange={this.props.onChange || ''}
-            className={this.props.className}
+            cols={props.cols || ''}
+            name={props.name || ''}
+            required={props.required || ''}
+            rows={props.rows || ''}
+            value = {props.textarea}
+            onChange={props.onChange || ''}
+            className={props.className}
           >
           </textarea>
         </fieldset>
       );
-    }
   };
 
   export default Textarea;

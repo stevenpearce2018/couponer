@@ -1,31 +1,29 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Label from '../Label/label';
 
-class Input extends Component {
-    render() {
+const Input = props => {
       return (
         <fieldset>
           <Label
-            hasLabel={this.props.hasLabel}
-            htmlFor={this.props.htmlFor}
-            label={this.props.label}
-            icon={this.props.icon}
+            hasLabel={props.hasLabel}
+            htmlFor={props.htmlFor}
+            label={props.label}
+            icon={props.icon}
           />
   
           <input
-            className={this.props.htmlFor}
-            name={this.props.name}
-            max={this.props.max || ''}
-            min={this.props.min || ''}
-            placeholder={this.props.placeholder || ''}
-            required={this.props.required || ''}
-            step={this.props.step || ''}
-            type={this.props.type || 'text'}
-            onChange={this.props.onChange || ''}
+            className={props.htmlFor}
+            name={props.name}
+            max={props.max || ''}
+            min={props.min || ''}
+            placeholder={props.placeholder || ''}
+            required={props.required || ''}
+            step={props.step || ''}
+            type={props.type || 'text'}
+            onChange={props.onChange || ''}
           />
         </fieldset>
       );
-    }
 }
 
 export default Input;

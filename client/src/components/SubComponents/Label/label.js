@@ -1,11 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 
-class Label extends Component {
-    render() {
-      if (this.props.hasLabel === 'true' && this.props.icon) return <label htmlFor={this.props.htmlFor}>{this.props.label} <img className='icon' src={this.props.icon} alt="Icon used to decorate form labels"></img></label>
-      if (this.props.hasLabel === 'true') return <label htmlFor={this.props.htmlFor}>{this.props.label}</label>;
-    }
-}
+const Label = props => props.hasLabel === 'true' && props.icon ? <label htmlFor={props.htmlFor}>{props.label}<img className='icon' src={props.icon} alt="Icon used to decorate form labels"></img></label> : <label htmlFor={props.htmlFor}>{props.label}</label>;
 
 export default Label;
