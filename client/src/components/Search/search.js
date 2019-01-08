@@ -75,7 +75,7 @@ class Search extends Component {
     const keywords = getParameterByName('keywords', url)
     if (keywords) this.setState({keywords: keywords})
     if (keywords || category || city || zip) this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-    const couponsData = getRequest(url);
+    const couponsData = await getRequest(url);
     this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center", pageNumber : Number(this.state.pageNumber), keywords: "", category: "", city: "", zip: ""})
     // alert(HaversineInMiles(latitude1, longitude1, latitude2, longitude2))
   }
@@ -99,7 +99,7 @@ class Search extends Component {
       const keywords = getParameterByName('keywords', url)
       if (keywords) this.setState({keywords: keywords})
       if (keywords || category || city || zip) this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
-      const couponsData = getRequest(url);
+      const couponsData = await getRequest(url);
       this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), pageNumber : Number(this.state.pageNumber)})
       // window.location.href = decodeURIComponent(`/search?pageNumber=${pageNumber}${searchSubUrl}`);
     }
@@ -129,7 +129,7 @@ class Search extends Component {
       this.setState({coupons: <div className="loaderContainer"><div className="loader"></div></div>})
       // window.location.href = decodeURIComponent(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       window.history.pushState(null, '', `/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
-      const couponsData = getRequest(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
+      const couponsData = await getRequest(`/search?pageNumber=${this.state.pageNumber}${searchSubUrl}`);
       this.setState({coupons: CouponsMaker(couponsData.coupons, this.props.updateCouponsClaimed), pageNumber : Number(this.state.pageNumber)})
     }
   }                

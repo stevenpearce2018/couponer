@@ -27,7 +27,7 @@ const validateCode = (_id, showPopup, title) => showPopup(_id, title);
 //       loggedInKey: loggedInKey,
 //       email: email
 //     }
-//     const response = await postRequest(`/api/getCoupon`, data)
+//     const response = await await postRequest(`/api/getCoupon`, data)
 //     const couponsCurrentlyClaimed = Number(sessionStorage.getItem('couponsCurrentlyClaimed')) + 1;
 //     sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed )
 //     updateCouponsClaimed(1)
@@ -48,7 +48,7 @@ const validateCode = (_id, showPopup, title) => showPopup(_id, title);
 //       loggedInKey: loggedInKey,
 //       email: email
 //     }
-//     const response = await postRequest(`/api/discardCoupon`, data)
+//     const response = await await postRequest(`/api/discardCoupon`, data)
 //     const couponsCurrentlyClaimed = Number(sessionStorage.getItem('couponsCurrentlyClaimed')) - 1;
 //     sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed )
 //     updateCouponsClaimed(-1)
@@ -70,7 +70,7 @@ const getOrDiscardCoupons = async (_id, updateCouponsClaimed, flag) => {
       loggedInKey: loggedInKey,
       email: email
     }
-    const response = await postRequest(flag === "discard" ? `/api/discardCoupon` : `/api/getCoupon`, data)
+    const response = await await postRequest(flag === "discard" ? `/api/discardCoupon` : `/api/getCoupon`, data)
     if (response.response === "Coupon Claimed!" || response.response === "Coupon Removed!") {
       toast.success(response.response)
       const couponsCurrentlyClaimed = flag === "discard" ? Number(sessionStorage.getItem('couponsCurrentlyClaimed')) - 1 : Number(sessionStorage.getItem('couponsCurrentlyClaimed')) + 1; 

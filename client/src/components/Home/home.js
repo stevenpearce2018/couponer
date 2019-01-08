@@ -32,7 +32,7 @@ class Home extends Component {
         longitude: couponlongitude,
       })
       const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/1`;
-      const data = getRequest(url);
+      const data = await getRequest(url);
       if(data.coupons && data.coupons.length > 0) that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed), incrementPageClass: "center marginTop"})
       else that.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
     }
@@ -48,7 +48,7 @@ class Home extends Component {
         longitude: position.longitude,
       })
       const url = `/api/geoCoupons/${position.longitude}/${position.latitude}/1`;
-      const data = getRequest(url);
+      const data = await getRequest(url);
       if(data.coupons && data.coupons > 0 ) that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed), incrementPageClass: "center marginTop"})
       else that.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
       sessionStorage.setItem("couponlatitude", position.latitude)
@@ -61,7 +61,7 @@ class Home extends Component {
     const couponlongitude = sessionStorage.getItem('couponlongitude');
     if (pageNumber >= 1) {
       const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/${pageNumber}`;
-      const data = getRequest(url);
+      const data = await await getRequest(url);
       if (data.coupons && data.coupons.length > 0) this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center marginTop", pageNumber: pageNumber})
       else this.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>, pageNumber: pageNumber})
     }

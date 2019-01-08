@@ -64,7 +64,7 @@ class AccountSettings extends Component {
   //     numberOfMonths: this.state.numberOfMonths,
   //     email: email
   //   }
-  //   const json = await postRequest(`/api/addMonths`, data)
+  //   const json = await await postRequest(`/api/addMonths`, data)
   //   json.cleanedDate ? (this.props.updateMembershipExperationDate(json.cleanedDate), toast.success(`You are now a member until ${json.cleanedDate}. WooHoo!`)) : toast.error("Failed to add months of membership!");
   // }
 
