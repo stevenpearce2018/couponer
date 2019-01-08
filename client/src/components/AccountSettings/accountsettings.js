@@ -40,7 +40,7 @@ class AccountSettings extends Component {
     d.setMonth( d.getMonth() + Number(event.target.value));
     this.setState({numberOfMonths: Number(event.target.value), membershipExperationDate: d})
   }
-  async handleSubmit(e){
+  handleSubmit(e){
     e.preventDefault();
     const data = {
       businessName: this.state.businessName,

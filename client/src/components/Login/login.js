@@ -39,13 +39,13 @@ class Login extends Component {
       toast.error("You are already logged in!")
     }
   }
-  async sendRecovery(){
+  sendRecovery(){
     if (validateEmail(this.state.recoveryEmail) === false) return toast.warn("You need to enter a valid email")
     const data = {
       recoveryEmail: this.state.recoveryEmail,
       // phoneNumber: this.state.phoneNumber
     }
-    const json = await postRequest(`/api/recoverAccount`, data)
+    const json = postRequest(`/api/recoverAccount`, data)
     if (json && json.success === true) {
       this.setState({recoverEmailSent: true})
       toast.success("Your recovery message has been sent! Please enter it in the next prompt.")
@@ -53,7 +53,7 @@ class Login extends Component {
     else toast.error("Something went wrong, please try again.")
     // this.togglePopup();
   }
-  async handleSubmit(e){
+  handleSubmit(e){
     e.preventDefault();
     if (validateEmail(this.state.email) === false) return toast.error("You need to enter a valid email")
     if (this.state.password === '') return toast.error("You need to enter a password")
@@ -61,7 +61,7 @@ class Login extends Component {
       email: this.state.email,
       password: this.state.password,
     }
-    const json = await postRequest(`/api/signin`, data)
+    const json = postRequest(`/api/signin`, data)
     if (json && json.loggedInKey){
       this.props.parentMethod( json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate);
       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
@@ -74,7 +74,7 @@ class Login extends Component {
     } else toast.error("Invalid Login")
   }
     
-  async validateCode(){
+  validateCode(){
     if (checkPasswordStrength(this.state.newPassword)) this.setState({validPassword: <span className="green icon">&#10003;</span>})
     else return toast.warn("Your password is not valid!");
     const data = {
@@ -82,7 +82,7 @@ class Login extends Component {
       newPassword: this.state.newPassword,
       randomNumber: this.state.recoveryCode
     }
-    const json = await postRequest(`/api/recoverAccountWithCode`, data)
+    const json = postRequest(`/api/recoverAccountWithCode`, data)
     json.success ? toast.success("Successful account recover!") : toast.error("Failed to recover account.")
   }
   render() {
