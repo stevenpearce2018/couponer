@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Label from '../Label/label';
 
 // Create component for select input
