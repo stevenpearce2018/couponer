@@ -12,6 +12,7 @@ import Notfound from "./components/Notfound/notfound";
 import history from './history';
 import MyCoupons from './components/MyCoupons/myCoupons';
 import postRequest from './postReqest';
+import getPosition from "./getPosition";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Helmet } from 'react-helmet';
@@ -83,6 +84,14 @@ class App extends Component {
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
   }
   async componentDidMount () {
+    const couponlatitude = sessionStorage.getItem('couponlatitude');
+    const couponlongitude = sessionStorage.getItem('couponlongitude');
+    if (!couponlatitude && !couponlongitude && navigator.geolocation) getPosition(gotPosition);
+    else this.setState({latitude: couponlongitude, longitude: couponlongitude})
+    function gotPosition(position) {
+      sessionStorage.setItem("couponlatitude", position.latitude)
+      sessionStorage.setItem("couponlongitude", position.longitude)
+    }
     const urlHandler = currentURL => {
       if(currentURL.toLowerCase().substring(0, 6) === "search") this.setMainSearch();
       else {

@@ -79,11 +79,11 @@ class Home extends Component {
         </div>
         {this.state.coupons}
         <div className={this.state.incrementPageClass}>
-          <a className="icon-button incrementIcons backgroundCircle" onClick={this.decreasePage}>
-            <i className="fa fa-arrow-left"></i>
+          <a className="incrementIcons backgroundCircle" onClick={this.decreasePage}>
+          &#8678;
           </a>
-          <a className="icon-button backgroundCircle" onClick={this.incrementPage}>
-            <i className="fa fa-arrow-right"></i>
+          <a className="backgroundCircle" onClick={this.incrementPage}>
+          &#8680;
           </a>
         </div>
       </div>
