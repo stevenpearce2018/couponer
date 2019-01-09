@@ -61,7 +61,7 @@ class Home extends Component {
     const couponlongitude = sessionStorage.getItem('couponlongitude');
     if (pageNumber >= 1) {
       const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/${pageNumber}`;
-      const data = await await getRequest(url);
+      const data = await getRequest(url);
       if (data.coupons && data.coupons.length > 0) this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed), incrementPageClass: "center marginTop", pageNumber: pageNumber})
       else this.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>, pageNumber: pageNumber})
     }

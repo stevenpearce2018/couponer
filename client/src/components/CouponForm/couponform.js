@@ -413,6 +413,10 @@ class CouponForm extends Component {
               required={true}
               onChange={this.handleImageChange} />
             </label>
+            {this.state.superCoupon !== "Let's go super" ? 
+            <button type="submit" value="Submit" className="uploadbtn" onClick={this.uploadCoupons}><strong>Upload Coupons!</strong></button>
+            :<div></div>
+            }
       </form>
       {this.state.superCoupon === "Let's go super" ? 
             <div className="couponPay">
@@ -432,7 +436,6 @@ class CouponForm extends Component {
             />
           </div> :
           <div>
-            <button type="submit" value="Submit" className="uploadbtn" onClick={this.uploadCoupons}><strong>Upload Coupons!</strong></button>
           </div>
       }
 

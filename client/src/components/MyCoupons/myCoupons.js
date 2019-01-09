@@ -49,7 +49,7 @@ class MyCoupons extends Component {
       loggedInKey: loggedInKey,
       email: email
     }
-    const json = await await postRequest(`/api/getYourCoupons`, data)
+    const json = await postRequest(`/api/getYourCoupons`, data)
     if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, this.props.updateCouponsClaimed, this.showPopup)})
     else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
   }

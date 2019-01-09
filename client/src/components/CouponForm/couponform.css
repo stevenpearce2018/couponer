@@ -24,12 +24,13 @@ body {
   background-color: #3fc1c9;
   color:ghostwhite;
   font-size: 14px;
-  padding: 6px 56px;
-  margin-right: 5%;
-  margin-top: -4.25%;
+  width: 100%;
+  margin-top: 16px;
   border: none;
   cursor: pointer;
   float: right;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 .couponPay{
   margin-top: -350px;
@@ -309,9 +310,11 @@ input[type="file"] {
 .custom-file-upload {
     background-color: #3fc1c9;
     color:ghostwhite;
-    display: inline;
-    padding: 6px 12px;
+    width: 100%;
     cursor: pointer;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 .submitButton {
   float: right;
