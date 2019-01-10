@@ -40,7 +40,7 @@ const requireHTTPS = (req, res, next) => {
   }
   next();
 }
-// app.use(requireHTTPS);
+app.use(requireHTTPS);
 app.use(compression());
 app.use(minify());
 app.use(favicon(__dirname + '/client/build/favicon.ico'));
