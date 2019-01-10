@@ -249,7 +249,7 @@ class App extends Component {
         {this.state.SEO}
         <ToastContainer />
           <h1 className='homeMainTitle'>
-              Save money, grow your business, try something new.
+            Coupons to for food, spas, gyms, bars, and more! Promote your business for free by offering discounts to local customers.
           </h1>
           { (this.state.email) ? <strong><p className="loginInfo">Logged in as: {this.state.email}.</p></strong> : <strong><p>Welcome, Guest!</p></strong> }
           {/* { (this.state.membershipExperationDate) ? <strong><p className="loginInfo">Membership Expires On: {this.state.membershipExperationDate}</p></strong> : <p></p> }       */}

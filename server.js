@@ -30,6 +30,8 @@ const useCode = require("./lib/useCode");
 const moment = require("moment");
 const checkPasswordStrength = require('./lib/checkPasswordStrength');
 const favicon = require('serve-favicon');
+const minify = require('express-minify');
+const compression = require('compression')
 
 const requireHTTPS = (req, res, next) => {
   // The 'x-forwarded-proto' check is for Heroku
@@ -38,8 +40,10 @@ const requireHTTPS = (req, res, next) => {
   }
   next();
 }
-app.use(requireHTTPS);
-app.use(favicon(__dirname + '/client/public/favicon.ico'));
+// app.use(requireHTTPS);
+app.use(compression());
+app.use(minify());
+app.use(favicon(__dirname + '/client/build/favicon.ico'));
 app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
@@ -948,6 +952,18 @@ app.post(`/api/discardCoupon`, async(req, res) => {
   }
 })
 
+app.get('*.js', function(req, res, next) {
+  req.url = req.url + '.gz';
+  res.set('Content-Encoding', 'gzip');
+  res.set('Content-Type', 'text/javascript');
+  next();
+});
+app.get('*.css', function(req, res, next) {
+  req.url = req.url + '.gz';
+  res.set('Content-Encoding', 'gzip');
+  res.set('Content-Type', 'text/css');
+  next();
+});
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "build", "index.html")));
 
 const port = process.env.PORT || 8080;
