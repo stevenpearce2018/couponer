@@ -87,7 +87,7 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup, focusCoupon) => {
             <button className="getCoupon" onClick={ () => showCode(coupons.couponCodes[0], showPopup, coupons.title)}><strong> Show Your Coupon Code </strong></button> :
             <div>
             <button className="getCoupon" onClick={ () => getOrDiscardCoupons(coupons._id, updateCouponsClaimed, "get")}><strong> Get Coupon </strong></button>
-            <button className="getCoupon" onClick={ () => focus(coupons, focusCoupon)}><strong> Close Up</strong></button>
+            <button className="getCoupon" onClick={ () => focus(coupons, focusCoupon)}><strong> Share Coupon</strong></button>
             </div>
         }
       </div>

@@ -36,12 +36,10 @@ const sm = require('sitemap');
 
 const requireHTTPS = (req, res, next) => {
   // The 'x-forwarded-proto' check is for Heroku
-  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
-    return res.redirect('https://' + req.get('host') + req.url);
-  }
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") return res.redirect('https://' + req.get('host') + req.url);
   next();
 }
-// app.use(requireHTTPS);
+app.use(requireHTTPS);
 app.use(compression());
 app.use(minify());
 app.use(favicon(__dirname + '/client/build/favicon.ico'));
@@ -641,6 +639,22 @@ app.post('/api/getYourCoupons', async (req, res) => {
       else if (outcome[0] && outcome[0].couponCodes.length === 0) res.json({response: "You are not logged in!"});
       else res.json({response: "No coupons found."});
     } else res.json({coupons: data});
+  }
+});
+
+app.get('/api/deals/:id', async (req, res) => {
+  // const ip = getIP(req)
+  const id = req.params.id;
+  redisHelper.get(`d${id}`, gotCoupon)
+  async function gotCoupon(coupon) {
+    if(coupon) res.json({coupons: data})
+    else {
+      let coupons;
+      coupons = await Coupon.find({'_id': id })
+      coupons.length === 0 ? coupons = "No coupons found." : coupons;
+      res.json({ coupons: coupons });
+      redisHelper.set(`d${id}`, cleanCoupons(coupon), 60*1)
+    }
   }
 });
 

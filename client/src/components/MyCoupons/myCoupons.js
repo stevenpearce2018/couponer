@@ -50,7 +50,7 @@ class MyCoupons extends Component {
       email: email
     }
     const json = await postRequest(`/api/getYourCoupons`, data)
-    if(json && json.coupons) this.setState({coupons: CouponsMaker(json.coupons, this.props.updateCouponsClaimed, this.showPopup)})
+    if(json && json.coupons && json.coupons !== "No coupons found.") this.setState({coupons: CouponsMaker(json.coupons, this.props.updateCouponsClaimed, this.showPopup)})
     else this.setState({coupons: <div className="center"><br/><h2>No coupons found, claim/create some coupons today!</h2></div>})
   }
   togglePopup = () => this.state.popupClass === "hiddenOverlay" ? this.setState({popupClass: "overlay"}) : this.setState({popupClass: "hiddenOverlay"})

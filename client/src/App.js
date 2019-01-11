@@ -8,7 +8,6 @@ import Footer from './components/Footer/footer';
 import Login from './components/Login/login';
 import Search from './components/Search/search';
 import About from './components/About/about';
-import Notfound from "./components/Notfound/notfound";
 import history from './history';
 import MyCoupons from './components/MyCoupons/myCoupons';
 import postRequest from './postReqest';
@@ -16,6 +15,7 @@ import getPosition from "./getPosition";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Helmet } from 'react-helmet';
+import capitalizeCase from './capitalizeCase';
 
 const SEO = props => {
   return (
@@ -55,9 +55,10 @@ class App extends Component {
         email: '',
         loggedInKey: '',
         SEO: <SEO
-        title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More."
-        keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" 
-        description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>,
+          title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More."
+          keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" 
+          description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."
+        />,
         couponsCurrentlyClaimed: "",
         membershipExperationDate: '',
         showOrHideNav: 'hidden',
@@ -82,6 +83,7 @@ class App extends Component {
     // this.fetchCoupons = this.fetchCoupons.bind(this);
     this.updateCouponsClaimed = this.updateCouponsClaimed.bind(this);
     this.updateMembershipExperationDate = this.updateMembershipExperationDate.bind(this);
+    this.updateHomeSEO = this.updateHomeSEO.bind(this);
   }
   async componentDidMount () {
     const couponlatitude = sessionStorage.getItem('couponlatitude');
@@ -96,12 +98,9 @@ class App extends Component {
       if(currentURL.toLowerCase().substring(0, 6) === "search") this.setMainSearch();
       else {
         switch (currentURL.toLowerCase()) {
-          case '':
+          case '' || 'home' || '/':
             this.setMainHome();
             break;
-          case 'home':
-              this.setMainHome();
-              break;
           case 'uploadcoupon':
               this.setMainUploadCoupon();
               break;
@@ -121,7 +120,7 @@ class App extends Component {
               this.setMainToMyCoupons();
               break;
           default:
-              this.setMainTo404();
+              this.setMainHome();
               break;
         }
       }
@@ -149,19 +148,23 @@ class App extends Component {
   hideNav = () => {
     if (this.showOrHideNav !== "hidden" && this.state.ignoreClick === false) this.setState({showOrHideNav: "hidden", ignoreClick: true})
   }
+
+  updateHomeSEO = couponData => this.setState({SEO: <SEO title={`${capitalizeCase(couponData.city)} coupons, ${capitalizeCase(couponData.title)}`} keywords={`${capitalizeCase(couponData.title)}, ${capitalizeCase(couponData.city)}`} description={capitalizeCase(couponData.textarea)} />});
+
   async logout(){
     const data = {
       loggedInKey: this.state.loggedInKey,
       email: this.state.email
     }
     await postRequest(`/api/signout`, data)
-    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInbusiness:"hidden", couponsCurrentlyClaimed: '', membershipExperationDate: ""})
+    this.setState({mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed} updateHomeSEO={this.updateHomeSEO}/>, loggedInKey: '', email: '', loginButton: 'notHidden', logoutButton: 'hidden', loggedInbusiness:"hidden", couponsCurrentlyClaimed: '', membershipExperationDate: ""})
     toast.success("Successful Logout!")
     sessionStorage.removeItem('UnlimitedCouponerKey')
     sessionStorage.removeItem('UnlimitedCouponerEmail')
     sessionStorage.removeItem('businessOwner');
     sessionStorage.removeItem('couponsCurrentlyClaimed')
     sessionStorage.removeItem('membershipExperationDate')
+    sessionStorage.removeItem("hsUrl")
   }
   async uploadCoupons(state){
     const data = {
@@ -203,6 +206,7 @@ class App extends Component {
     if(json && json.response === "Updated Account!") toast.success("Updated Account!")
     else toast.error("Failed to update account.")
   }
+
   setMainAccountSettings = () => this.setState({SEO: <SEO title="UnlimitedCouponer - Manage Coupons and Your Account." keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Manage free coupons, upload coupons for free and manage them all through unlimitedcouponer. Validate coupons and market for free online. Manage your account and view your currently claimed coupons for free online. View deals near you."/>, mainContent: <AccountSettings updateMembershipExperationDate = {this.updateMembershipExperationDate} setMainHome={this.setMainHome} updateAccountSettings={this.updateAccountSettings} updateCouponsClaimed={this.updateCouponsClaimed}/>})
   
   setMainUploadCoupon = () => this.setState({SEO: <SEO keywords="Upload Coupons, Boston Coupons, Online Coupons, Upload Coupons" description="Promote your local business with online coupons for free. Market your business to local customers. Grow your revenue by gaining new customers. Advertise locally in boston by uploading your coupons and business to gain popularity today. Manage custom coupons online for free."/>, mainContent: <CouponForm setMainHome={this.setMainHome} uploadCoupons={this.uploadCoupons}/>})
@@ -212,8 +216,10 @@ class App extends Component {
   updateCouponsClaimed = number => number === -1 ? this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) - 1)}) : this.setState({couponsCurrentlyClaimed: (Number(this.state.couponsCurrentlyClaimed) + 1)})
 
   setMainHome = () => {
-    window.history.pushState(null, '', '/Home');
-    this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More." keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>})
+    const urlTwo = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
+    const id = urlTwo.substring(urlTwo.lastIndexOf('/')+1, urlTwo.length)
+    id.length === 24 ? window.history.pushState(null, '', window.location.href) : window.history.pushState(null, '', '/Home');
+    this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More." keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed} updateHomeSEO={this.updateHomeSEO}/>})
   }
 
   setMainLogin = () => this.setState({SEO: <SEO title="Login to claim free coupons for food, coffee, pizza, rock climbing, laser tag, and More." keywords="Manage Coupons, Boston Coupons, Online Coupons, Boston Deals" description="Login to claim unlimited coupons for free. Easy online coupons in the boston area, search by category, keywords, or location. Get pizza coupon, gym coupons, great deals, auto repair deals, deals on cruises, deals on paintball, deals on bars, deals on anything and everything at unlimitedcouponer. Upload coupons now for free at unlimited couponer."/>, mainContent: <Login setMainHome={this.setMainHome} parentMethod={this.setStateLoggedIn}/>})
@@ -222,21 +228,19 @@ class App extends Component {
 
   setMainToAbout = () => this.setState({SEO: <SEO title="About UnlimitedCouponer Great Deals." keywords="Free Coupons, Boston Coupons, Cheap Marketing, Boston Activities" description="Learn about great deals on unlimited couponer and how you can use it to market to customers in the boston area. We are a great alternative to Groupon and offer online coupons at a much more reasonable price than other vendors. Signup today and begin marketing your business for free. Get great deals on gym memberships, eating out, rock climbing, paintball, cruises, travel, and much more."/>, mainContent: <About/>})
 
-  setMainTo404 = () => this.setState({SEO: <SEO title="UnlimitedCouponer - Page not found" keywords="404 error page" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Notfound/>})
-
   setMainToMyCoupons = () => this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More." keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <MyCoupons updateCouponsClaimed={this.updateCouponsClaimed} setMainHome={this.setMainHome}/>})
   
   setStateLoggedIn = (key, email, couponsCurrentlyClaimed, membershipExperationDate) => {
     sessionStorage.setItem('UnlimitedCouponerKey', key)
     sessionStorage.setItem('UnlimitedCouponerEmail', email)
     if(key.substr(-1) === "c") {
-      this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More." keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
+      this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More." keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed} updateHomeSEO={this.updateHomeSEO}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', couponsCurrentlyClaimed: couponsCurrentlyClaimed, membershipExperationDate: membershipExperationDate})
       sessionStorage.setItem('couponsCurrentlyClaimed', couponsCurrentlyClaimed)
       sessionStorage.setItem('membershipExperationDate', membershipExperationDate)
       window.history.pushState(null, '', '/Home');
     }
     else if(key.substr(-1) === "b") {
-      this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More."keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInbusiness: 'notHidden'})
+      this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More."keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed} updateHomeSEO={this.updateHomeSEO}/>, loggedInKey: key, email: email, logoutButton: 'notHidden', loginButton: 'hidden', loggedInbusiness: 'notHidden'})
       window.history.pushState(null, '', '/Home');
     }
   }
