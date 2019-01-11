@@ -371,6 +371,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
   // const ip = getIP(req)
   const loggedInKey = req.body.loggedInKey;
   const outcome = await AccountInfo.find({'email':req.body.email }).limit(1)
+  console.log(req.body.superCoupon)
   if(req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks") res.json({response: "Please choose your coupon type!"});
   else if(bcrypt.compareSync(loggedInKey, outcome[0].loggedInKey)) {
     if(validateCouponForm(req.body).valid !== false) {

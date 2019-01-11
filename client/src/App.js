@@ -189,7 +189,10 @@ class App extends Component {
       email: this.state.email,
     }
     const json = await postRequest(`/api/uploadCoupons`, data)
-    if(json && json.response === "Coupon Created" ) return toast.success("Coupon Created!");
+    if(json && json.response === "Coupon Created" ) {
+      this.setMainHome();
+      return toast.success("Coupon Created!");
+    }
     else return toast.error(json.response);
     // alert(JSON.stringify(json), "json")
   }

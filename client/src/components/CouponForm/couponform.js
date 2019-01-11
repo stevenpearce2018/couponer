@@ -214,12 +214,9 @@ class CouponForm extends Component {
     });
   }
 
-  uploadCoupons = dataFromStripe => {
+  uploadCoupons = e => {
+    e.preventDefault();
     const data = {
-      description: dataFromStripe.description,
-      source: dataFromStripe.source,
-      currency: dataFromStripe.currency,
-      amount: dataFromStripe.amount,
       title: this.state.title,
       address: this.state.address,
       amountCoupons: Number(this.state.amountCoupons),
@@ -276,11 +273,7 @@ class CouponForm extends Component {
           <h2>Coupon details</h2>
         </div>
         <div className='uploadCouponForm'>
-        <form
-          method="post"
-          encType="multipart/form-data"
-          className='uploadForm'
-          action="/api/uploadCoupons">
+        <form className='uploadForm'>
         <br/>
         <br/>
         <Input
