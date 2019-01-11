@@ -48,6 +48,10 @@ app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
+app.use('/robots.txt', (req, res, next) => {
+  res.type('text/plain')
+  res.send("User-agent: *\nDisallow: /");
+});
 
 app.post('/api/generateQR', async(req, res) => {
   try {
