@@ -52,7 +52,10 @@ class Home extends Component {
     if(id.toLowerCase() !== "home") {
       const getURL = `/api/deals/${id}`;
       const dataTwo = await getRequest(getURL);
-      if(dataTwo && dataTwo.coupons !== "No coupons found.") this.setState({coupon: CouponsMaker(dataTwo.coupons, that.props.updateCouponsClaimed, undefined, that.alreadySelected)})
+      if(dataTwo && dataTwo.coupons !== "No coupons found.") {
+        this.props.updateHomeSEO(dataTwo.coupons[0])
+        this.setState({coupon: CouponsMaker(dataTwo.coupons, that.props.updateCouponsClaimed, undefined, that.alreadySelected)})
+      }
     }
   }
   async changePage(number){
