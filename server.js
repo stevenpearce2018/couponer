@@ -32,6 +32,7 @@ const checkPasswordStrength = require('./lib/checkPasswordStrength');
 const favicon = require('serve-favicon');
 const minify = require('express-minify');
 const compression = require('compression')
+const sm = require('sitemap');
 
 const requireHTTPS = (req, res, next) => {
   // The 'x-forwarded-proto' check is for Heroku
@@ -40,7 +41,7 @@ const requireHTTPS = (req, res, next) => {
   }
   next();
 }
-app.use(requireHTTPS);
+// app.use(requireHTTPS);
 app.use(compression());
 app.use(minify());
 app.use(favicon(__dirname + '/client/build/favicon.ico'));
@@ -50,8 +51,29 @@ app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
 app.use('*/robots.txt', (req, res, next) => {
   res.type('text/plain')
-  res.send("User-agent: *\nDisallow: /");
+  res.send("# GSM: https://www.unlimitedcouponer.com\nSitemap: https://www.unlimitedcouponer.com/sitemap.xml\nUser-agent: *\nDisallow: /");
 });
+
+const sitemap = sm.createSitemap ({
+  hostname: 'https://www.unlimitedcouponer.com',
+  cacheTime: 600000,
+  urls: [
+    { url: '/Home',  changefreq: 'daily', priority: 0.3 },
+    { url: '/Search',  changefreq: 'daily',  priority: 0.3 },
+    { url: '/About',  changefreq: 'monthly',  priority: 0.7 },
+    { url: '/Login',  changefreq: 'monthly',  priority: 0.7 },
+    { url: '/Signup',  changefreq: 'monthly',  priority: 0.7 },
+  ]
+});
+
+app.use('*/sitemap.xml', (req, res) => {
+  sitemap.toXML((err, xml) => {
+    if (err) return res.status(500).end();
+    res.header('Content-Type', 'application/xml');
+    res.send( xml );
+  });
+});
+
 
 app.post('/api/generateQR', async(req, res) => {
   try {
