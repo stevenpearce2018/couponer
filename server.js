@@ -442,6 +442,56 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
     } else res.json({response: validateCouponForm(req.body).errorMessage})
   } else res.json({response: "You are not logged in!"});
 })
+
+app.post(`/api/uploadGrouponCoupon`, async(req, res) => {
+  if(req && req.body && req.body.superCoupon !== "Let's go super" && req.body.superCoupon !== "No thanks") res.json({response: "Please choose your coupon type!"});
+  else if(req && req.body && process.env.SECRETKEY === req.body.key) {
+    if(validateCouponForm(req.body).valid !== false) {
+      if (req.body.superCoupon === "No thanks") {
+        res.json({response: 'Coupon Created'})
+        const amountCoupons = req.body.amountCoupons;
+        let couponCodes = [];
+        let i = 0
+        for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
+        const saveCoupon = async () => {
+          const mongodbID = new mongoose.Types.ObjectId();
+          const coupon = new Coupon({
+            _id: mongodbID,
+            title: req.body.title,
+            address: req.body.address,
+            city: req.body.city.toLowerCase(),
+            amountCoupons: amountCoupons,
+            currentPrice: req.body.currentPrice,
+            discountedPrice: req.body.discountedPrice,
+            category: req.body.category,
+            textarea: req.body.textarea,
+            base64image: req.body.imagePreviewUrl,
+            superCoupon: req.body.superCoupon,
+            couponCodes: couponCodes,
+            couponStillValid: true,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
+            loc: { 
+              type: "Point",
+              coordinates: [req.body.longitude, req.body.latitude]
+            }
+          })
+          const arr = [...outcome[0].couponIds, mongodbID]
+          await AccountInfo.updateOne(
+            { "_id" : outcome[0]._id }, 
+            { "$set" : {"couponIds": arr}}, 
+            { "upsert" : false } 
+          );
+          await coupon.save()
+            .catch(err => console.log(err))
+        }
+        saveCoupon();
+      }
+      else res.json({response: 'Failed to charge the card provided, coupon was not created.'})
+    } else res.json({response: validateCouponForm(req.body).errorMessage})
+  } else res.json({response: "Wrong Key!"});
+})
+
 app.get('/api/geoCoupons/:long/:lat/:pageNumber', async (req, res) => {
   const long = (req && req.params && req.params.long) ? req.params.long.toLowerCase().replace(/\"/g,"") : res.json({ coupons: data });
   const lat = (req && req.params && req.params.lat) ? req.params.lat.toLowerCase().replace(/\"/g,"") : res.json({ coupons: "Could Not Find your locaton" });
