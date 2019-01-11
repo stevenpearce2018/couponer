@@ -1,7 +1,9 @@
 # Copyright 2018 Steven Pearce
 <strong> You will need a twilio key, mongodb connection string, and a redis url in order to use this application.</strong>
 
-Check it out at https://whispering-beach-41759.herokuapp.com/Home!
+We're live baby!
+
+Check it out at: https://www.unlimitedcouponer.com/Home
 
 1) cd Couponer
 2) npm install
@@ -20,9 +22,9 @@ Make sure you install the node packages for the server AND the client.
 [X] Search Functionality <br />
 [ ] Docker Containers <br />
 [X] Stateless Server <br />
-[ ] Load Balancer <br />
+[X] Load Balancer <br />
 [X] Redis Caching Support <br />
-[ ] HTTPS <br />
+[X] HTTPS <br />
 [X] MongoDB Connection <br />
 [X] Signup Support <br />
 [X] Login Support <br />
@@ -35,14 +37,14 @@ Make sure you install the node packages for the server AND the client.
 [X] Login Security/Validation <br />
 [/] React Native App (Waiting till webapp is Fully Complete to Resume) <br />
 [X] Refactoring of CSS <br />
-[/] Global CSS Classes to Reduce Css Bloat <br />
-[/] Refactoring of JS Components <br />
+[X] Global CSS Classes to Reduce Css Bloat <br />
+[X] Refactoring of JS Components <br />
 [X] Router Support <br />
 [X] SPA design <br />
 [/] Webpack Preact Setup <br />
 [ ] Webpack Lazy Loading <br />
 [ ] Image Optimizations for Performance <br />
-[/] General Serverside Validation of data <br />
+[X] General Serverside Validation of data <br />
 [X] Stripe payment handling<br />
 [X] CDN Setup of Assets <br />
 [X] Address Validation <br />
@@ -53,6 +55,6 @@ Make sure you install the node packages for the server AND the client.
 [X] Production MongoDB Setup <br />
 [X] Production Redis Setup <br />
 [X] Enviromnet Variables setup <br />
-[ ] Production Payment Setup <br />
+[X] Production Payment Setup <br />
 [X] AWS S3 hosting of assets <br />
-[/] Deployed on Heroku <br />
+[X] Deployed on Heroku <br />
