@@ -61,7 +61,7 @@ class SignUp extends Component {
       phoneNumber: this.state.country + this.state.phoneNumber,
       randomNumber: this.state.fiveDigitCode,
     }
-    const json = await await postRequest(`/api/phoneTestValidateNumber`, data)
+    const json = await postRequest(`/api/phoneTestValidateNumber`, data)
     if (json && json.success) {
       toast.success("Phone number is valid, woohoo!")
       this.setState({checkout: "showBuissnessIfCustomer", showOrHidePhoneValidationButton: 'hidden', boolValidPhoneNumber: true, validPhoneNumber: <span className="green icon">&#10003;</span>})
@@ -85,7 +85,7 @@ class SignUp extends Component {
       const data = {
         phoneNumber: this.state.country + this.state.phoneNumber,
       }
-      await await postRequest(`/api/phoneTest`, data)
+      await postRequest(`/api/phoneTest`, data)
     }
   }
 
@@ -104,7 +104,7 @@ class SignUp extends Component {
     }
     if (!checkPasswordStrength(this.state.password)) return toast.error("Your password is not valid!")
     if (validateEmail(this.state.email) && this.validState(this.state)){
-      const json = await await postRequest(`/api/signupCustomer`, data)
+      const json = await postRequest(`/api/signupCustomer`, data)
       if (json && json.loggedInKey) {
         this.props.parentMethod(json && json.loggedInKey, this.state.email);
         sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)
@@ -127,7 +127,7 @@ class SignUp extends Component {
   //   }
   //   if (!checkPasswordStrength(this.state.password)) return toast.error("Your password is not valid!")
   //   if (validateEmail(this.state.email) && this.validState(this.state)){
-  //     const json = await await postRequest(`/api/signupCustomer`, data)
+  //     const json = await postRequest(`/api/signupCustomer`, data)
   //     if (json && json.loggedInKey) {
   //       this.props.parentMethod(json.loggedInKey, this.state.email, json.couponsCurrentlyClaimed, json.membershipExperationDate)
   //       sessionStorage.setItem('UnlimitedCouponerKey', json.loggedInKey)

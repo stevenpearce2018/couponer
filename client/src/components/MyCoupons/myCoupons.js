@@ -69,7 +69,7 @@ class MyCoupons extends Component {
       email: this.state.email,
       couponCode: this.state.couponCode + ":c"
     }
-    const json = await await postRequest(`/api/validateCode`, data)
+    const json = await postRequest(`/api/validateCode`, data)
     if(json.response === "Coupon is valid!") {
       this.togglePopup()
       toast.success(json.response)

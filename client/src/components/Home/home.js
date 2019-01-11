@@ -67,6 +67,8 @@ class Home extends Component {
     }
     else toast.error("You cannot go lower than page one!") 
   }
+
+  
   decreasePage = () => this.changePage(-1)
 
   incrementPage = () => this.changePage(1)
