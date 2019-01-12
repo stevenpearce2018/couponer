@@ -3,6 +3,7 @@ import './home.css';
 import CouponsMaker from '../../couponsMaker';
 import { toast } from 'react-toastify';
 import getRequest from '../../getRequest';
+import getParameterByName from '../../getParameterByName';
 
 class Home extends Component {
   constructor(props) {
@@ -11,7 +12,7 @@ class Home extends Component {
       geolocation: '',
       latitude: '',
       longitude: '',
-      pageNumber: 1,
+      pageNumber: getParameterByName('pageNumber', '/'+window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)) || 1,
       coupon: <div></div>,
       coupons: <div className="loaderContainer"><div className="loader"></div></div>,
       incrementPageClass: "hidden"
@@ -28,7 +29,7 @@ class Home extends Component {
     if (!couponlongitude && !couponlatitude) {
       if (navigator && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
       async function showPosition(location) {
-        const url = `/api/geoCoupons/${location.coords.longitude}/${location.coords.latitude}/1`;
+        const url = `/api/geoCoupons/${location.coords.longitude}/${location.coords.latitude}/${this.state.pageNumber}`;
         const data = await getRequest(url);
         sessionStorage.setItem('couponlatitude', location.coords.latitude);
         sessionStorage.setItem('couponlongitude', location.coords.longitude);
@@ -42,13 +43,13 @@ class Home extends Component {
         latitude: couponlatitude,
         longitude: couponlongitude,
       })
-      const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/1`;
+      const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/${this.state.pageNumber}`;
       const data = await getRequest(url);
       if(data && data.coupons && data.coupons.length > 0) that.setState({coupons: CouponsMaker(data.coupons, that.props.updateCouponsClaimed, undefined, that.focusCoupon), incrementPageClass: "center marginTop"})
       else that.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>})
     }
     const urlTwo = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
-    const id = urlTwo.substring(urlTwo.lastIndexOf('/')+1, urlTwo.length)
+    const id = urlTwo.substring(urlTwo.lastIndexOf('/')+1, urlTwo.lastIndexOf('/')+25)
     if(id.toLowerCase() !== "home") {
       const getURL = `/api/deals/${id}`;
       const dataTwo = await getRequest(getURL);
@@ -65,6 +66,8 @@ class Home extends Component {
     if (pageNumber >= 1) {
       const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/${pageNumber}`;
       const data = await getRequest(url);
+      window.location.href.lastIndexOf("?pageNumber=") > -1 ? window.history.pushState(null, '', window.location.href.substring(0, window.location.href.lastIndexOf("?pageNumber=")) + "?pageNumber="+pageNumber) : window.history.pushState(null, '', window.location.href + "?pageNumber="+pageNumber)
+      // getParameterByName('pageNumber', '/'+window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)) ? window.history.pushState(null, '', window.location.href) : window.history.pushState(null, '', '/Home');
       if (data.coupons && data.coupons.length > 0) this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed, undefined, this.focusCoupon), incrementPageClass: "center marginTop", pageNumber: pageNumber})
       else this.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>, pageNumber: pageNumber})
     }
@@ -89,7 +92,7 @@ class Home extends Component {
     return (
       <div>
         <div className="center">
-          <h2>Coupons near you</h2>
+          <h2>Coupons near you {this.state.pageNumber}</h2>
         </div>
         {this.state.coupon}
         {this.state.coupons}

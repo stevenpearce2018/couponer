@@ -221,7 +221,8 @@ class App extends Component {
   setMainHome = () => {
     const urlTwo = window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)
     const id = urlTwo.substring(urlTwo.lastIndexOf('/')+1, urlTwo.length)
-    id.length === 24 ? window.history.pushState(null, '', window.location.href) : window.history.pushState(null, '', '/Home');
+    const redirect = (id.length === 24 || urlTwo.includes("?pageNumber="))
+    redirect ? window.history.pushState(null, '', window.location.href) : window.history.pushState(null, '', '/Home');
     this.setState({SEO: <SEO title="Boston Deals and Coupons for Food, Spa, Beauty, Clothes, Gym, Car repair, and More." keywords="Coupons, Boston Coupons, Food Coupons, Boston Activities" description="Free unlimited online coupons in boston. Save money and explore local businesses in boston. Promote and market your small business for free. Food Coupons, Automotive and Car Repair Coupons, Coupons for Bars, Coupons for Gyms, Yoga Coupons, Health Coupons, Travel Coupons, Increase Business Revenue, Try new Activies, Explore Boston."/>, mainContent: <Home updateCouponsClaimed={this.updateCouponsClaimed} updateHomeSEO={this.updateHomeSEO}/>})
   }
 
