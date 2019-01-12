@@ -92,7 +92,7 @@ class SignUp extends Component {
   validState = state => state.email && state.yourPick !== '' && state.password === state.passwordConfirm && state.phoneNumber ? true : false;
 
   async handleSingup(e){
-    if(this.state.boolValidPhoneNumber === false) return toast.error("You must validate your phone number!")
+    // if(this.state.boolValidPhoneNumber === false) return toast.error("You must validate your phone number!")
     e.preventDefault();
     const data = {
       businessName: this.state.businessName,
@@ -248,8 +248,8 @@ class SignUp extends Component {
   </form>
 
   <div className='buttonAndForgot'>
-    <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.validatePhone}><strong>Validate Phone Number</strong></button>
-    <div className={this.state.popupClass}>
+    {/* <button type="submit" value="Submit" className={this.state.showOrHidePhoneValidationButton} onClick={this.validatePhone}><strong>Validate Phone Number</strong></button> */}
+    {/* <div className={this.state.popupClass}>
             <div className="popup">
               <h2 className="popupheader">Please Enter Your 5 digit security code</h2>
               <a className="close" onClick={this.togglePopup}>&times;</a>
@@ -268,7 +268,7 @@ class SignUp extends Component {
               </div>
               </div>
             </div>
-          </div>
+          </div> */}
     <div className={this.state.checkout}>
       <br/>
       <br/>
@@ -284,9 +284,9 @@ class SignUp extends Component {
         />
     </div> : <div></div>} */}
 
-    <div className={this.state.showSignUp}>
+    {/* <div className={this.state.showSignUp}> */}
       <button type="submit" value="Submit" className="signupbtn" onClick={this.handleSingup}><strong>Sign up!</strong></button>
-    </div>
+    {/* </div> */}
     </div>
     </div>
     )

@@ -192,9 +192,9 @@ app.post('/api/phoneTestValidateNumber', async (req, res) => {
 })
 
 app.post('/api/signupCustomer', async(req, res) => {
-  redisHelper.get(req.body.phoneNumber, compareRandomNumber)
-  async function compareRandomNumber(randomNumber){
-    if (randomNumber && randomNumber === req.body.randomNumber) {
+  // redisHelper.get(req.body.phoneNumber, compareRandomNumber)
+  // async function compareRandomNumber(randomNumber){
+  //   if (randomNumber && randomNumber === req.body.randomNumber) {
       const yourPick = req.body.yourPick;
       const password = req.body.password;
       const phoneNumber = req.body.phoneNumber;
@@ -257,8 +257,8 @@ app.post('/api/signupCustomer', async(req, res) => {
             } else res.json({resp:'You need to select if you are a Business Owner or a customer!'});
         } else res.json({resp:'You need to fill out all fields!'});
       } else res.json({resp:'Email address is taken!'});
-    } else res.json({resp:'Wrong number, please try again!'});
-  }
+  //   } else res.json({resp:'Wrong number, please try again!'});
+  // }
 });
 
 app.post('/api/phoneTest', async (req, res) => {
