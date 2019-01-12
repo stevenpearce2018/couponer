@@ -29,7 +29,7 @@ class Home extends Component {
     if (!couponlongitude && !couponlatitude) {
       if (navigator && navigator.geolocation) navigator.geolocation.getCurrentPosition(showPosition);
       async function showPosition(location) {
-        const url = `/api/geoCoupons/${location.coords.longitude}/${location.coords.latitude}/${this.state.pageNumber}`;
+        const url = `/api/geoCoupons/${location.coords.longitude}/${location.coords.latitude}/${that.state.pageNumber}`;
         const data = await getRequest(url);
         sessionStorage.setItem('couponlatitude', location.coords.latitude);
         sessionStorage.setItem('couponlongitude', location.coords.longitude);
@@ -67,7 +67,6 @@ class Home extends Component {
       const url = `/api/geoCoupons/${couponlongitude}/${couponlatitude}/${pageNumber}`;
       const data = await getRequest(url);
       window.location.href.lastIndexOf("?pageNumber=") > -1 ? window.history.pushState(null, '', window.location.href.substring(0, window.location.href.lastIndexOf("?pageNumber=")) + "?pageNumber="+pageNumber) : window.history.pushState(null, '', window.location.href + "?pageNumber="+pageNumber)
-      // getParameterByName('pageNumber', '/'+window.location.href.substring(window.location.href.lastIndexOf('/')+1, window.location.href.length)) ? window.history.pushState(null, '', window.location.href) : window.history.pushState(null, '', '/Home');
       if (data.coupons && data.coupons.length > 0) this.setState({coupons: CouponsMaker(data.coupons, this.props.updateCouponsClaimed, undefined, this.focusCoupon), incrementPageClass: "center marginTop", pageNumber: pageNumber})
       else this.setState({coupons: <h2 className="center paddingTop">No coupons found based on your location or we could not get your location. Please try searching manually.</h2>, pageNumber: pageNumber})
     }
@@ -80,9 +79,10 @@ class Home extends Component {
 
   incrementPage = () => this.changePage(1)
 
-  focusCoupon = async coupon => {
+  focusCoupon = coupon => {
     sessionStorage.setItem("hsUrl", `/${encodeURI(coupon.city)}/${encodeURI(coupon.title)}/${encodeURI(coupon._id)}`)
     window.history.pushState(null, '', '/Home'+sessionStorage.getItem("hsUrl"))
+    window.location.href.lastIndexOf("?pageNumber=") > -1 ? window.history.pushState(null, '', window.location.href.substring(0, window.location.href.lastIndexOf("?pageNumber=")) + "?pageNumber="+this.state.pageNumber) : window.history.pushState(null, '', window.location.href + "?pageNumber="+this.state.pageNumber)
     this.setState({coupon: CouponsMaker([coupon], this.props.updateCouponsClaimed, undefined, this.alreadySelected)})
     this.props.updateHomeSEO(coupon)
     toast.success("Share the URL with your friends!")
@@ -92,7 +92,7 @@ class Home extends Component {
     return (
       <div>
         <div className="center">
-          <h2>Coupons near you {this.state.pageNumber}</h2>
+          <h2>Coupons near you</h2>
         </div>
         {this.state.coupon}
         {this.state.coupons}
