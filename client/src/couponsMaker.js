@@ -14,6 +14,18 @@ const showCode = (code, showPopup, title) => showPopup(code, title);
 const validateCode = (_id, showPopup, title) => showPopup(_id, title);
 const focus = (coupon, focusCoupon) => focusCoupon(coupon);
 
+const getDistanceFromUser = (latitude, longitude) => {
+  const couponlatitude = sessionStorage.getItem('couponlatitude');
+  const couponlongitude = sessionStorage.getItem('couponlongitude');
+  if (navigator && navigator.geolocation && !couponlongitude && !couponlatitude) navigator.geolocation.getCurrentPosition(showPosition);
+  else return HaversineInMiles(couponlatitude, couponlongitude, latitude, longitude);
+  function showPosition(location) {
+    sessionStorage.setItem('couponlatitude', location.coords.latitude);
+    sessionStorage.setItem('couponlongitude', location.coords.longitude);
+    return HaversineInMiles(location.coords.latitude, location.coords.longitude, latitude, longitude)
+  }
+}
+
 const getOrDiscardCoupons = async (_id, updateCouponsClaimed, flag) => {
   const loggedInKey = sessionStorage.getItem('UnlimitedCouponerKey') ? sessionStorage.getItem('UnlimitedCouponerKey').replace('"', '').replace('"', '') : null;
   const email = sessionStorage.getItem('UnlimitedCouponerEmail') ? sessionStorage.getItem('UnlimitedCouponerEmail') : null;
@@ -72,7 +84,7 @@ const CouponsMaker = (props, updateCouponsClaimed, showPopup, focusCoupon) => {
         <hr/>
         <p>{capitalizeCase(coupons.address)}, {capitalizeCase(coupons.city)}</p>
         <br/>
-        <p>{HaversineInMiles(latitude, longitude, coupons.latitude, coupons.longitude)}</p>
+        <p>{getDistanceFromUser(coupons.latitude, coupons.longitude)}</p>
         <hr/>
         <br/>
         {
