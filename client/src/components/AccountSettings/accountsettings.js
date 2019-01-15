@@ -73,7 +73,7 @@ class AccountSettings extends Component {
     <div className="container text-center">
         <section id="portfolio" className="content">
           <h2 className="textHeader">How to update your account settings</h2>
-          <p className="text">In order to add more months of membership you must pay 4.99$ per month. You must validate your new phone number once again in order to change your phone number. To change your password simply type your current password and the new password you would like. To update your city or other information, simply fill out the form and click the update info button below!</p>
+          <p className="text">To change your password simply type your current password and the new password you would like. To update your city or other information, simply fill out the form and click the update info button below!</p>
         </section>
         <br/>
       <div className="accountForm">
