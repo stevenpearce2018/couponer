@@ -49,7 +49,7 @@ app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
 app.use('*/robots.txt', (req, res, next) => {
   res.type('text/plain')
-  res.send("# GSM: https://www.unlimitedcouponer.com\nSitemap: https://www.unlimitedcouponer.com/sitemap.xml\nUser-agent: *\nDisallow: /");
+  res.send("# GSM: https://www.unlimitedcouponer.com\nSitemap: https://www.unlimitedcouponer.com/sitemap.xml\nUser-agent: *\nDisallow:");
 });
 
 const sitemap = sm.createSitemap ({
