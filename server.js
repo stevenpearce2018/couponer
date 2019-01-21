@@ -526,7 +526,7 @@ app.get('/api/geoCoupons/:long/:lat/:pageNumber', async (req, res) => {
     couponStillValid: true,
     'loc.coordinates': {
       $geoWithin: {
-        $center: [[long, lat], 10000]
+        $center: [[long, lat], 1000]
       },
     },
   }).skip((pageNumber-1)*20).limit(20)
@@ -536,7 +536,7 @@ app.get('/api/geoCoupons/:long/:lat/:pageNumber', async (req, res) => {
       couponStillValid: true,
       'loc.coordinates': {
         $geoWithin: {
-          $center: [[long, lat], 10000]
+          $center: [[long, lat], 1000]
         },
       },
     }).skip((pageNumber-1)*20).limit(20)
@@ -546,7 +546,7 @@ app.get('/api/geoCoupons/:long/:lat/:pageNumber', async (req, res) => {
       couponStillValid: true,
       'loc.coordinates': {
         $geoWithin: {
-          $center: [[long, lat], 10000]
+          $center: [[long, lat], 1000]
         },
       },
     }).skip((pageNumber-1)*20).limit(20 - coupons.length)
