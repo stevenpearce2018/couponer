@@ -1,8 +1,21 @@
 {
-  "short_name": "Coupons",
-  "name": "Save money with coupons to all your favorite places",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
-}
+    "short_name": "Coupons",
+    "name": "UnlimitedCouponer",
+    "icons": [
+      {
+        "src": "/icon.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/large.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#002e5b",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#fde428"
+  }
