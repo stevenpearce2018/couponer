@@ -32,7 +32,20 @@ const checkPasswordStrength = require('./lib/checkPasswordStrength');
 const favicon = require('serve-favicon');
 const minify = require('express-minify');
 const compression = require('compression')
-const sm = require('sitemap');
+
+const addUrlToSitemapXML = url => {
+  const filename = "sitemap.xml"
+  fs.readFile(filename, (err, data) => {
+    if(err) throw err;
+    let theFile = data.toString().split("\n");
+    theFile.splice(-1,1);
+    fs.writeFile(filename, theFile.join("\n"), err => {
+    if(err) return console.log(err);
+    });
+    fs.appendFile('sitemap.xml', `\n<url>\n<loc>${url}</loc>\n<changefreq>daily</changefreq>\n<priority>0.3</priority>\n</url>\n</urlset>`, (err, contents) => {
+    });
+  });
+}
 
 const requireHTTPS = (req, res, next) => {
   // The 'x-forwarded-proto' check is for Heroku
@@ -47,31 +60,11 @@ app.use(express.static('dist'));
 app.use(express.static(path.join(__dirname, "client", "build")))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'50mb' }))
+app.use('*/sitemap.xml', (req, res) => res.sendFile('sitemap.xml' , { root : __dirname}));
 app.use('*/robots.txt', (req, res, next) => {
   res.type('text/plain')
   res.send("# GSM: https://www.unlimitedcouponer.com\nSitemap: https://www.unlimitedcouponer.com/sitemap.xml\nUser-agent: *\nDisallow:");
 });
-
-const sitemap = sm.createSitemap ({
-  hostname: 'https://www.unlimitedcouponer.com',
-  cacheTime: 600000,
-  urls: [
-    { url: '/Home',  changefreq: 'daily', priority: 0.3 },
-    { url: '/Search',  changefreq: 'daily',  priority: 0.3 },
-    { url: '/About',  changefreq: 'monthly',  priority: 0.7 },
-    { url: '/Login',  changefreq: 'monthly',  priority: 0.7 },
-    { url: '/Signup',  changefreq: 'monthly',  priority: 0.7 },
-  ]
-});
-
-app.use('*/sitemap.xml', (req, res) => {
-  sitemap.toXML((err, xml) => {
-    if (err) return res.status(500).end();
-    res.header('Content-Type', 'application/xml');
-    res.send( xml );
-  });
-});
-
 
 app.post('/api/generateQR', async(req, res) => {
   try {
@@ -392,6 +385,7 @@ app.post(`/api/uploadCoupons`, async(req, res) => {
         for(; i < amountCoupons; i++) couponCodes.push(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)+':a');
         const saveCoupon = async () => {
           const mongodbID = new mongoose.Types.ObjectId();
+          addUrlToSitemapXML(`https://www.unlimitedcouponer.com/coupons/${encodeURI(req.body.city).replace(/%20/g, "-")}/${encodeURI(req.body.title).replace(/%20/g, "-")}/${mongodbID}`)
           const coupon = new Coupon({
             _id: mongodbID,
             title: req.body.title,
